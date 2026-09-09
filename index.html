@@ -15,7 +15,6 @@
         .header p { font-size: 0.85rem; color: #8ab4c9; margin-top: 4px; }
         .content { padding: 24px 28px; }
         
-        /* Авторизация */
         .auth-form { display: block; }
         .auth-form.hidden { display: none; }
         .auth-form h2 { color: #0b2b3c; font-size: 1.2rem; margin-bottom: 16px; }
@@ -31,7 +30,6 @@
         .auth-form .btn-link { background: transparent; border: none; color: #2d6b84; cursor: pointer; font-size: 0.9rem; text-decoration: underline; margin-top: 12px; display: block; text-align: center; }
         .auth-form .btn-link:hover { color: #1f4a5e; }
         
-        /* Регистрация */
         .register-form { display: none; }
         .register-form.active { display: block; }
         .register-form h2 { color: #0b2b3c; font-size: 1.2rem; margin-bottom: 16px; }
@@ -49,7 +47,6 @@
         .register-success .code { font-size: 2rem; font-weight: 700; color: #0b2b3c; letter-spacing: 8px; background: white; padding: 8px 16px; border-radius: 12px; display: inline-block; margin: 8px 0; }
         .register-success.active { display: block; }
         
-        /* Личный кабинет */
         .dashboard { display: none; }
         .dashboard.active { display: block; }
         
@@ -396,7 +393,6 @@ window.register = async function() {
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Регистрация...';
     
     try {
-        // Проверяем, не зарегистрирован ли уже такой номер
         const existing = await supabaseQuery('clients', 'GET');
         const found = existing.find(c => c.plate === plate);
         
@@ -408,28 +404,24 @@ window.register = async function() {
             return;
         }
         
-        // Генерируем 4-значный код доступа
         const accessCode = String(Math.floor(1000 + Math.random() * 9000));
         
-        // Создаем клиента
         const clientData = {
             name: name,
             phone: phone,
             car: car,
             plate: plate,
             access_code: accessCode,
-            is_new: true // Маркер, что клиент новый (для сервисного приложения)
+            is_new: true
         };
         
         const result = await supabaseQuery('clients', 'POST', clientData);
         
         if (result && result[0]) {
-            // Показываем код доступа
             document.getElementById('regAccessCode').textContent = accessCode;
             document.getElementById('registerSuccess').classList.add('active');
             document.getElementById('regError').style.display = 'none';
             
-            // Сохраняем данные клиента для быстрого входа
             localStorage.setItem('palych_new_client', JSON.stringify({
                 plate: plate,
                 access_code: accessCode
@@ -724,7 +716,7 @@ function startAutoRefresh() {
 }
 
 // ============================================================
-// ЗАПИСЬ
+// ЗАПИСЬ (ИСПРАВЛЕННАЯ ВЕРСИЯ)
 // ============================================================
 window.toggleBookingForm = function() {
     const form = document.getElementById('bookingForm');
@@ -764,24 +756,44 @@ window.createBooking = async function() {
         time: time || null,
         reason: reason || null,
         status: 'новая',
-        is_new: true // Маркер, что это новая заявка
+        is_new: true
     };
+    
+    console.log('📤 Отправка данных:', bookingData);
     
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Отправка...';
     
     try {
         const result = await supabaseQuery('bookings', 'POST', bookingData);
+        
+        console.log('✅ Результат:', result);
+        
         if (result && result[0]) {
             showNotification('✅ Заявка отправлена!', 'success');
             document.getElementById('bookingForm').classList.remove('active');
             currentBooking = result[0];
             updateStatusDisplay(currentBooking);
             await loadHistory();
+        } else {
+            showNotification('⚠️ Запись создана, но данные не вернулись.', 'error');
         }
+        
     } catch (error) {
-        console.error('Ошибка:', error);
-        showNotification('❌ Ошибка создания записи', 'error');
+        console.error('❌ Ошибка:', error);
+        
+        let errorMsg = '❌ Не удалось создать запись.\n\n';
+        if (error.code === 401) {
+            errorMsg += '🔒 Ошибка авторизации. Проверьте ключи API.';
+        } else if (error.code === 403) {
+            errorMsg += '🔒 Доступ запрещен (RLS). Проверьте политики в Supabase.';
+        } else if (error.code === 400) {
+            errorMsg += '📋 Неверные данные. Проверьте структуру таблицы.\n';
+            errorMsg += error.message || '';
+        } else {
+            errorMsg += error.message || 'Попробуйте позже.';
+        }
+        showNotification(errorMsg, 'error');
     }
     
     btn.disabled = false;
@@ -849,7 +861,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('bkDate').value = new Date().toISOString().slice(0,10);
     console.log('🚀 Клиентское приложение загружено!');
     
-    // Проверяем, есть ли сохраненные данные после регистрации
     const saved = localStorage.getItem('palych_new_client');
     if (saved) {
         try {

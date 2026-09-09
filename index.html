@@ -98,6 +98,14 @@
         .history-card .h-date { font-size: 0.8rem; color: #3a657e; }
         .history-card .h-status { font-size: 0.7rem; padding: 2px 10px; border-radius: 20px; font-weight: 600; background: #d3f0d8; color: #0a6030; }
         
+        .active-booking-card { background: white; border: 1px solid #e4ecf4; border-radius: 12px; padding: 12px 16px; margin-bottom: 8px; border-left: 4px solid #2d6b84; }
+        .active-booking-card .b-type { font-weight: 600; }
+        .active-booking-card .b-type.diag { color: #f6b83d; }
+        .active-booking-card .b-type.repair { color: #1f7b4a; }
+        .active-booking-card .b-date { font-size: 0.8rem; color: #3a657e; }
+        .active-booking-card .b-status { font-size: 0.7rem; padding: 2px 10px; border-radius: 20px; font-weight: 600; }
+        .active-booking-card .b-reason { font-size: 0.8rem; color: #3a657e; margin-top: 4px; }
+        
         .notification {
             position: fixed;
             top: 20px;
@@ -129,6 +137,7 @@
             .header h1 { font-size: 1.2rem; }
             .car-card .plate { font-size: 1rem; }
             .status-card .status-value { font-size: 1.1rem; }
+            .active-booking-card { padding: 10px 12px; }
         }
         
         .hidden { display: none !important; }
@@ -247,6 +256,20 @@
                 <button class="btn-refresh" id="refreshBtn" onclick="refreshStatus()">
                     <i class="fas fa-sync"></i> Проверить статус
                 </button>
+            </div>
+            
+            <!-- ===== АКТИВНЫЕ ЗАПИСИ ===== -->
+            <div style="margin-top: 16px;">
+                <h3 style="color:#0b2b3c; font-size:1rem; margin-bottom:10px;">
+                    <i class="fas fa-list" style="color:#f6b83d;"></i> Мои активные записи
+                    <span id="activeBookingsCount" style="background:#2d6b84;color:white;padding:2px 10px;border-radius:20px;font-size:0.7rem;margin-left:8px;">0</span>
+                </h3>
+                <div id="activeBookingsContainer">
+                    <div style="color:#3a657e; font-size:0.85rem; text-align:center; padding:20px;">
+                        <i class="fas fa-inbox" style="font-size:1.5rem; display:block; margin-bottom:6px;"></i>
+                        Нет активных записей
+                    </div>
+                </div>
             </div>
             
             <button class="btn-create" onclick="toggleBookingForm()">
@@ -418,7 +441,7 @@ function goToLogin() {
 }
 
 // ============================================================
-// РЕГИСТРАЦИЯ (С JSON)
+// РЕГИСТРАЦИЯ
 // ============================================================
 window.register = async function() {
     const name = document.getElementById('regName').value.trim();
@@ -441,7 +464,6 @@ window.register = async function() {
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Регистрация...';
     
     try {
-        // 1. Загружаем текущий JSON
         const jsonData = await loadJsonFromServer();
         if (!jsonData) {
             errorEl.textContent = '❌ Ошибка загрузки данных с сервера';
@@ -451,7 +473,6 @@ window.register = async function() {
             return;
         }
         
-        // 2. Проверяем, не зарегистрирован ли уже такой номер
         if (jsonData.clients) {
             const found = jsonData.clients.find(c => c.plate === plate);
             if (found) {
@@ -463,11 +484,9 @@ window.register = async function() {
             }
         }
         
-        // 3. Генерируем код доступа
         const accessCode = String(Math.floor(1000 + Math.random() * 9000));
         const newClientId = jsonData.clients ? Math.max(...jsonData.clients.map(c => c.id || 0), 0) + 1 : 1;
         
-        // 4. Создаем клиента
         const newClient = {
             id: newClientId,
             name: name,
@@ -475,16 +494,14 @@ window.register = async function() {
             car: car,
             plate: plate,
             access_code: accessCode,
-            is_new: true // 🔥 Новый клиент попадает в "Онлайн заявки"
+            is_new: true
         };
         
         if (!jsonData.clients) jsonData.clients = [];
         jsonData.clients.push(newClient);
         
-        // 5. Сохраняем обновленный JSON
         await updateJsonOnServer(jsonData);
         
-        // 6. Показываем код доступа
         document.getElementById('regAccessCode').textContent = accessCode;
         document.getElementById('registerSuccess').classList.add('active');
         document.getElementById('regError').style.display = 'none';
@@ -606,6 +623,7 @@ async function loadClientData() {
     document.getElementById('clientPhone').textContent = currentClient.phone || '—';
     
     await loadBooking();
+    await loadActiveBookings();
     await loadHistory();
 }
 
@@ -636,6 +654,83 @@ async function loadBooking() {
     }
 }
 
+// ============================================================
+// АКТИВНЫЕ ЗАПИСИ
+// ============================================================
+async function loadActiveBookings() {
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData || !jsonData.bookings) {
+            renderActiveBookings([]);
+            return;
+        }
+        
+        const activeBookings = jsonData.bookings.filter(b => 
+            b.client_id === currentClient.id && 
+            !['отремонтирована', 'не отремонтирована', 'продиагностирована', 'отменена'].includes(b.status)
+        );
+        
+        // Сортируем по дате (сначала новые)
+        activeBookings.sort((a, b) => {
+            if (!a.date) return 1;
+            if (!b.date) return -1;
+            return new Date(b.date) - new Date(a.date);
+        });
+        
+        renderActiveBookings(activeBookings);
+        
+    } catch (error) {
+        console.error('Ошибка загрузки активных записей:', error);
+        renderActiveBookings([]);
+    }
+}
+
+function renderActiveBookings(bookings) {
+    const container = document.getElementById('activeBookingsContainer');
+    const countEl = document.getElementById('activeBookingsCount');
+    
+    if (countEl) countEl.textContent = bookings.length;
+    
+    if (!bookings || bookings.length === 0) {
+        container.innerHTML = `
+            <div style="color:#3a657e; font-size:0.85rem; text-align:center; padding:20px;">
+                <i class="fas fa-inbox" style="font-size:1.5rem; display:block; margin-bottom:6px;"></i>
+                Нет активных записей
+            </div>
+        `;
+        return;
+    }
+    
+    const statusLabels = {
+        'новая': { text: 'Новая', class: 'status-new' },
+        'в работе': { text: 'В работе', class: 'status-work' },
+        'ожидается': { text: 'Ожидается', class: 'status-wait' }
+    };
+    
+    container.innerHTML = bookings.map(b => {
+        const typeLabel = b.type === 'diagnostic' ? '🔍 Диагностика' : '🔧 Ремонт';
+        const typeClass = b.type === 'diagnostic' ? 'diag' : 'repair';
+        const statusInfo = statusLabels[b.status] || { text: b.status, class: 'status-new' };
+        const timeDisplay = b.time ? `, ${b.time}` : '';
+        
+        return `
+            <div class="active-booking-card">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
+                    <div>
+                        <span class="b-type ${typeClass}">${typeLabel}</span>
+                        <span class="b-date">📅 ${b.date}${timeDisplay}</span>
+                    </div>
+                    <span class="b-status ${statusInfo.class}">${statusInfo.text}</span>
+                </div>
+                ${b.reason ? `<div class="b-reason"><i class="fas fa-comment"></i> ${b.reason}</div>` : ''}
+            </div>
+        `;
+    }).join('');
+}
+
+// ============================================================
+// ОБНОВЛЕНИЕ СТАТУСА
+// ============================================================
 function updateStatusDisplay(booking) {
     const statusMap = {
         'новая': { text: 'Новая', class: 'status-new', detail: 'Ваша заявка принята. Ожидайте подтверждения.' },
@@ -660,6 +755,9 @@ function updateStatusDisplay(booking) {
     }
 }
 
+// ============================================================
+// ИСТОРИЯ
+// ============================================================
 async function loadHistory() {
     const container = document.getElementById('historyContainer');
     
@@ -762,6 +860,7 @@ window.refreshStatus = async function() {
             showNotification('✅ Активных записей нет', 'success');
         }
         
+        await loadActiveBookings();
         await loadHistory();
         
     } catch (error) {
@@ -795,6 +894,7 @@ function startAutoRefresh() {
                     currentBooking = active;
                     updateStatusDisplay(active);
                     showNotification(`🔄 Статус изменен: ${active.status}`, 'info');
+                    await loadActiveBookings();
                     await loadHistory();
                 }
             } else if (currentBooking) {
@@ -804,6 +904,7 @@ function startAutoRefresh() {
                 document.getElementById('statusDetail').textContent = 'Вы можете записаться на обслуживание';
                 document.getElementById('cancelBtn').classList.add('hidden');
                 showNotification('📋 Активных записей нет', 'info');
+                await loadActiveBookings();
                 await loadHistory();
             }
         } catch (error) {
@@ -846,7 +947,6 @@ window.createBooking = async function() {
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Отправка...';
     
     try {
-        // 1. Загружаем текущий JSON
         const jsonData = await loadJsonFromServer();
         if (!jsonData) {
             showNotification('❌ Ошибка загрузки данных с сервера', 'error');
@@ -857,7 +957,6 @@ window.createBooking = async function() {
         
         if (!jsonData.bookings) jsonData.bookings = [];
         
-        // 2. Создаем новую запись
         const newBooking = {
             id: jsonData.bookings.length > 0 ? Math.max(...jsonData.bookings.map(b => b.id || 0)) + 1 : 1,
             client_id: currentClient.id,
@@ -870,13 +969,11 @@ window.createBooking = async function() {
             time: time || null,
             reason: reason || null,
             status: 'новая',
-            is_new: true, // 🔥 Новая запись попадает в "Онлайн заявки"
+            is_new: true,
             created_at: new Date().toISOString()
         };
         
         jsonData.bookings.push(newBooking);
-        
-        // 3. Сохраняем обновленный JSON
         await updateJsonOnServer(jsonData);
         
         showNotification('✅ Заявка отправлена! Мы свяжемся с вами.', 'success');
@@ -884,6 +981,7 @@ window.createBooking = async function() {
         
         currentBooking = newBooking;
         updateStatusDisplay(newBooking);
+        await loadActiveBookings();
         await loadHistory();
         
     } catch (error) {
@@ -903,20 +1001,17 @@ window.cancelBooking = async function() {
     if (!confirm('Отменить запись?')) return;
     
     try {
-        // 1. Загружаем текущий JSON
         const jsonData = await loadJsonFromServer();
         if (!jsonData || !jsonData.bookings) {
             showNotification('❌ Ошибка загрузки данных', 'error');
             return;
         }
         
-        // 2. Находим и обновляем запись
         const booking = jsonData.bookings.find(b => b.id === currentBooking.id);
         if (booking) {
             booking.status = 'отменена';
         }
         
-        // 3. Сохраняем обновленный JSON
         await updateJsonOnServer(jsonData);
         
         showNotification('✅ Запись отменена', 'success');
@@ -925,6 +1020,7 @@ window.cancelBooking = async function() {
         document.getElementById('statusBadge').className = 'badge-status status-new';
         document.getElementById('statusDetail').textContent = 'Вы можете записаться на обслуживание';
         document.getElementById('cancelBtn').classList.add('hidden');
+        await loadActiveBookings();
         await loadHistory();
         
     } catch (error) {
@@ -971,7 +1067,7 @@ document.addEventListener('keydown', function(e) {
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('bkDate').value = new Date().toISOString().slice(0,10);
     console.log('🚀 Клиентское приложение загружено!');
-    console.log('📋 Версия с JSON-хранением на сервере');
+    console.log('📋 Версия с активными записями');
     
     const saved = localStorage.getItem('palych_new_client');
     if (saved) {

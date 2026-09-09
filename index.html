@@ -106,6 +106,24 @@
         .active-booking-card .b-status { font-size: 0.7rem; padding: 2px 10px; border-radius: 20px; font-weight: 600; }
         .active-booking-card .b-reason { font-size: 0.8rem; color: #3a657e; margin-top: 4px; }
         
+        /* Чат */
+        .chat-container { margin-top: 16px; }
+        .chat-container h3 { color: #0b2b3c; font-size: 1rem; margin-bottom: 10px; }
+        .chat-messages { max-height: 300px; overflow-y: auto; border: 1px solid #e4ecf4; border-radius: 12px; padding: 12px; margin-bottom: 10px; background: #fafcff; }
+        .chat-msg { padding: 8px 12px; margin-bottom: 6px; border-radius: 10px; }
+        .chat-msg.from-service { background: #e8f5e9; border-left: 3px solid #1f7b4a; }
+        .chat-msg.from-client { background: #f0f7ff; border-left: 3px solid #2d6b84; }
+        .chat-msg .msg-text { font-size: 0.9rem; color: #0b2b3c; }
+        .chat-msg .msg-time { font-size: 0.65rem; color: #3a657e; margin-top: 2px; }
+        .chat-msg .msg-from { font-size: 0.65rem; font-weight: 600; }
+        .chat-msg .msg-from.service { color: #1f7b4a; }
+        .chat-msg .msg-from.client { color: #2d6b84; }
+        .chat-input-area { display: flex; gap: 8px; }
+        .chat-input-area textarea { flex: 1; padding: 8px 12px; border: 1px solid #d4dee9; border-radius: 10px; font-size: 0.85rem; resize: none; min-height: 50px; }
+        .chat-input-area textarea:focus { border-color: #f6b83d; outline: none; box-shadow: 0 0 0 3px rgba(246,184,61,0.15); }
+        .chat-input-area button { padding: 8px 16px; background: #2d6b84; color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; }
+        .chat-input-area button:hover { background: #1f4a5e; }
+        
         .notification {
             position: fixed;
             top: 20px;
@@ -138,6 +156,8 @@
             .car-card .plate { font-size: 1rem; }
             .status-card .status-value { font-size: 1.1rem; }
             .active-booking-card { padding: 10px 12px; }
+            .chat-input-area { flex-direction: column; }
+            .chat-input-area button { width: 100%; }
         }
         
         .hidden { display: none !important; }
@@ -269,6 +289,21 @@
                         <i class="fas fa-inbox" style="font-size:1.5rem; display:block; margin-bottom:6px;"></i>
                         Нет активных записей
                     </div>
+                </div>
+            </div>
+            
+            <!-- ===== ЧАТ С СЕРВИСОМ ===== -->
+            <div class="chat-container">
+                <h3><i class="fas fa-comment-dots" style="color:#f6b83d;"></i> Чат с сервисом</h3>
+                <div class="chat-messages" id="chatMessages">
+                    <div style="color:#3a657e; font-size:0.85rem; text-align:center; padding:20px;">
+                        <i class="fas fa-comment-dots" style="font-size:1.5rem; display:block; margin-bottom:6px;"></i>
+                        Нет сообщений
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <textarea id="chatMessageInput" placeholder="Напишите свой вопрос о стоимости услуг..." rows="2"></textarea>
+                    <button onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i> Отправить</button>
                 </div>
             </div>
             
@@ -417,6 +452,7 @@ async function updateJsonOnServer(updatedData) {
 let currentClient = null;
 let currentBooking = null;
 let statusCheckInterval = null;
+let chatMessages = [];
 
 // ============================================================
 // ПЕРЕКЛЮЧЕНИЕ МЕЖДУ ФОРМАМИ
@@ -625,6 +661,7 @@ async function loadClientData() {
     await loadBooking();
     await loadActiveBookings();
     await loadHistory();
+    await loadChatMessages();
 }
 
 async function loadBooking() {
@@ -670,7 +707,6 @@ async function loadActiveBookings() {
             !['отремонтирована', 'не отремонтирована', 'продиагностирована', 'отменена'].includes(b.status)
         );
         
-        // Сортируем по дате (сначала новые)
         activeBookings.sort((a, b) => {
             if (!a.date) return 1;
             if (!b.date) return -1;
@@ -815,6 +851,107 @@ async function loadHistory() {
 }
 
 // ============================================================
+// ЧАТ
+// ============================================================
+async function loadChatMessages() {
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (jsonData && jsonData.chatMessages) {
+            chatMessages = jsonData.chatMessages.filter(m => m.client_id === currentClient.id);
+        } else {
+            chatMessages = [];
+        }
+        renderChatMessages();
+    } catch (error) {
+        console.error('Ошибка загрузки чата:', error);
+    }
+}
+
+function renderChatMessages() {
+    const container = document.getElementById('chatMessages');
+    if (!container) return;
+    
+    if (!chatMessages || chatMessages.length === 0) {
+        container.innerHTML = `
+            <div style="color:#3a657e; font-size:0.85rem; text-align:center; padding:20px;">
+                <i class="fas fa-comment-dots" style="font-size:1.5rem; display:block; margin-bottom:6px;"></i>
+                Нет сообщений
+            </div>
+        `;
+        return;
+    }
+    
+    // Сортируем по времени (сначала старые)
+    const sorted = [...chatMessages].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    
+    container.innerHTML = sorted.map(msg => {
+        const isFromService = !msg.is_from_client;
+        const className = isFromService ? 'from-service' : 'from-client';
+        const fromLabel = isFromService ? '🛠️ Сервис' : '👤 Вы';
+        const time = new Date(msg.timestamp).toLocaleString();
+        
+        return `
+            <div class="chat-msg ${className}">
+                <div class="msg-from ${isFromService ? 'service' : 'client'}">${fromLabel}</div>
+                <div class="msg-text">${msg.message}</div>
+                <div class="msg-time">${time}</div>
+            </div>
+        `;
+    }).join('');
+    
+    // Скролл вниз
+    container.scrollTop = container.scrollHeight;
+}
+
+window.sendChatMessage = async function() {
+    if (!currentClient) {
+        showNotification('⚠️ Авторизуйтесь заново', 'error');
+        return;
+    }
+    
+    const input = document.getElementById('chatMessageInput');
+    const message = input.value.trim();
+    
+    if (!message) {
+        showNotification('⚠️ Введите сообщение', 'error');
+        return;
+    }
+    
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData) {
+            showNotification('❌ Ошибка загрузки данных с сервера', 'error');
+            return;
+        }
+        
+        if (!jsonData.chatMessages) jsonData.chatMessages = [];
+        if (!jsonData.chatIdCounter) jsonData.chatIdCounter = 1;
+        
+        const newMessage = {
+            id: jsonData.chatIdCounter++,
+            client_id: currentClient.id,
+            message: message,
+            is_from_client: true,
+            timestamp: new Date().toISOString(),
+            read: false
+        };
+        
+        jsonData.chatMessages.push(newMessage);
+        await updateJsonOnServer(jsonData);
+        
+        input.value = '';
+        chatMessages = jsonData.chatMessages.filter(m => m.client_id === currentClient.id);
+        renderChatMessages();
+        
+        showNotification('✅ Сообщение отправлено!', 'success');
+        
+    } catch (error) {
+        console.error('Ошибка:', error);
+        showNotification('❌ Ошибка отправки сообщения', 'error');
+    }
+};
+
+// ============================================================
 // ПРОВЕРКА СТАТУСА
 // ============================================================
 window.refreshStatus = async function() {
@@ -862,6 +999,7 @@ window.refreshStatus = async function() {
         
         await loadActiveBookings();
         await loadHistory();
+        await loadChatMessages();
         
     } catch (error) {
         console.error('Ошибка обновления:', error);
@@ -896,6 +1034,7 @@ function startAutoRefresh() {
                     showNotification(`🔄 Статус изменен: ${active.status}`, 'info');
                     await loadActiveBookings();
                     await loadHistory();
+                    await loadChatMessages();
                 }
             } else if (currentBooking) {
                 currentBooking = null;
@@ -906,6 +1045,7 @@ function startAutoRefresh() {
                 showNotification('📋 Активных записей нет', 'info');
                 await loadActiveBookings();
                 await loadHistory();
+                await loadChatMessages();
             }
         } catch (error) {
             console.warn('Ошибка автообновления:', error);
@@ -1049,7 +1189,19 @@ window.logout = function() {
 };
 
 // ============================================================
-// ОБРАБОТКА ENTER
+// ОБРАБОТКА ENTER В ЧАТЕ
+// ============================================================
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+        if (document.getElementById('chatMessageInput') === document.activeElement) {
+            e.preventDefault();
+            window.sendChatMessage();
+        }
+    }
+});
+
+// ============================================================
+// ОБРАБОТКА ENTER ДЛЯ АВТОРИЗАЦИИ
 // ============================================================
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') {
@@ -1067,7 +1219,7 @@ document.addEventListener('keydown', function(e) {
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('bkDate').value = new Date().toISOString().slice(0,10);
     console.log('🚀 Клиентское приложение загружено!');
-    console.log('📋 Версия с активными записями');
+    console.log('📋 Версия с чатом и активными записями');
     
     const saved = localStorage.getItem('palych_new_client');
     if (saved) {

@@ -26,7 +26,28 @@
         .auth-form .btn-auth { width: 100%; padding: 14px; background: #0b2b3c; color: white; border: none; border-radius: 50px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: 0.2s; }
         .auth-form .btn-auth:hover { background: #1c4055; }
         .auth-form .btn-auth i { color: #f6b83d; margin-right: 8px; }
+        .auth-form .btn-auth:disabled { opacity: 0.6; cursor: not-allowed; }
         .auth-error { color: #b33c3c; font-size: 0.85rem; margin-top: 8px; display: none; background: #fadad8; padding: 10px 14px; border-radius: 10px; }
+        .auth-form .btn-link { background: transparent; border: none; color: #2d6b84; cursor: pointer; font-size: 0.9rem; text-decoration: underline; margin-top: 12px; display: block; text-align: center; }
+        .auth-form .btn-link:hover { color: #1f4a5e; }
+        
+        /* Регистрация */
+        .register-form { display: none; }
+        .register-form.active { display: block; }
+        .register-form h2 { color: #0b2b3c; font-size: 1.2rem; margin-bottom: 16px; }
+        .register-form .form-group { margin-bottom: 14px; }
+        .register-form label { display: block; font-weight: 600; margin-bottom: 4px; color: #1f4055; font-size: 0.85rem; }
+        .register-form input { width: 100%; padding: 12px 16px; border: 2px solid #d4dee9; border-radius: 12px; font-size: 1rem; transition: 0.15s; background: white; }
+        .register-form input:focus { border-color: #f6b83d; outline: none; box-shadow: 0 0 0 3px rgba(246,184,61,0.15); }
+        .register-form .btn-auth { width: 100%; padding: 14px; background: #1f7b4a; color: white; border: none; border-radius: 50px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .register-form .btn-auth:hover { background: #2a965a; }
+        .register-form .btn-auth i { color: #f6b83d; margin-right: 8px; }
+        .register-form .btn-auth:disabled { opacity: 0.6; cursor: not-allowed; }
+        .register-form .btn-link { background: transparent; border: none; color: #2d6b84; cursor: pointer; font-size: 0.9rem; text-decoration: underline; margin-top: 12px; display: block; text-align: center; }
+        .register-form .btn-link:hover { color: #1f4a5e; }
+        .register-success { display: none; background: #d3f0d8; padding: 16px; border-radius: 12px; text-align: center; margin-top: 12px; }
+        .register-success .code { font-size: 2rem; font-weight: 700; color: #0b2b3c; letter-spacing: 8px; background: white; padding: 8px 16px; border-radius: 12px; display: inline-block; margin: 8px 0; }
+        .register-success.active { display: block; }
         
         /* Личный кабинет */
         .dashboard { display: none; }
@@ -48,23 +69,18 @@
         .status-fail { background: #b33c3c; color: white; }
         .status-cancel { background: #888; color: white; }
         
-        .history-card { background: white; border: 1px solid #e4ecf4; border-radius: 12px; padding: 12px 16px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .history-card .h-type { font-weight: 600; color: #0b2b3c; }
-        .history-card .h-date { font-size: 0.8rem; color: #3a657e; }
-        .history-card .h-status { font-size: 0.7rem; padding: 2px 10px; border-radius: 20px; font-weight: 600; }
-        
-        .btn-create { width: 100%; padding: 14px; background: #f6b83d; color: #0b2b3c; border: none; border-radius: 50px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: 0.2s; margin-top: 12px; }
-        .btn-create:hover { transform: scale(1.02); box-shadow: 0 8px 20px rgba(246,184,61,0.3); }
-        .btn-create i { margin-right: 8px; }
+        .btn-refresh { width: 100%; padding: 10px; background: #2d6b84; color: white; border: none; border-radius: 50px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.2s; margin-top: 8px; }
+        .btn-refresh:hover { background: #1f4a5e; }
+        .btn-refresh i { margin-right: 6px; }
+        .btn-refresh:disabled { opacity: 0.6; cursor: not-allowed; }
         
         .btn-cancel { width: 100%; padding: 12px; background: #b33c3c; color: white; border: none; border-radius: 50px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: 0.2s; margin-top: 8px; }
         .btn-cancel:hover { background: #a12b2b; }
         .btn-cancel.hidden { display: none; }
         
-        .btn-refresh { width: 100%; padding: 10px; background: #2d6b84; color: white; border: none; border-radius: 50px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.2s; margin-top: 8px; }
-        .btn-refresh:hover { background: #1f4a5e; }
-        .btn-refresh i { margin-right: 6px; }
-        .btn-refresh:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-create { width: 100%; padding: 14px; background: #f6b83d; color: #0b2b3c; border: none; border-radius: 50px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: 0.2s; margin-top: 12px; }
+        .btn-create:hover { transform: scale(1.02); box-shadow: 0 8px 20px rgba(246,184,61,0.3); }
+        .btn-create i { margin-right: 8px; }
         
         .form-booking { background: #f8fafc; border-radius: 16px; padding: 16px 20px; margin-top: 16px; display: none; }
         .form-booking.active { display: block; }
@@ -80,14 +96,11 @@
         .logout-btn { background: transparent; border: 1px solid #d4dee9; color: #3a657e; padding: 6px 16px; border-radius: 30px; cursor: pointer; font-size: 0.8rem; margin-top: 16px; width: 100%; }
         .logout-btn:hover { background: #f4f7fb; }
         
-        .text-center { text-align: center; }
-        .mt-2 { margin-top: 12px; }
-        .mb-2 { margin-bottom: 12px; }
-        .hidden { display: none !important; }
+        .history-card { background: white; border: 1px solid #e4ecf4; border-radius: 12px; padding: 12px 16px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .history-card .h-type { font-weight: 600; color: #0b2b3c; }
+        .history-card .h-date { font-size: 0.8rem; color: #3a657e; }
+        .history-card .h-status { font-size: 0.7rem; padding: 2px 10px; border-radius: 20px; font-weight: 600; background: #d3f0d8; color: #0a6030; }
         
-        .loading { opacity: 0.6; pointer-events: none; }
-        
-        /* Уведомления */
         .notification {
             position: fixed;
             top: 20px;
@@ -108,7 +121,6 @@
         .notification.success { border-left-color: #1f7b4a; }
         .notification.error { border-left-color: #b33c3c; }
         .notification.info { border-left-color: #2d6b84; }
-        
         @keyframes slideDown {
             from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
             to { transform: translateX(-50%) translateY(0); opacity: 1; }
@@ -121,23 +133,28 @@
             .car-card .plate { font-size: 1rem; }
             .status-card .status-value { font-size: 1.1rem; }
         }
+        
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        .mt-2 { margin-top: 12px; }
     </style>
 </head>
 <body>
+
 <div class="app" id="app">
-    <!-- Шапка -->
     <div class="header">
         <h1><i class="fas fa-car"></i> PalЫCH</h1>
-        <p>Клиентский кабинет</p>
+        <p>Личный кабинет клиента</p>
     </div>
 
-    <!-- Контент -->
     <div class="content">
         
         <!-- ===== АВТОРИЗАЦИЯ ===== -->
         <div class="auth-form" id="authForm">
             <h2><i class="fas fa-lock" style="color:#f6b83d;"></i> Вход в кабинет</h2>
-            <p style="color:#3a657e; font-size:0.85rem; margin-bottom:16px;">Введите гос. номер и код доступа, полученный в автосервисе</p>
+            <p style="color:#3a657e; font-size:0.85rem; margin-bottom:16px;">
+                Введите гос. номер и код доступа, полученный в автосервисе
+            </p>
             
             <div class="form-group">
                 <label><i class="fas fa-id-card"></i> Государственный номер</label>
@@ -153,44 +170,92 @@
                 <i class="fas fa-sign-in-alt"></i> Войти
             </button>
             <div class="auth-error" id="authError"></div>
+            
+            <button class="btn-link" onclick="showRegister()">
+                <i class="fas fa-user-plus"></i> Нет личного кабинета? Зарегистрироваться
+            </button>
+        </div>
+        
+        <!-- ===== РЕГИСТРАЦИЯ ===== -->
+        <div class="register-form" id="registerForm">
+            <h2><i class="fas fa-user-plus" style="color:#f6b83d;"></i> Регистрация</h2>
+            <p style="color:#3a657e; font-size:0.85rem; margin-bottom:16px;">
+                Заполните данные и получите код доступа
+            </p>
+            
+            <div class="form-group">
+                <label><i class="fas fa-user"></i> Ваше имя</label>
+                <input type="text" id="regName" placeholder="Иван Петров">
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-phone"></i> Номер телефона</label>
+                <input type="text" id="regPhone" placeholder="+7 999 123-45-67">
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-car"></i> Марка автомобиля</label>
+                <input type="text" id="regCar" placeholder="BMW X5">
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-id-card"></i> Государственный номер</label>
+                <input type="text" id="regPlate" placeholder="А123ВС777" style="text-transform:uppercase;">
+            </div>
+            
+            <button class="btn-auth" id="registerBtn" onclick="register()">
+                <i class="fas fa-check-circle"></i> Зарегистрироваться
+            </button>
+            <div class="auth-error" id="regError"></div>
+            
+            <div class="register-success" id="registerSuccess">
+                <i class="fas fa-check-circle" style="color:#1f7b4a; font-size:2rem;"></i>
+                <p style="margin-top:8px; font-weight:600;">Регистрация успешна!</p>
+                <p>Ваш код доступа:</p>
+                <div class="code" id="regAccessCode">0000</div>
+                <p style="font-size:0.85rem; color:#3a657e;">Сохраните код для входа в кабинет</p>
+                <button class="btn-auth" onclick="goToLogin()" style="margin-top:12px; background:#0b2b3c;">
+                    <i class="fas fa-sign-in-alt"></i> Перейти ко входу
+                </button>
+            </div>
+            
+            <button class="btn-link" onclick="showLogin()">
+                <i class="fas fa-arrow-left"></i> Назад ко входу
+            </button>
         </div>
         
         <!-- ===== ЛИЧНЫЙ КАБИНЕТ ===== -->
         <div class="dashboard" id="dashboard">
             
-            <!-- Информация об авто -->
-            <div class="car-card" id="carCard">
+            <div class="car-card">
                 <div class="plate" id="clientPlate">—</div>
                 <div class="car-info"><i class="fas fa-car"></i> <span id="clientCar">—</span></div>
                 <div class="car-info" style="margin-top:2px;"><i class="fas fa-user"></i> <span id="clientName">—</span></div>
                 <div class="car-info"><i class="fas fa-phone"></i> <span id="clientPhone">—</span></div>
             </div>
             
-            <!-- Текущий статус -->
-            <div class="status-card" id="statusCard">
+            <div class="status-card">
                 <div class="status-title"><i class="fas fa-clock"></i> Текущий статус</div>
                 <div class="status-value">
                     <span class="badge-status status-new" id="statusBadge">Нет активных записей</span>
                 </div>
-                <div style="margin-top:8px; font-size:0.85rem; color:#3a657e;" id="statusDetail">Вы можете записаться на обслуживание</div>
+                <div style="margin-top:8px; font-size:0.85rem; color:#3a657e;" id="statusDetail">
+                    Вы можете записаться на обслуживание
+                </div>
                 
-                <!-- Кнопка отмены записи -->
                 <button class="btn-cancel hidden" id="cancelBtn" onclick="cancelBooking()">
                     <i class="fas fa-times-circle"></i> Отменить запись
                 </button>
                 
-                <!-- Кнопка проверки статуса -->
                 <button class="btn-refresh" id="refreshBtn" onclick="refreshStatus()">
                     <i class="fas fa-sync"></i> Проверить статус
                 </button>
             </div>
             
-            <!-- Кнопка "Записаться" -->
             <button class="btn-create" onclick="toggleBookingForm()">
                 <i class="fas fa-calendar-plus"></i> Записаться на обслуживание
             </button>
             
-            <!-- Форма записи -->
             <div class="form-booking" id="bookingForm">
                 <h3><i class="fas fa-calendar-check" style="color:#f6b83d;"></i> Новая запись</h3>
                 
@@ -225,13 +290,11 @@
                 </button>
             </div>
             
-            <!-- История -->
             <h3 style="color:#0b2b3c; font-size:1rem; margin-top:20px; margin-bottom:10px;">
                 <i class="fas fa-history" style="color:#f6b83d;"></i> История обслуживания
             </h3>
             <div id="historyContainer"></div>
             
-            <!-- Выход -->
             <button class="logout-btn" onclick="logout()" style="width:100%; margin-top:16px;">
                 <i class="fas fa-sign-out-alt"></i> Выйти
             </button>
@@ -247,7 +310,7 @@ const SUPABASE_URL = 'https://xpaqczxqkuzfwmnimzsx.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhwYXFjenhxa3V6ZndtbmltenN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5Njg4NDcsImV4cCI6MjEwNDU0NDg0N30.hH62d6aCsgBchg4MVPey714O3-FR9bNaqnsm_T32zAk';
 
 // ============================================================
-// ФУНКЦИЯ ЗАПРОСОВ К SUPABASE
+// ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ
 // ============================================================
 async function supabaseQuery(table, method, data = null, id = null) {
     let url = `${SUPABASE_URL}/rest/v1/${table}`;
@@ -275,7 +338,7 @@ async function supabaseQuery(table, method, data = null, id = null) {
     const result = await response.json();
     
     if (!response.ok) {
-        throw { code: response.status, message: result.message || 'Ошибка запроса', details: result };
+        throw { code: response.status, message: result.message || 'Ошибка запроса' };
     }
     return result;
 }
@@ -286,6 +349,104 @@ async function supabaseQuery(table, method, data = null, id = null) {
 let currentClient = null;
 let currentBooking = null;
 let statusCheckInterval = null;
+
+// ============================================================
+// ПЕРЕКЛЮЧЕНИЕ МЕЖДУ ФОРМАМИ
+// ============================================================
+function showRegister() {
+    document.getElementById('authForm').classList.add('hidden');
+    document.getElementById('registerForm').classList.add('active');
+    document.getElementById('registerSuccess').classList.remove('active');
+    document.getElementById('regError').style.display = 'none';
+}
+
+function showLogin() {
+    document.getElementById('authForm').classList.remove('hidden');
+    document.getElementById('registerForm').classList.remove('active');
+    document.getElementById('registerSuccess').classList.remove('active');
+}
+
+function goToLogin() {
+    showLogin();
+    document.getElementById('authPlate').value = '';
+    document.getElementById('authCode').value = '';
+}
+
+// ============================================================
+// РЕГИСТРАЦИЯ
+// ============================================================
+window.register = async function() {
+    const name = document.getElementById('regName').value.trim();
+    const phone = document.getElementById('regPhone').value.trim();
+    const car = document.getElementById('regCar').value.trim();
+    const plate = document.getElementById('regPlate').value.trim().toUpperCase();
+    const errorEl = document.getElementById('regError');
+    const btn = document.getElementById('registerBtn');
+    
+    errorEl.style.display = 'none';
+    errorEl.textContent = '';
+    
+    if (!name || !phone || !car || !plate) {
+        errorEl.textContent = '❌ Заполните все поля';
+        errorEl.style.display = 'block';
+        return;
+    }
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Регистрация...';
+    
+    try {
+        // Проверяем, не зарегистрирован ли уже такой номер
+        const existing = await supabaseQuery('clients', 'GET');
+        const found = existing.find(c => c.plate === plate);
+        
+        if (found) {
+            errorEl.textContent = '❌ Автомобиль с таким номером уже зарегистрирован';
+            errorEl.style.display = 'block';
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check-circle"></i> Зарегистрироваться';
+            return;
+        }
+        
+        // Генерируем 4-значный код доступа
+        const accessCode = String(Math.floor(1000 + Math.random() * 9000));
+        
+        // Создаем клиента
+        const clientData = {
+            name: name,
+            phone: phone,
+            car: car,
+            plate: plate,
+            access_code: accessCode,
+            is_new: true // Маркер, что клиент новый (для сервисного приложения)
+        };
+        
+        const result = await supabaseQuery('clients', 'POST', clientData);
+        
+        if (result && result[0]) {
+            // Показываем код доступа
+            document.getElementById('regAccessCode').textContent = accessCode;
+            document.getElementById('registerSuccess').classList.add('active');
+            document.getElementById('regError').style.display = 'none';
+            
+            // Сохраняем данные клиента для быстрого входа
+            localStorage.setItem('palych_new_client', JSON.stringify({
+                plate: plate,
+                access_code: accessCode
+            }));
+            
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check-circle"></i> Зарегистрироваться';
+        }
+        
+    } catch (error) {
+        console.error('Ошибка регистрации:', error);
+        errorEl.textContent = '❌ Ошибка регистрации. Попробуйте позже.';
+        errorEl.style.display = 'block';
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check-circle"></i> Зарегистрироваться';
+    }
+};
 
 // ============================================================
 // УВЕДОМЛЕНИЯ
@@ -343,11 +504,10 @@ window.login = async function() {
         currentClient = client;
         
         document.getElementById('authForm').classList.add('hidden');
+        document.getElementById('registerForm').classList.remove('active');
         document.getElementById('dashboard').classList.add('active');
         
         await loadClientData();
-        
-        // Запускаем автообновление статуса
         startAutoRefresh();
         
         showNotification(`✅ Добро пожаловать, ${client.name}!`, 'success');
@@ -369,7 +529,7 @@ function showError(msg) {
 }
 
 // ============================================================
-// ЗАГРУЗКА ДАННЫХ КЛИЕНТА
+// ЗАГРУЗКА ДАННЫХ
 // ============================================================
 async function loadClientData() {
     if (!currentClient) return;
@@ -383,9 +543,6 @@ async function loadClientData() {
     await loadHistory();
 }
 
-// ============================================================
-// ЗАГРУЗКА АКТИВНОЙ ЗАПИСИ
-// ============================================================
 async function loadBooking() {
     try {
         const allBookings = await supabaseQuery('bookings', 'GET');
@@ -409,9 +566,6 @@ async function loadBooking() {
     }
 }
 
-// ============================================================
-// ОБНОВЛЕНИЕ ОТОБРАЖЕНИЯ СТАТУСА
-// ============================================================
 function updateStatusDisplay(booking) {
     const statusMap = {
         'новая': { text: 'Новая', class: 'status-new', detail: 'Ваша заявка принята. Ожидайте подтверждения.' },
@@ -436,9 +590,6 @@ function updateStatusDisplay(booking) {
     }
 }
 
-// ============================================================
-// ЗАГРУЗКА ИСТОРИИ
-// ============================================================
 async function loadHistory() {
     const container = document.getElementById('historyContainer');
     
@@ -469,7 +620,7 @@ async function loadHistory() {
                     </div>
                     <div>
                         <span class="h-date">${entry.date || ''}</span>
-                        <span class="h-status" style="background:#d3f0d8; color:#0a6030;">Завершено</span>
+                        <span class="h-status">Завершено</span>
                     </div>
                 </div>
             `;
@@ -486,7 +637,7 @@ async function loadHistory() {
 }
 
 // ============================================================
-// ПРОВЕРКА СТАТУСА (КНОПКА)
+// ПРОВЕРКА СТАТУСА
 // ============================================================
 window.refreshStatus = async function() {
     if (!currentClient) {
@@ -536,16 +687,13 @@ window.refreshStatus = async function() {
 };
 
 // ============================================================
-// АВТОМАТИЧЕСКОЕ ОБНОВЛЕНИЕ СТАТУСА
+// АВТООБНОВЛЕНИЕ
 // ============================================================
 function startAutoRefresh() {
-    if (statusCheckInterval) {
-        clearInterval(statusCheckInterval);
-    }
+    if (statusCheckInterval) clearInterval(statusCheckInterval);
     
     statusCheckInterval = setInterval(async () => {
         if (!currentClient) return;
-        
         try {
             const allBookings = await supabaseQuery('bookings', 'GET');
             const active = allBookings.find(b => 
@@ -572,11 +720,11 @@ function startAutoRefresh() {
         } catch (error) {
             console.warn('Ошибка автообновления:', error);
         }
-    }, 15000); // Каждые 15 секунд
+    }, 15000);
 }
 
 // ============================================================
-// ЗАПИСЬ НА ОБСЛУЖИВАНИЕ
+// ЗАПИСЬ
 // ============================================================
 window.toggleBookingForm = function() {
     const form = document.getElementById('bookingForm');
@@ -590,7 +738,7 @@ window.toggleBookingForm = function() {
 
 window.createBooking = async function() {
     if (!currentClient) {
-        showNotification('❌ Клиент не найден. Авторизуйтесь заново.', 'error');
+        showNotification('❌ Авторизуйтесь заново', 'error');
         return;
     }
     
@@ -615,7 +763,8 @@ window.createBooking = async function() {
         date: date,
         time: time || null,
         reason: reason || null,
-        status: 'новая'
+        status: 'новая',
+        is_new: true // Маркер, что это новая заявка
     };
     
     btn.disabled = true;
@@ -623,33 +772,16 @@ window.createBooking = async function() {
     
     try {
         const result = await supabaseQuery('bookings', 'POST', bookingData);
-        
-        if (!result || result.length === 0) {
-            showNotification('⚠️ Запись создана, но данные не вернулись.', 'error');
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Отправить заявку';
-            return;
+        if (result && result[0]) {
+            showNotification('✅ Заявка отправлена!', 'success');
+            document.getElementById('bookingForm').classList.remove('active');
+            currentBooking = result[0];
+            updateStatusDisplay(currentBooking);
+            await loadHistory();
         }
-        
-        showNotification('✅ Заявка отправлена! Мы свяжемся с вами.', 'success');
-        
-        document.getElementById('bookingForm').classList.remove('active');
-        
-        currentBooking = result[0];
-        updateStatusDisplay(currentBooking);
-        await loadHistory();
-        
     } catch (error) {
         console.error('Ошибка:', error);
-        let errorMsg = '❌ Не удалось создать запись.\n\n';
-        if (error.code === 401) {
-            errorMsg += '🔒 Ошибка доступа. Проверьте настройки Supabase.';
-        } else if (error.code === 400) {
-            errorMsg += '📋 Неверные данные. Проверьте заполнение полей.';
-        } else {
-            errorMsg += error.message || 'Попробуйте позже.';
-        }
-        showNotification(errorMsg, 'error');
+        showNotification('❌ Ошибка создания записи', 'error');
     }
     
     btn.disabled = false;
@@ -657,29 +789,24 @@ window.createBooking = async function() {
 };
 
 // ============================================================
-// ОТМЕНА ЗАПИСИ
+// ОТМЕНА
 // ============================================================
 window.cancelBooking = async function() {
     if (!currentBooking) return;
-    
-    if (!confirm('Вы уверены, что хотите отменить запись?')) return;
+    if (!confirm('Отменить запись?')) return;
     
     try {
         await supabaseQuery('bookings', 'PATCH', { status: 'отменена' }, currentBooking.id);
-        
-        showNotification('✅ Запись отменена.', 'success');
-        
+        showNotification('✅ Запись отменена', 'success');
         currentBooking = null;
         document.getElementById('statusBadge').textContent = 'Нет активных записей';
         document.getElementById('statusBadge').className = 'badge-status status-new';
         document.getElementById('statusDetail').textContent = 'Вы можете записаться на обслуживание';
         document.getElementById('cancelBtn').classList.add('hidden');
-        
         await loadHistory();
-        
     } catch (error) {
         console.error('Ошибка отмены:', error);
-        showNotification('❌ Не удалось отменить запись. Попробуйте позже.', 'error');
+        showNotification('❌ Ошибка отмены', 'error');
     }
 };
 
@@ -688,19 +815,17 @@ window.cancelBooking = async function() {
 // ============================================================
 window.logout = function() {
     if (!confirm('Выйти из кабинета?')) return;
-    
     if (statusCheckInterval) {
         clearInterval(statusCheckInterval);
         statusCheckInterval = null;
     }
-    
     currentClient = null;
     currentBooking = null;
     document.getElementById('authForm').classList.remove('hidden');
+    document.getElementById('registerForm').classList.remove('active');
     document.getElementById('dashboard').classList.remove('active');
     document.getElementById('authPlate').value = '';
     document.getElementById('authCode').value = '';
-    
     showNotification('👋 До свидания!', 'info');
 };
 
@@ -711,6 +836,8 @@ document.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') {
         if (!document.getElementById('authForm').classList.contains('hidden')) {
             window.login();
+        } else if (document.getElementById('registerForm').classList.contains('active')) {
+            window.register();
         }
     }
 });
@@ -721,19 +848,18 @@ document.addEventListener('keydown', function(e) {
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('bkDate').value = new Date().toISOString().slice(0,10);
     console.log('🚀 Клиентское приложение загружено!');
-    console.log('📋 Supabase URL:', SUPABASE_URL);
-});
-
-// ============================================================
-// ОБРАБОТЧИК ДЛЯ КНОПКИ "ОТМЕНИТЬ" (ЧТОБЫ НЕ ЗАКРЫВАЛАСЬ ФОРМА)
-// ============================================================
-document.addEventListener('click', function(e) {
-    if (e.target.closest('.btn-cancel')) {
-        // Ничего не делаем, функция cancelBooking уже вызывается
+    
+    // Проверяем, есть ли сохраненные данные после регистрации
+    const saved = localStorage.getItem('palych_new_client');
+    if (saved) {
+        try {
+            const data = JSON.parse(saved);
+            document.getElementById('authPlate').value = data.plate || '';
+            document.getElementById('authCode').value = data.access_code || '';
+            localStorage.removeItem('palych_new_client');
+        } catch(e) {}
     }
 });
-
-console.log('✅ Клиентское приложение готово к работе!');
 </script>
 </body>
 </html>

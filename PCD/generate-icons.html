@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Иконки для основного приложения PalЫCH</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f4f7fb; text-align: center; }
+        .icon-preview { display: inline-block; margin: 10px; text-align: center; }
+        canvas { border: 2px solid #0b2b3c; border-radius: 16px; }
+        button { background: #1f7b4a; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; margin-top: 10px; font-size: 1rem; }
+        button:hover { background: #2a965a; }
+        h1 { color: #0b2b3c; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Иконки основного приложения PalЫCH</h1>
+    <p>Нажмите "Скачать" и сохраните файлы в папку <code>icons/</code></p>
+
+    <div class="icon-preview">
+        <canvas id="c192" width="192" height="192"></canvas>
+        <br><button onclick="download('c192', 'icon-192.png')">Скачать 192×192</button>
+    </div>
+
+    <div class="icon-preview">
+        <canvas id="c512" width="512" height="512"></canvas>
+        <br><button onclick="download('c512', 'icon-512.png')">Скачать 512×512</button>
+    </div>
+
+    <script>
+        function drawIcon(id, size) {
+            const canvas = document.getElementById(id);
+            const ctx = canvas.getContext('2d');
+
+            // Фон
+            ctx.fillStyle = '#0b2b3c';
+            ctx.fillRect(0, 0, size, size);
+
+            // Жёлтая полоса снизу
+            ctx.fillStyle = '#f6b83d';
+            ctx.fillRect(0, size * 0.88, size, size * 0.12);
+
+            // Жёлтый кружок для инструментов
+            ctx.beginPath();
+            ctx.arc(size / 2, size * 0.42, size * 0.28, 0, Math.PI * 2);
+            ctx.fillStyle = '#f6b83d';
+            ctx.fill();
+
+            // Иконка инструментов (🔧)
+            ctx.font = `${size * 0.4}px serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('🔧', size / 2, size * 0.44);
+
+            // Текст "PalЫCH" мелко сверху
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `bold ${size * 0.1}px 'Segoe UI', sans-serif`;
+            ctx.fillText('PalЫCH', size / 2, size * 0.14);
+        }
+
+        function download(id, filename) {
+            const canvas = document.getElementById(id);
+            const url = canvas.toDataURL('image/png');
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+        }
+
+        drawIcon('c192', 192);
+        drawIcon('c512', 512);
+    </script>
+</body>
+</html>

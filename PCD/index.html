@@ -1,0 +1,2945 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PalЫCH Car Diagnost v4.7</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, system-ui, sans-serif; }
+        body { background: #f4f7fb; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .app-container { max-width: 1400px; width: 100%; background: white; border-radius: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); overflow: hidden; }
+        .app-header { background: #0b2b3c; padding: 18px 32px; color: white; display: flex; align-items: center; gap: 14px; border-bottom: 4px solid #f6b83d; flex-wrap: wrap; }
+        .app-header h1 { font-weight: 600; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .app-header h1 i { color: #f6b83d; }
+        .app-header .sub { margin-left: auto; font-size: 0.9rem; background: #1f4a5e; padding: 6px 18px; border-radius: 40px; color: #d4e9f5; }
+        .app-header .nav-buttons { display: flex; gap: 8px; margin-left: 20px; flex-wrap: wrap; align-items: center; }
+        .app-header .nav-buttons button { background: transparent; border: 1px solid #3a6b7e; color: #d4e9f5; padding: 6px 16px; border-radius: 30px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; }
+        .app-header .nav-buttons button:hover { background: #1f4a5e; border-color: #f6b83d; }
+        .app-header .nav-buttons button.active { background: #f6b83d; color: #0b2b3c; border-color: #f6b83d; }
+        .app-header .file-actions { display: flex; gap: 6px; margin-left: 10px; flex-wrap: wrap; align-items: center; }
+        .app-header .file-actions button { background: #1f4a5e; border: 1px solid #3a6b7e; color: #d4e9f5; padding: 4px 12px; border-radius: 20px; cursor: pointer; font-size: 0.75rem; transition: 0.2s; }
+        .app-header .file-actions button:hover { background: #2a5a6e; border-color: #f6b83d; }
+        .app-header .file-actions .save-btn { background: #1f7b4a; border-color: #1f7b4a; }
+        .app-header .file-actions .save-btn:hover { background: #2a965a; }
+        .app-header .file-actions .cloud-send { background: #1f7b4a; border-color: #1f7b4a; }
+        .app-header .file-actions .cloud-pull { background: #2d6b84; border-color: #2d6b84; }
+        .app-header .file-status { font-size: 0.75rem; color: #8ab4c9; margin-left: 10px; }
+        
+        .tabs { display: flex; background: #eef2f7; border-bottom: 1px solid #d0d9e4; padding: 0 20px; gap: 4px; flex-wrap: wrap; overflow-x: auto; }
+        .tab-btn { background: transparent; border: none; padding: 16px 24px; font-weight: 600; font-size: 0.95rem; color: #2d4b5e; cursor: pointer; border-bottom: 4px solid transparent; transition: 0.2s; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+        .tab-btn i { font-size: 1.1rem; color: #3f6b81; }
+        .tab-btn.active { background: white; color: #0b2b3c; border-bottom: 4px solid #f6b83d; border-radius: 12px 12px 0 0; }
+        .tab-btn.active i { color: #f6b83d; }
+        .tab-content { padding: 24px 28px 28px; display: none; animation: fade 0.25s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fade { 0% { opacity: 0.5; transform: translateY(6px); } 100% { opacity: 1; transform: translateY(0); } }
+
+        .main-menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; }
+        .menu-card { background: white; border-radius: 24px; padding: 24px 20px; text-align: center; cursor: pointer; transition: 0.3s; border: 2px solid #e4ecf4; }
+        .menu-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); border-color: #f6b83d; }
+        .menu-card i { font-size: 2.8rem; margin-bottom: 10px; display: block; }
+        .menu-card h2 { font-size: 1.2rem; color: #0b2b3c; }
+        .menu-card p { color: #3a657e; font-size: 0.8rem; }
+
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; margin-top: 12px; }
+        .system-card { background: white; border-radius: 14px; padding: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border: 1px solid #e6edf4; cursor: pointer; transition: 0.2s; }
+        .system-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,40,60,0.08); }
+        .system-card .title { font-weight: 700; font-size: 0.95rem; color: #0b2b3c; display: flex; justify-content: space-between; }
+        .system-card .badge { background: #eef3f8; padding: 2px 10px; border-radius: 30px; font-size: 0.65rem; color: #1b4b62; }
+        .system-card .desc { font-size: 0.75rem; color: #2b556b; margin-top: 4px; }
+
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 4px; color: #1f4055; font-size: 0.85rem; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 14px; border: 1px solid #d4dee9; border-radius: 12px; font-size: 0.9rem; background: #fafcff; }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: #f6b83d; outline: none; background: white; }
+        .row-3col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+        .row-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .row-4col { display: grid; grid-template-columns: 1fr 1fr 1fr 0.7fr; gap: 10px; }
+
+        .btn-primary { background: #0b2b3c; color: white; border: none; padding: 10px 22px; border-radius: 50px; font-weight: 700; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+        .btn-primary i { color: #f6b83d; }
+        .btn-success { background: #1f7b4a; color: white; border: none; padding: 10px 22px; border-radius: 50px; font-weight: 700; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+        .btn-success i { color: #f6b83d; }
+        .btn-danger { background: #b33c3c; color: white; border: none; padding: 4px 12px; border-radius: 30px; font-size: 0.7rem; cursor: pointer; }
+        .btn-warning { background: #d4a017; color: white; border: none; padding: 4px 12px; border-radius: 30px; font-size: 0.7rem; cursor: pointer; }
+        .btn-sm { padding: 4px 14px; border-radius: 30px; border: none; font-size: 0.75rem; cursor: pointer; }
+        .btn-copy { background: #6c5b7b; color: white; border: none; padding: 3px 10px; border-radius: 20px; font-size: 0.65rem; cursor: pointer; }
+        .btn-link { background: transparent; border: none; color: #1f7b4a; cursor: pointer; font-size: 0.75rem; text-decoration: underline; }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 999; }
+        .modal-overlay.active { display: flex; }
+        .modal-box { background: white; max-width: 1100px; width: 95%; max-height: 90vh; border-radius: 24px; padding: 24px 28px; box-shadow: 0 30px 60px rgba(0,0,0,0.4); overflow-y: auto; position: relative; }
+        .modal-close { position: sticky; top: 0; float: right; background: #eef2f7; border: none; width: 36px; height: 36px; border-radius: 40px; font-size: 1.2rem; cursor: pointer; z-index: 10; }
+        .modal-title { font-size: 1.4rem; font-weight: 700; color: #0b2b3c; margin-bottom: 12px; border-bottom: 3px solid #f6b83d; padding-bottom: 6px; }
+
+        .diagnostic-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.82rem; }
+        .diagnostic-table th { text-align: left; background: #e4ecf4; padding: 8px 6px; font-size: 0.75rem; color: #1a4055; }
+        .diagnostic-table td { padding: 6px 5px; border-bottom: 1px solid #e9eff6; vertical-align: middle; }
+        .diagnostic-table input, .diagnostic-table textarea { width: 100%; padding: 4px 6px; border: 1px solid #d0dce8; border-radius: 6px; font-size: 0.8rem; }
+
+        .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .small-note { color: #3a657e; font-size: 0.8rem; }
+        .status-select { padding: 3px 8px; border-radius: 30px; border: 1px solid #d0dce8; background: white; font-weight: 600; font-size: 0.7rem; cursor: pointer; }
+
+        .journal-item { background: white; border: 1px solid #e4ecf4; border-radius: 12px; padding: 12px 16px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .journal-item .info { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+        .journal-item .info .type { font-weight: 700; color: #0b2b3c; }
+        .journal-item .info .type.diag { color: #f6b83d; }
+        .journal-item .info .type.repair { color: #1f7b4a; }
+        .journal-item .info .date { color: #3a657e; font-size: 0.8rem; }
+        .journal-item .info .car { font-weight: 600; color: #0b2b3c; }
+        .journal-item .info .plate { background: #eef3f8; padding: 2px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; color: #0b2b3c; }
+
+        .file-status-bar { background: #eef3f8; padding: 6px 16px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; font-size: 0.8rem; color: #1f4055; }
+
+        .settings-group { background: #f8fafc; border-radius: 12px; padding: 16px; margin-bottom: 16px; border: 1px solid #e4ecf4; }
+        .settings-group h4 { color: #0b2b3c; margin-bottom: 10px; }
+        .settings-item { display: flex; gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px solid #eef2f7; flex-wrap: wrap; }
+        .settings-item .param-name { font-weight: 600; min-width: 150px; color: #1f4055; }
+        .settings-item input[type="text"] { flex: 1; min-width: 120px; padding: 4px 8px; border: 1px solid #d0dce8; border-radius: 6px; font-size: 0.85rem; }
+        .settings-param-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+        .settings-param-list .param-tag { background: white; border: 1px solid #d0dce8; border-radius: 20px; padding: 2px 10px; font-size: 0.75rem; display: flex; align-items: center; gap: 6px; }
+        .settings-param-list .param-tag .remove { color: #b33c3c; cursor: pointer; font-weight: 700; }
+
+        .bookings-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .bookings-table th { background: #e4ecf4; padding: 10px 8px; text-align: left; font-size: 0.75rem; color: #1a4055; }
+        .bookings-table td { padding: 8px 6px; border-bottom: 1px solid #e9eff6; vertical-align: middle; }
+        .bookings-table input[type="text"], .bookings-table input[type="date"], .bookings-table input[type="time"], .bookings-table select { width: 100%; padding: 4px 6px; border: 1px solid #d0dce8; border-radius: 6px; font-size: 0.8rem; }
+        .bookings-table .inactive-row { opacity: 0.6; background: #f5f5f5; }
+
+        .clients-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .clients-table th { background: #e4ecf4; padding: 10px 8px; text-align: left; font-size: 0.75rem; color: #1a4055; }
+        .clients-table td { padding: 8px 6px; border-bottom: 1px solid #e9eff6; vertical-align: middle; }
+
+        .client-badge { display: inline-block; background: #d3f0d8; color: #0a6030; padding: 2px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; }
+        .discount-badge { display: inline-block; background: #f6b83d; color: #0b2b3c; padding: 2px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; }
+
+        .price-section { margin-top: 16px; border: 1px solid #e4ecf4; border-radius: 10px; overflow: hidden; }
+        .price-section .section-title { background: #0b2b3c; color: white; padding: 10px 16px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; }
+        .price-row { display: grid; grid-template-columns: 2.5fr 1fr 1fr 0.5fr; padding: 6px 14px; border-bottom: 1px solid #eef2f7; font-size: 0.85rem; align-items: center; }
+        .price-row.header { background: #eef3f8; font-weight: 700; }
+
+        .plate-badge { background: #f6b83d; color: #0b2b3c; padding: 2px 12px; border-radius: 12px; font-weight: 700; font-size: 0.8rem; display: inline-block; }
+
+        .sync-status { font-size: 0.7rem; padding: 2px 10px; border-radius: 20px; }
+        .sync-ok { background: #d3f0d8; color: #0a6030; }
+        .sync-fail { background: #fadad8; color: #a12b2b; }
+        .sync-wait { background: #f6b83d; color: #0b2b3c; }
+
+        .requests-box { background: #f8fafc; border-radius: 16px; padding: 16px 20px; margin-bottom: 20px; border: 2px solid #f6b83d; }
+        .requests-box .request-item { background: white; border-radius: 10px; padding: 10px 14px; margin-bottom: 6px; border-left: 4px solid #2d6b84; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
+        .requests-box .request-item.client-item { border-left-color: #f6b83d; }
+        .requests-box .request-item .name { font-weight: 700; color: #0b2b3c; }
+        .requests-box .request-item .badge-new { font-size: 0.65rem; padding: 2px 8px; border-radius: 10px; margin-left: 6px; }
+
+        .price-request-item { background: #fff8e6; border-left: 4px solid #6c5b7b; border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; }
+        .price-request-item .req-header { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
+        .price-request-item .req-text { margin-top: 6px; font-size: 0.9rem; color: #0b2b3c; }
+        .price-request-item .req-reply { margin-top: 8px; }
+        .price-request-item .req-reply textarea { width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #d0dce8; font-size: 0.85rem; }
+
+        .status-icons { display: flex; gap: 6px; align-items: center; }
+        .status-icon { width: 34px; height: 34px; border-radius: 50%; border: 2px solid #d0dce8; display: flex; align-items: center; justify-content: center; cursor: pointer; background: white; font-size: 0.7rem; }
+        .status-icon.active-ok { border-color: #0a6030; background: #d3f0d8; }
+        .status-icon.active-fail { border-color: #a12b2b; background: #fadad8; }
+        .status-icon.active-unknown { border-color: #4a5e6b; background: #e8ecf0; }
+        .param-with-etalon { display: flex; align-items: center; gap: 4px; }
+        .etalon-hint { display: inline-block; background: #e8f0fe; padding: 1px 8px; border-radius: 12px; font-size: 0.6rem; margin-left: 6px; border: 1px dashed #6c8db0; }
+
+        .booking-detail-modal .modal-box { max-width: 600px; }
+        .booking-detail-modal .detail-row { display: flex; padding: 6px 0; border-bottom: 1px solid #eef2f7; }
+        .booking-detail-modal .detail-row .label { font-weight: 600; min-width: 130px; color: #1f4055; }
+
+        @media print {
+            body * { visibility: hidden; }
+            #printArea, #printArea * { visibility: visible; }
+            #printArea { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; background: white; }
+            #printAreaRepair, #printAreaRepair * { visibility: visible; }
+            #printAreaRepair { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; background: white; }
+        }
+
+        @media (max-width: 700px) {
+            .row-3col, .row-2col { grid-template-columns: 1fr; }
+            .row-4col { grid-template-columns: 1fr 1fr; }
+            .main-menu { grid-template-columns: 1fr 1fr; }
+        }
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        .fw-bold { font-weight: 700; }
+        
+        .notification-main {
+            position: fixed; bottom: 20px; right: 20px; padding: 12px 20px;
+            border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 1000; font-weight: 600; font-size: 0.9rem; color: white;
+        }
+        .notification-main.success { background: #1f7b4a; }
+        .notification-main.error { background: #b33c3c; }
+        .notification-main.info { background: #0b2b3c; }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <div class="app-header">
+        <h1 onclick="goHome()"><i class="fas fa-car"></i> PalЫCH</h1>
+        <span class="sub"><i class="fas fa-wrench"></i> v4.7</span>
+        <div class="nav-buttons">
+            <button class="active" onclick="goHome()"><i class="fas fa-home"></i> Главная</button>
+            <button onclick="switchMode('diag')"><i class="fas fa-stethoscope"></i> Диагностика</button>
+            <button onclick="switchMode('repair')"><i class="fas fa-tools"></i> Ремонт</button>
+            <button onclick="switchMode('bookings')"><i class="fas fa-calendar-check"></i> Записи</button>
+            <button onclick="switchMode('clients')"><i class="fas fa-users"></i> Клиенты</button>
+            <button onclick="switchMode('prices')"><i class="fas fa-ruble-sign"></i> Прайс</button>
+            <button onclick="switchMode('journal')"><i class="fas fa-book"></i> Журнал</button>
+            <button onclick="switchMode('etalons')"><i class="fas fa-database"></i> Эталоны</button>
+            <button onclick="switchMode('settings')"><i class="fas fa-cog"></i> Настройки</button>
+        </div>
+        <div class="file-actions">
+            <button class="save-btn" onclick="saveAllToFile()"><i class="fas fa-save"></i> Сохранить</button>
+            <button onclick="document.getElementById('fileInput').click()"><i class="fas fa-folder-open"></i> Открыть</button>
+            <input type="file" id="fileInput" accept=".json" style="display:none" onchange="loadFromFile(event)">
+            <button class="cloud-send" onclick="sendToCloud()"><i class="fas fa-cloud-upload-alt"></i> Отправить</button>
+            <button class="cloud-pull" onclick="syncFromCloud()"><i class="fas fa-cloud-download-alt"></i> Синхр.</button>
+        </div>
+        <span class="file-status" id="fileStatus">📁 Нет открытого файла</span>
+    </div>
+
+    <!-- ГЛАВНАЯ -->
+    <div id="page-home" class="tab-content active">
+        <div class="file-status-bar">
+            <span><i class="fas fa-database"></i> <span id="currentFileName">Нет файла</span></span>
+            <span>Журнал: <strong id="journalCount">0</strong></span>
+            <span id="cloudStatus"><span class="sync-status sync-wait">☁️ Проверка...</span></span>
+        </div>
+
+        <!-- ЗАПРОСЫ СТОИМОСТИ -->
+        <div class="requests-box" style="border-color: #6c5b7b;">
+            <div class="flex-between" style="margin-bottom: 8px;">
+                <h3 style="color:#0b2b3c; font-size:1rem;">
+                    <i class="fas fa-calculator" style="color:#6c5b7b;"></i> Запросы стоимости
+                    <span id="priceRequestsCount" style="background:#6c5b7b;color:white;padding:2px 10px;border-radius:20px;font-size:0.7rem;margin-left:8px;">0</span>
+                </h3>
+                <button class="btn-primary" onclick="loadPriceRequests()" style="padding:6px 16px;font-size:0.8rem;">
+                    <i class="fas fa-sync"></i> Обновить
+                </button>
+            </div>
+            <div id="priceRequestsContainer" style="max-height:400px; overflow-y:auto;">
+                <div style="color:#3a657e; font-size:0.85rem; text-align:center; padding:20px;">
+                    <i class="fas fa-inbox" style="font-size:1.5rem; display:block; margin-bottom:6px;"></i>
+                    Нет запросов стоимости
+                </div>
+            </div>
+        </div>
+
+        <!-- ОНЛАЙН ЗАЯВКИ -->
+        <div class="requests-box">
+            <div class="flex-between" style="margin-bottom: 8px;">
+                <h3 style="color:#0b2b3c; font-size:1rem;">
+                    <i class="fas fa-bell" style="color:#f6b83d;"></i> Онлайн заявки
+                    <span id="newRequestsCount" style="background:#b33c3c;color:white;padding:2px 10px;border-radius:20px;font-size:0.7rem;margin-left:8px;">0</span>
+                </h3>
+                <button class="btn-primary" onclick="loadNewRequests()" style="padding:6px 16px;font-size:0.8rem;">
+                    <i class="fas fa-sync"></i> Обновить
+                </button>
+            </div>
+            <div id="newRequestsContainer" style="max-height:300px; overflow-y:auto;">
+                <div style="color:#3a657e; font-size:0.85rem; text-align:center; padding:20px;">
+                    <i class="fas fa-inbox" style="font-size:1.5rem; display:block; margin-bottom:6px;"></i>
+                    Нет новых заявок
+                </div>
+            </div>
+        </div>
+
+        <div class="main-menu">
+            <div class="menu-card" onclick="switchMode('diag')">
+                <i class="fas fa-stethoscope" style="color:#f6b83d;"></i>
+                <h2>Диагностика</h2>
+                <p>Проверка систем</p>
+            </div>
+            <div class="menu-card" onclick="switchMode('repair')">
+                <i class="fas fa-tools" style="color:#1f7b4a;"></i>
+                <h2>Ремонт</h2>
+                <p>Запчасти и работы</p>
+            </div>
+            <div class="menu-card" onclick="switchMode('bookings')">
+                <i class="fas fa-calendar-check" style="color:#d4a017;"></i>
+                <h2>Записи</h2>
+                <p>Учёт клиентов</p>
+            </div>
+            <div class="menu-card" onclick="switchMode('clients')">
+                <i class="fas fa-users" style="color:#2d6b84;"></i>
+                <h2>Клиенты</h2>
+                <p>База клиентов</p>
+            </div>
+            <div class="menu-card" onclick="switchMode('prices')">
+                <i class="fas fa-ruble-sign" style="color:#e67e22;"></i>
+                <h2>Прайс</h2>
+                <p>Цены на услуги</p>
+            </div>
+            <div class="menu-card" onclick="switchMode('journal')">
+                <i class="fas fa-book" style="color:#2d6b84;"></i>
+                <h2>Журнал</h2>
+                <p>Сохранённые записи</p>
+            </div>
+            <div class="menu-card" onclick="switchMode('etalons')">
+                <i class="fas fa-database" style="color:#8b5cf6;"></i>
+                <h2>Эталоны</h2>
+                <p>Нормальные значения</p>
+            </div>
+            <div class="menu-card" onclick="switchMode('settings')">
+                <i class="fas fa-cog" style="color:#6c5b7b;"></i>
+                <h2>Настройки</h2>
+                <p>Управление</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ПРОДОЛЖЕНИЕ В ЧАСТИ 2 -->
+    <!-- ===== ДИАГНОСТИКА ===== -->
+    <div id="page-diag" class="tab-content">
+        <div class="tabs" style="background:transparent; border-bottom:1px solid #d0d9e4; padding:0;">
+            <button class="tab-btn active" data-tab="diag1"><i class="fas fa-edit"></i> Регистрация</button>
+            <button class="tab-btn" data-tab="diag2"><i class="fas fa-list-ul"></i> Выбор систем</button>
+            <button class="tab-btn" data-tab="diag3"><i class="fas fa-clipboard-list"></i> Диагностика</button>
+            <button class="tab-btn" data-tab="diag4"><i class="fas fa-file-alt"></i> Лист</button>
+        </div>
+        <div id="diag1" class="tab-content active" style="padding:14px 0 0;">
+            <div class="flex-between" style="margin-bottom:10px;">
+                <div class="row-3col" style="flex:1; gap:14px;">
+                    <div class="form-group"><label>Марка / Модель</label><input type="text" id="carMake" placeholder="Например: BMW X5"></div>
+                    <div class="form-group"><label>Гос. номер</label><input type="text" id="carPlate" placeholder="А123ВС777"></div>
+                    <div class="form-group"><label>Год выпуска</label><input type="number" id="carYear" placeholder="2020"></div>
+                    <div class="form-group"><label>Пробег (км)</label><input type="number" id="carMileage" placeholder="125000"></div>
+                    <div class="form-group"><label>Дата диагностики</label><input type="date" id="diagDate"></div>
+                </div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap; min-width:120px;">
+                    <button class="btn-success" onclick="saveCarInfo()" style="white-space:nowrap;"><i class="fas fa-save"></i> Сохранить</button>
+                    <button class="btn-warning" onclick="clearDiag()" style="white-space:nowrap;"><i class="fas fa-plus"></i> Новая</button>
+                </div>
+            </div>
+            <div class="form-group"><label>Жалобы / Примечания</label><textarea id="carComplaints" rows="2" placeholder="Опишите жалобы клиента..."></textarea></div>
+            <div id="saveFeedback" style="margin-top:8px; font-weight:500; color:#1b6d3b;"></div>
+        </div>
+        <div id="diag2" class="tab-content" style="padding:14px 0 0;">
+            <div class="flex-between"><h3 style="color:#0b2b3c;font-size:1rem;"><i class="fas fa-check-circle" style="color:#f6b83d;"></i> Выберите системы</h3><span class="small-note">нажмите на карточку</span></div>
+            <div class="card-grid" id="systemsGrid"></div>
+            <div style="margin-top:12px; padding:10px; background:#edf4fa; border-radius:10px; color:#1f4a5e; font-size:0.85rem;">
+                <i class="fas fa-info-circle"></i> Выбрано систем: <span id="selectedCount">0</span>
+            </div>
+        </div>
+        <div id="diag3" class="tab-content" style="padding:14px 0 0;">
+            <h3 style="color:#0b2b3c;font-size:1rem;margin-bottom:8px;"><i class="fas fa-stethoscope" style="color:#f6b83d;"></i> Список выбранных систем</h3>
+            <div id="selectedSystemsContainer"></div>
+            <div id="emptyDiagMessage" style="color:#4f6f82; background:#edf3fa; padding:20px; border-radius:14px; text-align:center;">Нет выбранных систем.</div>
+        </div>
+        <div id="diag4" class="tab-content" style="padding:14px 0 0;">
+            <div class="flex-between">
+                <h3 style="color:#0b2b3c;font-size:1rem;"><i class="fas fa-file-alt" style="color:#f6b83d;"></i> Лист диагностики</h3>
+                <div class="no-print" style="display:flex; gap:6px; flex-wrap:wrap;">
+                    <button class="btn-success" onclick="saveDiagToJournal()"><i class="fas fa-save"></i> Сохранить</button>
+                    <button class="btn-success" onclick="transferToRepair()"><i class="fas fa-arrow-right"></i> В ремонт</button>
+                    <button class="btn-primary" onclick="printDiag()"><i class="fas fa-print"></i> Печать</button>
+                </div>
+            </div>
+            <div id="printArea">
+                <div id="reportContent" style="margin-top:10px;"></div>
+            </div>
+            <div id="saveReportFeedback" style="margin-top:8px; font-weight:500; color:#1b6d3b;"></div>
+        </div>
+    </div>
+
+    <!-- ===== РЕМОНТ ===== -->
+    <div id="page-repair" class="tab-content">
+        <div class="tabs" style="background:transparent; border-bottom:1px solid #d0d9e4; padding:0;">
+            <button class="tab-btn active" data-tab="repair1"><i class="fas fa-edit"></i> Регистрация</button>
+            <button class="tab-btn" data-tab="repair2"><i class="fas fa-shopping-cart"></i> Запчасти</button>
+            <button class="tab-btn" data-tab="repair3"><i class="fas fa-wrench"></i> Работы</button>
+            <button class="tab-btn" data-tab="repair4"><i class="fas fa-file-contract"></i> Акт</button>
+        </div>
+        <div id="repair1" class="tab-content active" style="padding:14px 0 0;">
+            <div class="flex-between" style="margin-bottom:10px;">
+                <div class="row-3col" style="flex:1; gap:14px;">
+                    <div class="form-group"><label>Марка / Модель</label><input type="text" id="repairMake" placeholder="Например: BMW X5"></div>
+                    <div class="form-group"><label>Гос. номер</label><input type="text" id="repairPlate" placeholder="А123ВС777"></div>
+                    <div class="form-group"><label>Год выпуска</label><input type="number" id="repairYear" placeholder="2020"></div>
+                    <div class="form-group"><label>Пробег (км)</label><input type="number" id="repairMileage" placeholder="125000"></div>
+                    <div class="form-group"><label>Дата ремонта</label><input type="date" id="repairDate"></div>
+                    <div class="form-group"><label>Скидка</label>
+                        <select id="repairDiscount" onchange="updateAct()">
+                            <option value="none">Без скидки</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap; min-width:120px;">
+                    <button class="btn-success" onclick="saveRepairCarInfo()" style="white-space:nowrap;"><i class="fas fa-save"></i> Сохранить</button>
+                    <button class="btn-warning" onclick="clearRepair()" style="white-space:nowrap;"><i class="fas fa-plus"></i> Новый</button>
+                </div>
+            </div>
+            <div class="form-group"><label>Жалобы / Примечания</label><textarea id="repairComplaints" rows="2" placeholder="Опишите жалобы клиента..."></textarea></div>
+            <div id="repairSaveFeedback" style="margin-top:8px; font-weight:500; color:#1b6d3b;"></div>
+        </div>
+        <div id="repair2" class="tab-content" style="padding:14px 0 0;">
+            <div class="flex-between"><h3 style="color:#0b2b3c;font-size:1rem;"><i class="fas fa-shopping-cart" style="color:#f6b83d;"></i> Запчасти</h3><button class="btn-success" onclick="addPart()"><i class="fas fa-plus"></i> Добавить</button></div>
+            <div style="margin-top:10px; overflow-x:auto;">
+                <table class="diagnostic-table" id="partsTable">
+                    <thead><tr><th>№</th><th>Название</th><th>Кол-во</th><th>Цена (₽)</th><th>Сумма (₽)</th><th>Действия</th></tr></thead>
+                    <tbody id="partsBody"></tbody>
+                    <tfoot><tr><td colspan="4" class="text-right fw-bold">Итого запчасти:</td><td class="fw-bold" id="partsTotal">0</td><td></td></tr></tfoot>
+                </table>
+            </div>
+        </div>
+        <div id="repair3" class="tab-content" style="padding:14px 0 0;">
+            <div class="flex-between">
+                <h3 style="color:#0b2b3c;font-size:1rem;"><i class="fas fa-wrench" style="color:#f6b83d;"></i> Работы</h3>
+                <div>
+                    <button class="btn-success" onclick="addWork()"><i class="fas fa-plus"></i> Добавить</button>
+                    <button class="btn-primary" onclick="addWorkFromPrice()"><i class="fas fa-list"></i> Из прайса</button>
+                </div>
+            </div>
+            <div style="margin-top:10px; overflow-x:auto;">
+                <table class="diagnostic-table works-table" id="worksTable">
+                    <thead><tr><th>№</th><th>Наименование работы</th><th>Стоимость (₽)</th><th>Примечание</th><th>Действия</th></tr></thead>
+                    <tbody id="worksBody"></tbody>
+                    <tfoot><tr><td colspan="2" class="text-right fw-bold">Итого работы:</td><td class="fw-bold" id="worksTotal">0</td><td></td><td></td></tr></tfoot>
+                </table>
+            </div>
+        </div>
+        <div id="repair4" class="tab-content" style="padding:14px 0 0;">
+            <div class="flex-between">
+                <h3 style="color:#0b2b3c;font-size:1rem;"><i class="fas fa-file-contract" style="color:#f6b83d;"></i> Акт выполненных работ</h3>
+                <div class="no-print" style="display:flex; gap:6px; flex-wrap:wrap;">
+                    <button class="btn-success" onclick="saveRepairToJournal()"><i class="fas fa-save"></i> Сохранить</button>
+                    <button class="btn-primary" onclick="printRepair()"><i class="fas fa-print"></i> Печать</button>
+                </div>
+            </div>
+            <div id="printAreaRepair">
+                <div id="actContent" style="margin-top:10px;"></div>
+            </div>
+            <div id="actFeedback" style="margin-top:8px; font-weight:500; color:#1b6d3b;"></div>
+        </div>
+    </div>
+
+    <!-- ===== ЗАПИСИ ===== -->
+    <div id="page-bookings" class="tab-content">
+        <h3 style="color:#0b2b3c; margin-bottom:12px;"><i class="fas fa-calendar-check" style="color:#f6b83d;"></i> Записи клиентов</h3>
+        
+        <div class="bookings-form" style="background:#f8fafc;padding:16px;border-radius:12px;margin-bottom:16px;border:1px solid #e4ecf4;">
+            <div class="row-4col">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Клиент</label>
+                    <select id="bk_client" onchange="selectClientForBooking()">
+                        <option value="">Выберите клиента...</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom:0;"><label>Имя</label><input type="text" id="bk_name" placeholder="Иван Петров"></div>
+                <div class="form-group" style="margin-bottom:0;"><label>Телефон</label><input type="text" id="bk_phone" placeholder="+7 999 123-45-67"></div>
+                <div class="form-group" style="margin-bottom:0;"><label>Марка</label><input type="text" id="bk_car" placeholder="BMW X5"></div>
+                <div class="form-group" style="margin-bottom:0;"><label>Гос. номер</label><input type="text" id="bk_plate" placeholder="А123ВС777"></div>
+                <div class="form-group" style="margin-bottom:0;"><label>Дата</label><input type="date" id="bk_date"></div>
+                <div class="form-group" style="margin-bottom:0;"><label>Время</label><input type="time" id="bk_time"></div>
+                <div class="form-group" style="margin-bottom:0;"><label>Тип</label>
+                    <select id="bk_type">
+                        <option value="diagnostic">🔍 Диагностика</option>
+                        <option value="repair">🔧 Ремонт</option>
+                        <option value="maintenance">🛠️ Тех. обслуживание (ТО)</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom:0;"><label>Причина</label><input type="text" id="bk_reason" placeholder="Причина записи"></div>
+                <div style="display:flex; align-items:flex-end; gap:6px;">
+                    <button class="btn-success" onclick="addBookingFromForm()" style="width:100%;"><i class="fas fa-plus"></i> Добавить</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex-between" style="margin-bottom:8px;">
+            <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                <span style="font-size:0.85rem; color:#3a657e;">Всего: <strong id="bookingsTotal">0</strong></span>
+              <select id="bookingsFilter" onchange="renderBookings()" style="padding:4px 10px; border:1px solid #d0dce8; border-radius:8px; font-size:0.8rem;">
+    <option value="all">Все записи</option>
+    <option value="новая">Новая</option>
+    <option value="в работе">В работе</option>
+    <option value="ожидается">Ожидается</option>
+    <option value="готово">✅ Готово</option>
+    <option value="отремонтирована">Отремонтирована</option>
+    <option value="не отремонтирована">Не отремонтирована</option>
+    <option value="продиагностирована">Продиагностирована</option>
+    <option value="closed">Закрытые</option>
+</select>
+            </div>
+            <span style="font-size:0.8rem; color:#3a657e;">💾 Данные сохраняются в общий файл</span>
+        </div>
+        
+        <div style="overflow-x:auto;">
+            <table class="bookings-table" id="bookingsTable">
+                <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>Имя</th>
+                        <th>Телефон</th>
+                        <th>Гос. номер</th>
+                        <th>Дата</th>
+                        <th>Время</th>
+                        <th>Марка</th>
+                        <th>Тип</th>
+                        <th>Статус</th>
+                        <th>Причина</th>
+                        <th>Связь</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody id="bookingsBody"></tbody>
+            </table>
+        </div>
+        <div id="bookingsFeedback" style="margin-top:10px; font-weight:500; color:#1b6d3b;"></div>
+    </div>
+
+    <!-- ===== КЛИЕНТЫ ===== -->
+    <div id="page-clients" class="tab-content">
+        <div class="flex-between">
+            <h3 style="color:#0b2b3c;font-size:1.1rem;">
+                <i class="fas fa-users" style="color:#f6b83d;"></i> База клиентов
+            </h3>
+            <div class="no-print" style="display:flex; gap:6px; flex-wrap:wrap;">
+                <button class="btn-success" onclick="addClientForm()">
+                    <i class="fas fa-plus"></i> Добавить клиента
+                </button>
+                <button class="btn-primary" onclick="syncClientCodes()" style="background:#2d6b84;">
+                    <i class="fas fa-sync"></i> Синхр. коды
+                </button>
+                <button class="btn-primary" onclick="restoreClientStats()" style="background:#6c5b7b;">
+                    <i class="fas fa-heartbeat"></i> Восст. статистику
+                </button>
+            </div>
+        </div>
+        
+        <div style="margin-top:12px; overflow-x:auto;">
+            <table class="clients-table" id="clientsTable">
+                <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>Имя</th>
+                        <th>Телефон</th>
+                        <th>Гос. номер</th>
+                        <th>Марка</th>
+                        <th>Тип авто</th>
+                        <th>Код доступа</th>
+                        <th>Диагностик</th>
+                        <th>Ремонтов</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody id="clientsBody"></tbody>
+            </table>
+        </div>
+        <div id="clientsFeedback" style="margin-top:10px; font-weight:500; color:#1b6d3b;"></div>
+    </div>
+
+    <!-- ===== ПРАЙС-ЛИСТ ===== -->
+    <div id="page-prices" class="tab-content">
+        <div class="flex-between">
+            <h3 style="color:#0b2b3c;font-size:1.1rem;"><i class="fas fa-ruble-sign" style="color:#f6b83d;"></i> Прайс-лист услуг</h3>
+            <div class="no-print" style="display:flex; gap:6px; flex-wrap:wrap;">
+                <button class="btn-success" onclick="addPriceItem()"><i class="fas fa-plus"></i> Добавить</button>
+                <button class="btn-warning" onclick="editPriceMode()"><i class="fas fa-edit"></i> Редактировать</button>
+            </div>
+        </div>
+        <div class="price-search" style="margin-bottom:12px;">
+            <input type="text" id="priceSearch" placeholder="🔍 Поиск по услугам..." oninput="renderPrices()" style="width:100%;padding:10px;border:1px solid #d4dee9;border-radius:12px;">
+        </div>
+        <div id="pricesContainer" style="margin-top:10px;"></div>
+        <div id="priceFeedback" style="margin-top:10px; font-weight:500; color:#1b6d3b;"></div>
+    </div>
+
+    <!-- ===== ЖУРНАЛ ===== -->
+    <div id="page-journal" class="tab-content">
+        <h3 style="color:#0b2b3c; margin-bottom:12px;"><i class="fas fa-book" style="color:#f6b83d;"></i> Журнал сохранённых записей</h3>
+        
+        <div class="journal-filters" style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+            <select id="journalFilter" onchange="renderJournal()" style="padding:6px 12px;border-radius:10px;border:1px solid #d0dce8;">
+                <option value="all">Все записи</option>
+                <option value="diagnostic">🔍 Диагностика</option>
+                <option value="repair">🔧 Ремонт</option>
+            </select>
+            <input type="text" id="journalSearch" placeholder="Поиск по авто или номеру..." oninput="renderJournal()" style="padding:6px 12px;border-radius:10px;border:1px solid #d0dce8;flex:1;">
+            <span style="font-size:0.85rem; color:#3a657e; margin-left:auto;" id="journalFilterCount">Найдено: 0</span>
+        </div>
+        
+        <div id="journalList"></div>
+        <div id="emptyJournal" style="color:#4f6f82; background:#edf3fa; padding:24px; border-radius:14px; text-align:center;">
+            <i class="fas fa-inbox" style="font-size:1.8rem; display:block; margin-bottom:6px;"></i>
+            <p>Нет сохранённых записей</p>
+        </div>
+    </div>
+
+    <!-- ===== ЭТАЛОНЫ ===== -->
+    <div id="page-etalons" class="tab-content">
+        <div class="flex-between">
+            <h3 style="color:#0b2b3c;font-size:1.1rem;"><i class="fas fa-database" style="color:#f6b83d;"></i> Эталонные значения</h3>
+            <span style="font-size:0.8rem; color:#3a657e;">💾 Данные сохраняются в общий файл</span>
+        </div>
+        
+        <div class="search-box" style="margin:12px 0;">
+            <input type="text" id="etalonSearch" placeholder="🔍 Поиск по системам и параметрам..." oninput="renderEtalons()" style="width:100%;padding:10px;border-radius:10px;border:1px solid #d0dce8;">
+        </div>
+        
+        <div id="etalonsContainer" style="margin-top:12px;"></div>
+        <div id="etalonsFeedback" style="margin-top:10px; font-weight:500; color:#1b6d3b;"></div>
+    </div>
+
+    <!-- ===== НАСТРОЙКИ ===== -->
+    <div id="page-settings" class="tab-content">
+        <h3 style="color:#0b2b3c; margin-bottom:16px;"><i class="fas fa-cog" style="color:#f6b83d;"></i> Настройки</h3>
+        
+        <div class="settings-group">
+            <h4>💰 Система скидок</h4>
+            <div id="discountsContainer">
+                <div class="settings-item" style="border-bottom: none;">
+                    <span class="param-name">Название скидки</span>
+                    <span class="param-name" style="min-width:80px;">Процент</span>
+                    <span style="min-width:80px;">Действия</span>
+                </div>
+                <div id="discountsList"></div>
+                <div class="settings-item" style="border-bottom: none; padding-top:10px;">
+                    <input type="text" id="newDiscountName" placeholder="Название скидки" style="flex:1; min-width:120px; padding:4px 8px; border:1px solid #d0dce8; border-radius:6px; font-size:0.85rem;">
+                    <input type="number" id="newDiscountPercent" placeholder="%" style="width:80px; padding:4px 8px; border:1px solid #d0dce8; border-radius:6px; font-size:0.85rem;">
+                    <button class="btn-sm btn-success" onclick="addDiscount()"><i class="fas fa-plus"></i> Добавить</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="settingsContainer"></div>
+        <div style="margin-top:16px;">
+            <button class="btn-success" onclick="addNewSystem()"><i class="fas fa-plus"></i> Добавить новую систему</button>
+            <button class="btn-primary" onclick="saveSettings()" style="margin-left:10px;"><i class="fas fa-save"></i> Сохранить настройки</button>
+        </div>
+        <div id="settingsFeedback" style="margin-top:10px; font-weight:500; color:#1b6d3b;"></div>
+    </div>
+</div>
+
+<!-- Modal для диагностики -->
+<div class="modal-overlay" id="diagModal">
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+        <div class="modal-title" id="modalSystemTitle">Система</div>
+        <div id="modalTableWrapper"></div>
+    </div>
+</div>
+
+<!-- Modal для выбора работы из прайса -->
+<div class="modal-overlay" id="priceSelectModal">
+    <div class="modal-box" style="max-width: 800px;">
+        <button class="modal-close" onclick="closePriceSelectModal()"><i class="fas fa-times"></i></button>
+        <div class="modal-title">📋 Выберите работу из прайс-листа</div>
+        <div class="price-search" style="margin:10px 0;">
+            <input type="text" id="priceSelectSearch" placeholder="🔍 Поиск..." oninput="renderPriceSelect()" style="width:100%;padding:8px;border-radius:8px;border:1px solid #d0dce8;">
+        </div>
+        <div id="priceSelectContainer" style="max-height:500px; overflow-y:auto;"></div>
+    </div>
+</div>
+
+<!-- Modal для деталей записи -->
+<div class="modal-overlay booking-detail-modal" id="bookingDetailModal">
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeBookingDetailModal()"><i class="fas fa-times"></i></button>
+        <div class="modal-title">📋 Детали записи</div>
+        <div id="bookingDetailContent"></div>
+        <div class="btn-group" style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
+            <button class="btn-success" onclick="insertBookingToDiag()"><i class="fas fa-stethoscope"></i> В диагностику</button>
+            <button class="btn-success" onclick="insertBookingToRepair()"><i class="fas fa-tools"></i> В ремонт</button>
+            <button class="btn-primary" onclick="closeBookingDetailModal()"><i class="fas fa-times"></i> Закрыть</button>
+        </div>
+        <div id="bookingInsertFeedback" style="margin-top:8px; font-weight:500; color:#1b6d3b;"></div>
+    </div>
+</div>
+
+<script>
+// ПРОДОЛЖЕНИЕ В ЧАСТИ 3
+// ============================================================
+// КОНФИГУРАЦИЯ SUPABASE
+// ============================================================
+const SUPABASE_URL = 'https://xpaqczxqkuzfwmnimzsx.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhwYXFjenhxa3V6ZndtbmltenN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5Njg4NDcsImV4cCI6MjEwNDU0NDg0N30.hH62d6aCsgBchg4MVPey714O3-FR9bNaqnsm_T32zAk';
+
+// ============================================================
+// СОСТОЯНИЕ ПРИЛОЖЕНИЯ
+// ============================================================
+let SYSTEMS = [
+    { id: 'engine', name: 'Двигатель', desc: 'Ошибки, уровень и цвет масла, шум' },
+    { id: 'cooling', name: 'Система охлаждения', desc: 'Термостат, температура ОЖ, уровень и утечки антифриза' },
+    { id: 'brakes', name: 'Тормозная система', desc: 'Колодки, диски, жидкость, суппорты, ручник' },
+    { id: 'ignition', name: 'Система зажигания', desc: 'Свечи, катушки, пропуски зажигания' },
+    { id: 'lights', name: 'Световые приборы', desc: 'Фары, габариты, поворотники, ПТФ, ДХО, подсветка' },
+    { id: 'ac', name: 'Кондиционирование', desc: 'Кондиционер, печка, моторчик, заслонки, обдув' },
+    { id: 'exhaust', name: 'Выхлопная система', desc: 'Целостность, катализатор, датчики, цвет и запах' },
+    { id: 'interior_electronics', name: 'Салонная электроника', desc: 'Свет, приборка, подрулевые, мультируль, мультимедиа, стёкла, замки' },
+    { id: 'suspension', name: 'Подвеска', desc: 'ШРУСы, шаровые, рулевые, амортизаторы, пружины, сайлентблоки' }
+];
+
+let PARAMS = getDefaultParams();
+let systemIdCounter = 100;
+let DIAG_TABLES = createEmptyDiagTables();
+let selectedSystems = new Set();
+let savedCarData = { make: '', plate: '', year: '', mileage: '', date: '', complaints: '' };
+let repairCarData = { make: '', plate: '', year: '', mileage: '', date: '', complaints: '', discount: 'none' };
+let parts = [];
+let works = [];
+let partIdCounter = 1;
+let workIdCounter = 1;
+let journal = [];
+let currentFileName = '';
+let bookings = [];
+let bookingIdCounter = 1;
+let etalonData = {};
+let clients = [];
+let clientIdCounter = 1;
+let discounts = [
+    { id: 1, name: 'Постоянный клиент', percent: 10 },
+    { id: 2, name: 'Акция', percent: 15 }
+];
+let discountIdCounter = 3;
+let priceEditMode = false;
+let currentBookingId = null;
+let newRequests = [];
+let newClients = [];
+let priceRequests = [];
+let priceRequestIdCounter = 1;
+
+// ============================================================
+// ПРАЙС-ЛИСТ
+// ============================================================
+let priceData = [
+    { category: 'Техническое обслуживание', service: 'Диагностика', domestic: 500, import: 500 },
+    { category: 'Техническое обслуживание', service: 'Замена масла в двигателе', domestic: 450, import: 600 },
+    { category: 'Техническое обслуживание', service: 'Замена воздушного фильтра', domestic: 100, import: 200 },
+    { category: 'Техническое обслуживание', service: 'Замена салонного фильтра', domestic: 100, import: 300 },
+    { category: 'Техническое обслуживание', service: 'Замена топливного фильтра', domestic: 400, import: 800 },
+    { category: 'Техническое обслуживание', service: 'Замена свечей зажигания', domestic: 400, import: 600 },
+    { category: 'Техническое обслуживание', service: 'Замена тормозной жидкости', domestic: 800, import: 1000 },
+    { category: 'Тормозная система', service: 'Замена передних колодок', domestic: 500, import: 900 },
+    { category: 'Тормозная система', service: 'Замена задних колодок', domestic: 500, import: 900 },
+    { category: 'Тормозная система', service: 'Замена передних дисков', domestic: 800, import: 1200 },
+    { category: 'Тормозная система', service: 'Прокачка тормозов', domestic: 600, import: 800 },
+    { category: 'Подвеска', service: 'Замена передних амортизаторов', domestic: 900, import: 1500 },
+    { category: 'Подвеска', service: 'Замена шаровой опоры', domestic: 600, import: 1000 },
+    { category: 'Подвеска', service: 'Замена рулевого наконечника', domestic: 400, import: 700 },
+    { category: 'Двигатель', service: 'Замена ремня ГРМ', domestic: 2000, import: 3500 },
+    { category: 'Двигатель', service: 'Замена помпы', domestic: 1000, import: 1500 },
+    { category: 'Двигатель', service: 'Замена прокладки ГБЦ', domestic: 5000, import: 7000 },
+    { category: 'Электрика', service: 'Замена генератора', domestic: 800, import: 1200 },
+    { category: 'Электрика', service: 'Замена стартера', domestic: 700, import: 1000 },
+    { category: 'Электрика', service: 'Диагностика электрики', domestic: 500, import: 700 }
+];
+
+// ЗАКРЫТЫЕ статусы — при них запись становится неактивной
+const CLOSED_STATUSES = ['отремонтирована', 'не отремонтирована', 'продиагностирована'];
+
+// ВСЕ доступные статусы
+const BOOKING_STATUSES = ['новая', 'в работе', 'ожидается', 'готово', 'отремонтирована', 'не отремонтирована', 'продиагностирована'];
+// ============================================================
+// ПАРАМЕТРЫ ПО УМОЛЧАНИЮ
+// ============================================================
+function getDefaultParams() {
+    return {
+        engine: ['Ошибки двигателя (DTC)', 'Уровень масла', 'Цвет масла', 'Шум из двигателя'],
+        cooling: ['Термостат', 'Температура охлаждающей жидкости', 'Уровень антифриза', 'Утечка антифриза'],
+        brakes: ['Толщина колодок передних', 'Толщина колодок задних', 'Толщина тормозных дисков передних',
+            'Толщина тормозных дисков задних', 'Уровень тормозной жидкости', 'Цвет тормозной жидкости',
+            'Утечки тормозной жидкости', 'Заклинивание суппортов', 'Состояние ручного тормоза'],
+        ignition: ['Нагар на свечах', 'Зазор на свечах', 'Состояние катушек зажигания', 'Пропуски зажигания'],
+        lights: ['Ближний свет', 'Дальний свет', 'Габариты передние', 'Габариты задние',
+            'Поворотники', 'ПТФ передние', 'ПТФ задние', 'Фара заднего хода',
+            'ДХО (дневные ходовые огни)', 'Подсветка номерного знака'],
+        ac: ['Работа кондиционера', 'Работа печки', 'Работа моторчика отопителя',
+            'Работа заслонки салон/улица', 'Работа режимов обдува',
+            'Посторонние запахи из дефлекторов', 'Работа скоростей моторчика'],
+        exhaust: ['Целостность трассы выхлопа', 'Состояние катализатора',
+            'Состояние датчиков кислорода', 'Запах выхлопа', 'Цвет выхлопа',
+            'Посторонние звуки от выхлопной системы'],
+        interior_electronics: ['Свет в салоне', 'Работа приборной панели', 'Работа левого подрулевого лепестка',
+            'Работа правого подрулевого лепестка', 'Работа кнопок мультируля',
+            'Работа мультимедиа', 'Работа стеклоподъемников', 'Работа центрального замка',
+            'Работа кнопок багажника/бесключевого доступа'],
+        suspension: ['Состояние ШРУСов', 'Состояние шаровых опор', 'Состояние рулевых наконечников',
+            'Состояние амортизаторов', 'Состояние пружин', 'Состояние сайлентблоков',
+            'Состояние рычагов', 'Состояние ступичных подшипников', 'Состояние опорных подшипников']
+    };
+}
+
+function createEmptyDiagTables() {
+    const tables = {};
+    SYSTEMS.forEach(sys => {
+        const params = PARAMS[sys.id] || ['Параметр 1', 'Параметр 2', 'Параметр 3'];
+        tables[sys.id] = params.map(p => ({
+            param: p,
+            value: '',
+            status: 'unknown',
+            checked: false,
+            note: ''
+        }));
+    });
+    return tables;
+}
+
+// ============================================================
+// РАБОТА С JSON НА СЕРВЕРЕ
+// ============================================================
+async function loadJsonFromServer() {
+    try {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/app_data?key=eq.palych_data&select=data`, {
+            headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+        });
+        if (!response.ok) return null;
+        const result = await response.json();
+        return (result && result.length > 0 && result[0].data) ? result[0].data : null;
+    } catch (error) {
+        console.error('❌ Ошибка загрузки JSON:', error);
+        return null;
+    }
+}
+
+async function saveJsonToServer(data) {
+    try {
+        const jsonData = { ...data, version: '4.7', timestamp: new Date().toISOString() };
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/app_data?key=eq.palych_data`, {
+            method: 'PATCH',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=representation'
+            },
+            body: JSON.stringify({ data: jsonData, updated_at: new Date().toISOString() })
+        });
+        if (!response.ok) {
+            const insertResponse = await fetch(`${SUPABASE_URL}/rest/v1/app_data`, {
+                method: 'POST',
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=representation'
+                },
+                body: JSON.stringify({ key: 'palych_data', data: jsonData, updated_at: new Date().toISOString() })
+            });
+            if (!insertResponse.ok) throw new Error(`HTTP ${insertResponse.status}`);
+            return await insertResponse.json();
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('❌ Ошибка сохранения JSON:', error);
+        throw error;
+    }
+}
+
+// ============================================================
+// ОТПРАВКА НА СЕРВЕР
+// ============================================================
+window.sendToCloud = async function() {
+    const btn = document.querySelector('.cloud-send');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Отправка...';
+    try {
+        const data = {
+            clients, bookings, journal, priceData, discounts,
+            systems: SYSTEMS, params: PARAMS,
+            diagTables: DIAG_TABLES,
+            selectedSystems: Array.from(selectedSystems),
+            savedCarData, repairCarData, parts, works,
+            etalonData, priceRequests, priceRequestIdCounter,
+            clientIdCounter, bookingIdCounter, partIdCounter,
+            workIdCounter, systemIdCounter, discountIdCounter
+        };
+        await saveJsonToServer(data);
+        alert('✅ Данные отправлены на сервер!');
+        document.getElementById('fileStatus').textContent = `☁️ Отправлено в ${new Date().toLocaleTimeString()}`;
+    } catch (error) {
+        alert('❌ Ошибка: ' + error.message);
+    }
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Отправить';
+};
+
+// ============================================================
+// ЗАГРУЗКА С СЕРВЕРА
+// ============================================================
+window.syncFromCloud = async function() {
+    const btn = document.querySelector('.cloud-pull');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData) {
+            alert('⚠️ Нет данных');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-cloud-download-alt"></i> Синхр.';
+            return;
+        }
+        if (jsonData.clients) clients = jsonData.clients;
+        if (jsonData.bookings) bookings = jsonData.bookings;
+        if (jsonData.journal) journal = jsonData.journal;
+        if (jsonData.priceData) priceData = jsonData.priceData;
+        if (jsonData.discounts) discounts = jsonData.discounts;
+        if (jsonData.systems) SYSTEMS = jsonData.systems;
+        if (jsonData.params) PARAMS = jsonData.params;
+        if (jsonData.diagTables) DIAG_TABLES = jsonData.diagTables;
+        if (jsonData.selectedSystems) selectedSystems = new Set(jsonData.selectedSystems);
+        if (jsonData.savedCarData) savedCarData = jsonData.savedCarData;
+        if (jsonData.repairCarData) repairCarData = jsonData.repairCarData;
+        if (jsonData.parts) parts = jsonData.parts;
+        if (jsonData.works) works = jsonData.works;
+        if (jsonData.etalonData) etalonData = jsonData.etalonData;
+        if (jsonData.priceRequests) priceRequests = jsonData.priceRequests;
+        if (jsonData.priceRequestIdCounter) priceRequestIdCounter = jsonData.priceRequestIdCounter;
+        if (jsonData.clientIdCounter) clientIdCounter = jsonData.clientIdCounter;
+        if (jsonData.bookingIdCounter) bookingIdCounter = jsonData.bookingIdCounter;
+        if (jsonData.partIdCounter) partIdCounter = jsonData.partIdCounter;
+        if (jsonData.workIdCounter) workIdCounter = jsonData.workIdCounter;
+        if (jsonData.systemIdCounter) systemIdCounter = jsonData.systemIdCounter;
+        if (jsonData.discountIdCounter) discountIdCounter = jsonData.discountIdCounter;
+        renderAll();
+        loadNewRequests();
+        loadPriceRequests();
+        alert(`✅ Загружено:\n• Клиентов: ${clients.length}\n• Записей: ${bookings.length}\n• Журнал: ${journal.length}\n• Запросов: ${priceRequests.length}`);
+        document.getElementById('fileStatus').textContent = `✅ Загружено с сервера`;
+    } catch (error) {
+        alert('❌ Ошибка: ' + error.message);
+    }
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-cloud-download-alt"></i> Синхр.';
+};
+
+// ============================================================
+// ФАЙЛЫ
+// ============================================================
+function saveAllToFile() {
+    const data = {
+        version: '4.7', timestamp: new Date().toISOString(),
+        journal, diagTables: DIAG_TABLES,
+        selectedSystems: Array.from(selectedSystems),
+        savedCarData, repairCarData, parts, works,
+        partIdCounter, workIdCounter, systems: SYSTEMS, params: PARAMS, systemIdCounter,
+        bookings, bookingIdCounter, etalonData, clients, clientIdCounter,
+        discounts, discountIdCounter, priceData, priceRequests, priceRequestIdCounter
+    };
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const fileName = `palych_data_${new Date().toISOString().slice(0,10)}.json`;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    currentFileName = fileName;
+    updateFileStatus();
+    document.getElementById('fileStatus').textContent = `💾 Сохранено: ${fileName}`;
+    setTimeout(() => updateFileStatus(), 3000);
+}
+
+function loadFromFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            if (data.version) {
+                if (data.journal) journal = data.journal;
+                if (data.diagTables) DIAG_TABLES = data.diagTables;
+                if (data.selectedSystems) selectedSystems = new Set(data.selectedSystems);
+                if (data.savedCarData) savedCarData = data.savedCarData;
+                if (data.repairCarData) repairCarData = data.repairCarData;
+                if (data.parts) parts = data.parts;
+                if (data.works) works = data.works;
+                if (data.partIdCounter) partIdCounter = data.partIdCounter;
+                if (data.workIdCounter) workIdCounter = data.workIdCounter;
+                if (data.systems) SYSTEMS = data.systems;
+                if (data.params) PARAMS = data.params;
+                if (data.systemIdCounter) systemIdCounter = data.systemIdCounter;
+                if (data.bookings) bookings = data.bookings.map(b => ({ ...b, is_new: false }));
+                if (data.bookingIdCounter) bookingIdCounter = data.bookingIdCounter;
+                if (data.etalonData) etalonData = data.etalonData;
+                if (data.clients) clients = data.clients.map(c => ({ ...c, is_new: false }));
+                if (data.clientIdCounter) clientIdCounter = data.clientIdCounter;
+                if (data.discounts) discounts = data.discounts;
+                if (data.discountIdCounter) discountIdCounter = data.discountIdCounter;
+                if (data.priceData) priceData = data.priceData;
+                if (data.priceRequests) priceRequests = data.priceRequests;
+                if (data.priceRequestIdCounter) priceRequestIdCounter = data.priceRequestIdCounter;
+                currentFileName = file.name;
+                updateFileStatus();
+                document.getElementById('fileStatus').textContent = `📂 Загружено: ${file.name}`;
+                renderAll();
+                loadNewRequests();
+                loadPriceRequests();
+                alert('✅ Данные загружены!');
+            } else {
+                alert('❌ Неверный формат');
+            }
+        } catch(err) {
+            alert('❌ Ошибка: ' + err.message);
+        }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+}
+
+function updateFileStatus() {
+    const statusEl = document.getElementById('fileStatus');
+    const nameEl = document.getElementById('currentFileName');
+    const countEl = document.getElementById('journalCount');
+    if (currentFileName) {
+        statusEl.textContent = `📁 ${currentFileName}`;
+        if (nameEl) nameEl.textContent = currentFileName;
+    } else {
+        statusEl.textContent = '📁 Нет открытого файла';
+        if (nameEl) nameEl.textContent = 'Нет открытого файла';
+    }
+    if (countEl) countEl.textContent = journal.length;
+}
+
+// ============================================================
+// АВТОСОХРАНЕНИЕ
+// ============================================================
+function autoSaveToLocalStorage() {
+    try {
+        const data = {
+            version: '4.7', timestamp: new Date().toISOString(),
+            journal, diagTables: DIAG_TABLES,
+            selectedSystems: Array.from(selectedSystems),
+            savedCarData, repairCarData, parts, works,
+            partIdCounter, workIdCounter, systems: SYSTEMS, params: PARAMS,
+            systemIdCounter, bookings, bookingIdCounter, etalonData,
+            clients, clientIdCounter, discounts, discountIdCounter,
+            priceData, priceRequests, priceRequestIdCounter
+        };
+        localStorage.setItem('palych_auto_save', JSON.stringify(data));
+    } catch (e) {
+        console.warn('Ошибка автосохранения:', e);
+    }
+}
+
+function loadFromLocalStorage() {
+    try {
+        const saved = localStorage.getItem('palych_auto_save');
+        if (!saved) return false;
+        const data = JSON.parse(saved);
+        if (!data.version) return false;
+        if (data.journal) journal = data.journal;
+        if (data.diagTables) DIAG_TABLES = data.diagTables;
+        if (data.selectedSystems) selectedSystems = new Set(data.selectedSystems);
+        if (data.savedCarData) savedCarData = data.savedCarData;
+        if (data.repairCarData) repairCarData = data.repairCarData;
+        if (data.parts) parts = data.parts;
+        if (data.works) works = data.works;
+        if (data.partIdCounter) partIdCounter = data.partIdCounter;
+        if (data.workIdCounter) workIdCounter = data.workIdCounter;
+        if (data.systems) SYSTEMS = data.systems;
+        if (data.params) PARAMS = data.params;
+        if (data.systemIdCounter) systemIdCounter = data.systemIdCounter;
+        if (data.bookings) bookings = data.bookings;
+        if (data.bookingIdCounter) bookingIdCounter = data.bookingIdCounter;
+        if (data.etalonData) etalonData = data.etalonData;
+        if (data.clients) clients = data.clients;
+        if (data.clientIdCounter) clientIdCounter = data.clientIdCounter;
+        if (data.discounts) discounts = data.discounts;
+        if (data.discountIdCounter) discountIdCounter = data.discountIdCounter;
+        if (data.priceData) priceData = data.priceData;
+        if (data.priceRequests) priceRequests = data.priceRequests;
+        if (data.priceRequestIdCounter) priceRequestIdCounter = data.priceRequestIdCounter;
+        return true;
+    } catch (e) {
+        console.warn('Ошибка загрузки:', e);
+        return false;
+    }
+}
+
+// ============================================================
+// НАВИГАЦИЯ
+// ============================================================
+function goHome() {
+    document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+    document.getElementById('page-home').classList.add('active');
+    document.querySelectorAll('.nav-buttons button').forEach(b => b.classList.remove('active'));
+    document.querySelector('.nav-buttons button:first-child').classList.add('active');
+}
+
+function switchMode(mode) {
+    document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+    const pageMap = {
+        diag: 'page-diag', repair: 'page-repair', bookings: 'page-bookings',
+        clients: 'page-clients', prices: 'page-prices', journal: 'page-journal',
+        etalons: 'page-etalons', settings: 'page-settings'
+    };
+    document.getElementById(pageMap[mode]).classList.add('active');
+    document.querySelectorAll('.nav-buttons button').forEach(b => b.classList.remove('active'));
+    const btns = document.querySelectorAll('.nav-buttons button');
+    const idx = { diag: 1, repair: 2, bookings: 3, clients: 4, prices: 5, journal: 6, etalons: 7, settings: 8 };
+    if (btns[idx[mode]]) btns[idx[mode]].classList.add('active');
+    if (mode === 'diag') { renderSystemsGrid(); updateDiagnosticsTab(); updateReport(); }
+    if (mode === 'repair') { renderParts(); renderWorks(); updateAct(); renderDiscounts(); }
+    if (mode === 'bookings') { renderBookings(); updateClientSelect(); }
+    if (mode === 'clients') renderClients();
+    if (mode === 'prices') renderPrices();
+    if (mode === 'journal') renderJournal();
+    if (mode === 'etalons') renderEtalons();
+    if (mode === 'settings') { renderSettings(); renderDiscounts(); }
+}
+
+// ============================================================
+// УВЕДОМЛЕНИЯ
+// ============================================================
+function showNotification(message, type = 'info') {
+    const existing = document.querySelector('.notification-main');
+    if (existing) existing.remove();
+    const div = document.createElement('div');
+    div.className = `notification-main ${type}`;
+    div.textContent = message;
+    document.body.appendChild(div);
+    setTimeout(() => {
+        div.style.opacity = '0';
+        div.style.transition = 'opacity 0.5s';
+        setTimeout(() => div.remove(), 500);
+    }, 4000);
+}
+
+// ============================================================
+// ПЕЧАТЬ
+// ============================================================
+function printDiag() {
+    const content = document.getElementById('printArea');
+    if (!content || content.innerHTML.trim() === '' || content.innerHTML.includes('Нет выбранных систем')) {
+        alert('Нет данных для печати');
+        return;
+    }
+    window.print();
+}
+
+function printRepair() {
+    const content = document.getElementById('printAreaRepair');
+    if (!content || content.innerHTML.trim() === '' || content.innerHTML.includes('Нет данных')) {
+        alert('Нет данных для печати');
+        return;
+    }
+    window.print();
+}
+
+// ============================================================
+// ДИАГНОСТИКА - РЕНДЕРЫ
+// ============================================================
+function renderSystemsGrid() {
+    const grid = document.getElementById('systemsGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    SYSTEMS.forEach(sys => {
+        const isChecked = selectedSystems.has(sys.id);
+        const card = document.createElement('div');
+        card.className = 'system-card';
+        card.style.borderLeft = isChecked ? '4px solid #f6b83d' : '4px solid transparent';
+        card.innerHTML = `<div class="title"><span>${sys.name}</span><span class="badge"><i class="fas ${isChecked ? 'fa-check-circle' : 'fa-circle'}"></i> ${isChecked ? 'выбрана' : 'выбрать'}</span></div><div class="desc">${sys.desc}</div>`;
+        card.addEventListener('click', () => toggleSystem(sys.id));
+        grid.appendChild(card);
+    });
+    updateSelectedCount();
+    updateDiagnosticsTab();
+    updateReport();
+}
+
+function toggleSystem(sysId) {
+    if (selectedSystems.has(sysId)) selectedSystems.delete(sysId);
+    else selectedSystems.add(sysId);
+    renderSystemsGrid();
+    updateDiagnosticsTab();
+    updateReport();
+}
+
+function updateSelectedCount() {
+    const el = document.getElementById('selectedCount');
+    if (el) el.textContent = selectedSystems.size;
+}
+
+function updateDiagnosticsTab() {
+    const container = document.getElementById('selectedSystemsContainer');
+    const emptyMsg = document.getElementById('emptyDiagMessage');
+    if (!container) return;
+    container.innerHTML = '';
+    if (selectedSystems.size === 0) { if (emptyMsg) emptyMsg.style.display = 'block'; return; }
+    if (emptyMsg) emptyMsg.style.display = 'none';
+    Array.from(selectedSystems).forEach(id => {
+        const sys = SYSTEMS.find(s => s.id === id);
+        if (!sys) return;
+        const box = document.createElement('div');
+        box.className = 'system-card';
+        box.style.marginBottom = '6px';
+        box.innerHTML = `
+            <div class="title"><span><i class="fas fa-car" style="color:#f6b83d;"></i> ${sys.name}</span><span class="badge"><i class="fas fa-clipboard"></i> нажмите</span></div>
+            <div style="display:flex; gap:8px; margin-top:4px; flex-wrap:wrap;">
+                <button class="btn-sm" style="background:#0b2b3c;color:white;padding:4px 14px;border-radius:30px;border:none;cursor:pointer;" onclick="event.stopPropagation(); openModalForSystem('${sys.id}')"><i class="fas fa-table"></i> Открыть</button>
+                <button class="btn-sm" style="background:#b33c3c;color:white;padding:4px 14px;border-radius:30px;border:none;cursor:pointer;" onclick="event.stopPropagation(); toggleSystem('${sys.id}')"><i class="fas fa-times"></i> Убрать</button>
+            </div>
+        `;
+        box.addEventListener('click', () => openModalForSystem(sys.id));
+        container.appendChild(box);
+    });
+}
+
+function getEtalonHint(sysId, paramName) {
+    if (etalonData && etalonData[sysId] && etalonData[sysId][paramName]) {
+        const e = etalonData[sysId][paramName];
+        let hint = '📊 Норма: ' + (e.norm || 'не указана');
+        if (e.note) hint += ' | 📝 ' + e.note;
+        return hint;
+    }
+    return null;
+}
+
+function openModalForSystem(sysId) {
+    const sys = SYSTEMS.find(s => s.id === sysId);
+    if (!sys) return;
+    const modal = document.getElementById('diagModal');
+    document.getElementById('modalSystemTitle').textContent = `🔧 ${sys.name}`;
+    const wrapper = document.getElementById('modalTableWrapper');
+    const tableData = DIAG_TABLES[sysId] || [];
+    let html = `<table class="diagnostic-table"><thead><tr><th style="width:30px;">№</th><th>Параметр</th><th style="width:150px;">Значение</th><th style="width:120px;">Статус</th><th style="width:40px;text-align:center;">Диагн.</th><th style="min-width:110px;">Примечание</th></tr></thead><tbody>`;
+    tableData.forEach((row, idx) => {
+        const checkedAttr = row.checked ? 'checked' : '';
+        const etalonHint = getEtalonHint(sysId, row.param);
+        html += `<tr>
+            <td>${idx+1}</td>
+            <td><div class="param-with-etalon"><span class="param-name">${row.param}</span>${etalonHint ? `<span class="etalon-hint" title="${etalonHint}">📊</span>` : ''}</div></td>
+            <td><input type="text" id="val_${sysId}_${idx}" value="${row.value}" oninput="autoCheckDiag('${sysId}',${idx})"></td>
+            <td>
+                <div class="status-icons">
+                    <div class="status-icon ${row.status === 'ok' ? 'active-ok' : ''}" onclick="setStatus('${sysId}',${idx},'ok')" title="Норма"><i class="fas fa-check"></i></div>
+                    <div class="status-icon ${row.status === 'fail' ? 'active-fail' : ''}" onclick="setStatus('${sysId}',${idx},'fail')" title="Поломка"><i class="fas fa-times"></i></div>
+                    <div class="status-icon ${row.status === 'unknown' ? 'active-unknown' : ''}" onclick="setStatus('${sysId}',${idx},'unknown')" title="Не определено"><i class="fas fa-question"></i></div>
+                </div>
+            </td>
+            <td style="text-align:center;"><input type="checkbox" id="check_${sysId}_${idx}" ${checkedAttr}></td>
+            <td><textarea id="note_${sysId}_${idx}" rows="1">${row.note||''}</textarea></td>
+        </tr>`;
+    });
+    html += `</tbody></table>
+        <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn-primary" style="padding:8px 20px;" onclick="saveDiagTable('${sysId}')"><i class="fas fa-save"></i> Сохранить</button>
+            <button class="btn-sm" style="background:#b33c3c;color:white;padding:4px 14px;border-radius:30px;border:none;cursor:pointer;" onclick="closeModal()"><i class="fas fa-times"></i> Закрыть</button>
+        </div>
+        <div id="saveTableFeedback" style="margin-top:8px; color:#1a6d3b;"></div>
+    `;
+    wrapper.innerHTML = html;
+    modal.classList.add('active');
+}
+
+function setStatus(sysId, idx, status) {
+    const row = DIAG_TABLES[sysId][idx];
+    if (row) {
+        row.status = status;
+        const icons = document.querySelectorAll(`#diagModal .status-icon`);
+        const startIdx = idx * 3;
+        icons.forEach((icon, i) => {
+            if (i >= startIdx && i < startIdx + 3) {
+                icon.className = 'status-icon';
+                if (i === startIdx && status === 'ok') icon.classList.add('active-ok');
+                else if (i === startIdx + 1 && status === 'fail') icon.classList.add('active-fail');
+                else if (i === startIdx + 2 && status === 'unknown') icon.classList.add('active-unknown');
+            }
+        });
+    }
+}
+
+function autoCheckDiag(sysId, idx) {
+    const val = document.getElementById(`val_${sysId}_${idx}`);
+    const chk = document.getElementById(`check_${sysId}_${idx}`);
+    if (val && chk) chk.checked = val.value.trim() !== '';
+}
+
+function saveDiagTable(sysId) {
+    const tableData = DIAG_TABLES[sysId];
+    if (!tableData) return;
+    let updated = 0;
+    tableData.forEach((row, idx) => {
+        const val = document.getElementById(`val_${sysId}_${idx}`);
+        const chk = document.getElementById(`check_${sysId}_${idx}`);
+        const note = document.getElementById(`note_${sysId}_${idx}`);
+        if (val) { row.value = val.value.trim(); if (chk) chk.checked = row.value !== ''; }
+        if (chk) row.checked = chk.checked;
+        if (note) row.note = note.value;
+        updated++;
+    });
+    document.getElementById('saveTableFeedback').innerHTML = `<i class="fas fa-check-circle" style="color:#2a8b5a;"></i> Сохранено (${updated} параметров)`;
+    setTimeout(() => { document.getElementById('saveTableFeedback').innerHTML = ''; }, 2000);
+    updateReport();
+}
+
+function closeModal() {
+    document.getElementById('diagModal').classList.remove('active');
+}
+
+document.getElementById('diagModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+});
+
+function saveCarInfo() {
+    savedCarData = {
+        make: document.getElementById('carMake').value.trim() || 'не указано',
+        plate: document.getElementById('carPlate').value.trim() || 'не указан',
+        year: document.getElementById('carYear').value || '----',
+        mileage: document.getElementById('carMileage').value || '0',
+        date: document.getElementById('diagDate').value || '----',
+        complaints: document.getElementById('carComplaints').value.trim() || '—'
+    };
+    document.getElementById('saveFeedback').innerHTML = `<i class="fas fa-check-circle" style="color:#2a8b5a;"></i> Данные сохранены`;
+    updateReport();
+    autoSaveToLocalStorage();
+}
+
+function clearDiag() {
+    if (!confirm('Очистить диагностику?')) return;
+    ['carMake','carPlate','carYear','carMileage','carComplaints'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.value = '';
+    });
+    const d = document.getElementById('diagDate'); if (d) d.value = new Date().toISOString().slice(0,10);
+    savedCarData = { make: '', plate: '', year: '', mileage: '', date: '', complaints: '' };
+    selectedSystems = new Set();
+    DIAG_TABLES = createEmptyDiagTables();
+    renderSystemsGrid();
+    updateDiagnosticsTab();
+    updateReport();
+}
+
+// ============================================================
+// ЛИСТ ДИАГНОСТИКИ
+// ============================================================
+function updateReport() {
+    const container = document.getElementById('reportContent');
+    if (!container) return;
+    const selectedIds = Array.from(selectedSystems);
+    let html = `<div style="background:white; border-radius:12px; padding:20px; border:2px solid #0b2b3c;">`;
+    html += `<div style="text-align:center; border-bottom:3px double #0b2b3c; padding-bottom:10px; margin-bottom:14px;">
+        <h2 style="font-size:1.4rem; color:#0b2b3c;">🔧 PalЫCH Car Diagnost</h2>
+        <div style="color:#3a657e; font-size:0.95rem;">Лист диагностики автомобиля</div>
+    </div>`;
+    html += `<div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px 20px; background:#f8fafc; padding:10px 14px; border-radius:8px; margin-bottom:14px; border-left:4px solid #f6b83d;">
+        <div><span style="font-weight:600;color:#1f4055;">Марка/Модель:</span> ${savedCarData.make}</div>
+        <div><span style="font-weight:600;color:#1f4055;">Гос. номер:</span> <span class="plate-badge">${savedCarData.plate}</span></div>
+        <div><span style="font-weight:600;color:#1f4055;">Год:</span> ${savedCarData.year}</div>
+        <div><span style="font-weight:600;color:#1f4055;">Пробег:</span> ${savedCarData.mileage} км</div>
+        <div><span style="font-weight:600;color:#1f4055;">Дата:</span> ${savedCarData.date}</div>
+        <div style="grid-column:1/-1;"><span style="font-weight:600;color:#1f4055;">Жалобы:</span> ${savedCarData.complaints}</div>
+    </div>`;
+    if (selectedIds.length === 0) {
+        html += `<div style="text-align:center;padding:30px;color:#4a6f82;">Нет выбранных систем</div>`;
+    } else {
+        selectedIds.forEach(id => {
+            const sys = SYSTEMS.find(s => s.id === id);
+            if (!sys) return;
+            const items = (DIAG_TABLES[id] || []).filter(r => r.checked && r.value.trim() !== '');
+            if (items.length === 0) return;
+            html += `<div style="margin-top:14px; border:1px solid #e4ecf4; border-radius:8px; overflow:hidden;">
+                <div style="background:#0b2b3c; color:white; padding:8px 14px; font-weight:700;">🔧 ${sys.name}</div>
+                <div style="padding:4px 0;">`;
+            items.forEach(row => {
+                const statusText = row.status === 'ok' ? '✅ норма' : row.status === 'fail' ? '⚠️ поломка' : '❓ не опр.';
+                html += `<div style="padding:6px 12px; border-bottom:1px solid #eef2f7; font-size:0.85rem;">
+                    <strong>${row.param}:</strong> ${row.value} — ${statusText} ${row.note ? `(${row.note})` : ''}
+                </div>`;
+            });
+            html += `</div></div>`;
+        });
+    }
+    html += `<div style="margin-top:16px; font-size:0.8rem; color:#3a657e; text-align:right;">${new Date().toLocaleString()}</div></div>`;
+    container.innerHTML = html;
+}
+
+function transferToRepair() {
+    if (!savedCarData.make || savedCarData.make === 'не указано') {
+        alert('Заполните данные автомобиля!');
+        return;
+    }
+    let complaints = savedCarData.complaints || '';
+    let failures = [];
+    Array.from(selectedSystems).forEach(id => {
+        const sys = SYSTEMS.find(s => s.id === id);
+        if (!sys) return;
+        const items = DIAG_TABLES[id] || [];
+        items.forEach(row => {
+            if (row.checked && row.value.trim() !== '' && row.status === 'fail') {
+                failures.push(`${sys.name} → ${row.param}: ${row.value}`);
+            }
+        });
+    });
+    if (failures.length > 0) {
+        if (complaints) complaints += '\n\n--- Выявленные неисправности ---\n';
+        complaints += failures.join('\n');
+    }
+    document.getElementById('repairMake').value = savedCarData.make;
+    document.getElementById('repairPlate').value = savedCarData.plate;
+    document.getElementById('repairYear').value = savedCarData.year;
+    document.getElementById('repairMileage').value = savedCarData.mileage;
+    document.getElementById('repairDate').value = savedCarData.date;
+    document.getElementById('repairComplaints').value = complaints;
+    repairCarData = {
+        make: savedCarData.make, plate: savedCarData.plate, year: savedCarData.year,
+        mileage: savedCarData.mileage, date: savedCarData.date,
+        complaints: complaints, discount: 'none'
+    };
+    switchMode('repair');
+    document.querySelectorAll('#page-repair .tabs .tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('#page-repair .tabs .tab-btn[data-tab="repair1"]').classList.add('active');
+    document.querySelectorAll('#page-repair .tab-content').forEach(tc => tc.classList.remove('active'));
+    document.getElementById('repair1').classList.add('active');
+    renderDiscounts();
+}
+
+// ============================================================
+// РЕМОНТ
+// ============================================================
+function saveRepairCarInfo() {
+    repairCarData = {
+        make: document.getElementById('repairMake').value.trim() || 'не указано',
+        plate: document.getElementById('repairPlate').value.trim() || 'не указан',
+        year: document.getElementById('repairYear').value || '----',
+        mileage: document.getElementById('repairMileage').value || '0',
+        date: document.getElementById('repairDate').value || '----',
+        complaints: document.getElementById('repairComplaints').value.trim() || '—',
+        discount: document.getElementById('repairDiscount').value || 'none'
+    };
+    document.getElementById('repairSaveFeedback').innerHTML = `<i class="fas fa-check-circle" style="color:#2a8b5a;"></i> Данные сохранены`;
+    updateAct();
+    autoSaveToLocalStorage();
+}
+
+function clearRepair() {
+    if (!confirm('Очистить ремонт?')) return;
+    ['repairMake','repairPlate','repairYear','repairMileage','repairComplaints'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.value = '';
+    });
+    const d = document.getElementById('repairDate'); if (d) d.value = new Date().toISOString().slice(0,10);
+    const disc = document.getElementById('repairDiscount'); if (disc) disc.value = 'none';
+    repairCarData = { make: '', plate: '', year: '', mileage: '', date: '', complaints: '', discount: 'none' };
+    parts = [];
+    works = [];
+    partIdCounter = 1;
+    workIdCounter = 1;
+    renderParts();
+    renderWorks();
+    updateAct();
+}
+
+function renderParts() {
+    const tbody = document.getElementById('partsBody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    let total = 0;
+    parts.forEach((p, idx) => {
+        const sum = p.qty * p.price;
+        total += sum;
+        tbody.innerHTML += `<tr>
+            <td>${idx+1}</td>
+            <td><input type="text" value="${p.name}" onchange="updatePart(${p.id},'name',this.value)"></td>
+            <td><input type="number" value="${p.qty}" onchange="updatePart(${p.id},'qty',parseInt(this.value)||0)" style="width:60px;"></td>
+            <td><input type="number" value="${p.price}" onchange="updatePart(${p.id},'price',parseFloat(this.value)||0)" style="width:80px;"></td>
+            <td>${sum}</td>
+            <td><button class="btn-danger" onclick="removePart(${p.id})"><i class="fas fa-trash"></i></button></td>
+        </tr>`;
+    });
+    const totalEl = document.getElementById('partsTotal');
+    if (totalEl) totalEl.textContent = total;
+}
+
+function updatePart(id, field, value) {
+    const p = parts.find(x => x.id === id);
+    if (p) { p[field] = value; renderParts(); updateAct(); autoSaveToLocalStorage(); }
+}
+
+function removePart(id) {
+    parts = parts.filter(p => p.id !== id);
+    renderParts(); updateAct(); autoSaveToLocalStorage();
+}
+
+function addPart() {
+    parts.push({ id: partIdCounter++, name: 'Новая запчасть', qty: 1, price: 0 });
+    renderParts(); updateAct(); autoSaveToLocalStorage();
+}
+
+function renderWorks() {
+    const tbody = document.getElementById('worksBody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    let total = 0;
+    works.forEach((w, idx) => {
+        total += w.cost;
+        tbody.innerHTML += `<tr>
+            <td>${idx+1}</td>
+            <td><input type="text" value="${w.name}" onchange="updateWork(${w.id},'name',this.value)"></td>
+            <td><input type="number" value="${w.cost}" onchange="updateWork(${w.id},'cost',parseFloat(this.value)||0)" style="width:80px;"></td>
+            <td><input type="text" value="${w.note||''}" onchange="updateWork(${w.id},'note',this.value)" placeholder="Примечание"></td>
+            <td><button class="btn-danger" onclick="removeWork(${w.id})"><i class="fas fa-trash"></i></button></td>
+        </tr>`;
+    });
+    const totalEl = document.getElementById('worksTotal');
+    if (totalEl) totalEl.textContent = total;
+}
+
+function updateWork(id, field, value) {
+    const w = works.find(x => x.id === id);
+    if (w) { w[field] = value; renderWorks(); updateAct(); autoSaveToLocalStorage(); }
+}
+
+function removeWork(id) {
+    works = works.filter(w => w.id !== id);
+    renderWorks(); updateAct(); autoSaveToLocalStorage();
+}
+
+function addWork() {
+    works.push({ id: workIdCounter++, name: 'Новая работа', cost: 0, note: '' });
+    renderWorks(); updateAct(); autoSaveToLocalStorage();
+}
+
+function updateAct() {
+    const container = document.getElementById('actContent');
+    if (!container) return;
+    const partsTotal = parts.reduce((sum, p) => sum + p.qty * p.price, 0);
+    const worksTotal = works.reduce((sum, w) => sum + w.cost, 0);
+    let discountPercent = 0;
+    let discountName = 'Нет';
+    const discountValue = document.getElementById('repairDiscount')?.value;
+    if (discountValue && discountValue !== 'none') {
+        const discount = discounts.find(d => d.id === parseInt(discountValue));
+        if (discount) {
+            discountPercent = discount.percent;
+            discountName = discount.name;
+        }
+    }
+    const discountAmount = worksTotal * (discountPercent / 100);
+    const grandTotal = partsTotal + worksTotal - discountAmount;
+
+    let html = `<div style="background:white; border-radius:12px; padding:20px; border:2px solid #0b2b3c;">
+        <h2 style="text-align:center; color:#0b2b3c;">АКТ ВЫПОЛНЕННЫХ РАБОТ</h2>
+        <div style="margin:14px 0; padding:10px; background:#f8fafc; border-radius:8px;">
+            <div><strong>Марка:</strong> ${repairCarData.make}</div>
+            <div><strong>Гос. номер:</strong> ${repairCarData.plate}</div>
+            <div><strong>Дата:</strong> ${repairCarData.date}</div>
+            <div><strong>Скидка:</strong> ${discountName} (${discountPercent}%)</div>
+        </div>`;
+    if (parts.length > 0) {
+        html += `<h4>📦 Запчасти</h4>`;
+        parts.forEach(p => { html += `<div>${p.name} × ${p.qty} = ${p.qty * p.price} ₽</div>`; });
+        html += `<div style="text-align:right;font-weight:700;">Итого: ${partsTotal} ₽</div>`;
+    }
+    if (works.length > 0) {
+        html += `<h4 style="margin-top:12px;">🔧 Работы</h4>`;
+        works.forEach(w => { html += `<div>${w.name} — ${w.cost} ₽</div>`; });
+        html += `<div style="text-align:right;font-weight:700;">Итого: ${worksTotal} ₽</div>`;
+    }
+    html += `<div style="margin-top:16px; padding:14px; background:#f8fafc; border:2px solid #0b2b3c; text-align:center; font-size:1.3rem; font-weight:700;">ИТОГО: ${grandTotal.toFixed(2)} ₽</div></div>`;
+    container.innerHTML = html;
+}
+
+// ============================================================
+// ПРОДОЛЖЕНИЕ В ЧАСТИ 4 - ВСЕ ОСТАЛЬНЫЕ ФУНКЦИИ
+// ============================================================
+// ============================================================
+// УТИЛИТА — ОПРЕДЕЛЕНИЕ ТИПА АВТО КЛИЕНТА
+// ============================================================
+function getClientCarType(plate, name, phone) {
+    if (!clients || clients.length === 0) return 'import';
+    let client = null;
+    if (plate && plate !== 'не указан') {
+        client = clients.find(c => c.plate && c.plate.toUpperCase() === plate.toUpperCase());
+    }
+    if (!client && phone) {
+        client = clients.find(c => c.phone === phone);
+    }
+    if (!client && name && name !== 'не указано') {
+        client = clients.find(c => c.name === name);
+    }
+    return client && client.carType ? client.carType : 'import';
+}
+
+// ============================================================
+// ГЛАВНАЯ РЕНДЕР-ФУНКЦИЯ
+// ============================================================
+function renderAll() {
+    renderSystemsGrid();
+    updateDiagnosticsTab();
+    updateReport();
+    renderParts();
+    renderWorks();
+    updateAct();
+    renderJournal();
+    renderSettings();
+    renderBookings();
+    renderClients();
+    renderEtalons();
+    renderDiscounts();
+    renderPrices();
+    updateClientSelect();
+    autoSaveToLocalStorage();
+}
+
+// ============================================================
+// СОХРАНЕНИЕ ДИАГНОСТИКИ В ЖУРНАЛ — С АВТОСВЯЗЬЮ
+// ============================================================
+function saveDiagToJournal() {
+    const selectedIds = Array.from(selectedSystems);
+    if (selectedIds.length === 0) { alert('Нет данных'); return; }
+
+    // Ищем активную запись с таким же номером
+    let linkedBooking = null;
+    if (savedCarData.plate && savedCarData.plate !== 'не указан') {
+        linkedBooking = bookings.find(b =>
+            b.plate && b.plate.toUpperCase() === savedCarData.plate.toUpperCase() &&
+            !CLOSED_STATUSES.includes(b.status)
+        );
+    }
+
+    // Ищем клиента
+    let clientId = null;
+    if (savedCarData.plate && savedCarData.plate !== 'не указан') {
+        const found = clients.find(c => c.plate && c.plate.toUpperCase() === savedCarData.plate.toUpperCase());
+        if (found) clientId = found.id;
+    }
+
+    const entry = {
+        id: Date.now(), type: 'diagnostic',
+        date: savedCarData.date || new Date().toISOString().slice(0,10),
+        car: savedCarData.make || 'не указано',
+        plate: savedCarData.plate || 'не указан',
+        systems: selectedIds,
+        tables: JSON.parse(JSON.stringify(DIAG_TABLES)),
+        carData: JSON.parse(JSON.stringify(savedCarData)),
+        clientId: clientId,
+        timestamp: new Date().toISOString()
+    };
+    journal.push(entry);
+
+    // АВТОСВЯЗЬ
+    if (linkedBooking) {
+        linkedBooking.linkedDiagId = entry.id;
+        linkedBooking.linkedRepairId = null;
+        updateBookingsStorage();
+        renderBookings();
+        showNotification('✅ Диагностика сохранена и привязана к записи', 'success');
+    } else {
+        showNotification('✅ Диагностика сохранена в журнал', 'success');
+    }
+
+    document.getElementById('saveReportFeedback').innerHTML = `<i class="fas fa-check-circle" style="color:#2a8b5a;"></i> Сохранено в журнал`;
+    setTimeout(() => { document.getElementById('saveReportFeedback').innerHTML = ''; }, 3000);
+    renderJournal();
+    updateFileStatus();
+    autoSaveToLocalStorage();
+}
+
+// ============================================================
+// СОХРАНЕНИЕ РЕМОНТА В ЖУРНАЛ — С АВТОСВЯЗЬЮ
+// ============================================================
+function saveRepairToJournal() {
+    if (parts.length === 0 && works.length === 0) { alert('Нет данных'); return; }
+
+    let linkedBooking = null;
+    if (repairCarData.plate && repairCarData.plate !== 'не указан') {
+        linkedBooking = bookings.find(b =>
+            b.plate && b.plate.toUpperCase() === repairCarData.plate.toUpperCase() &&
+            !CLOSED_STATUSES.includes(b.status)
+        );
+    }
+
+    let clientId = null;
+    if (repairCarData.plate && repairCarData.plate !== 'не указан') {
+        const found = clients.find(c => c.plate && c.plate.toUpperCase() === repairCarData.plate.toUpperCase());
+        if (found) clientId = found.id;
+    }
+
+    const entry = {
+        id: Date.now(), type: 'repair',
+        date: repairCarData.date || new Date().toISOString().slice(0,10),
+        car: repairCarData.make || 'не указано',
+        plate: repairCarData.plate || 'не указан',
+        parts: JSON.parse(JSON.stringify(parts)),
+        works: JSON.parse(JSON.stringify(works)),
+        carData: JSON.parse(JSON.stringify(repairCarData)),
+        clientId: clientId,
+        timestamp: new Date().toISOString()
+    };
+    journal.push(entry);
+
+    if (linkedBooking) {
+        linkedBooking.linkedRepairId = entry.id;
+        linkedBooking.linkedDiagId = null;
+        updateBookingsStorage();
+        renderBookings();
+        showNotification('✅ Ремонт сохранён и привязан к записи', 'success');
+    } else {
+        showNotification('✅ Ремонт сохранён в журнал', 'success');
+    }
+
+    document.getElementById('actFeedback').innerHTML = `<i class="fas fa-check-circle" style="color:#2a8b5a;"></i> Акт сохранён`;
+    setTimeout(() => { document.getElementById('actFeedback').innerHTML = ''; }, 3000);
+    renderJournal();
+    updateFileStatus();
+    autoSaveToLocalStorage();
+}
+
+// ============================================================
+// ЗАПИСИ — ФИНАЛЬНАЯ ВЕРСИЯ С ВОССТАНОВЛЕННОЙ СВЯЗЬЮ
+// ============================================================
+function renderBookings() {
+    const tbody = document.getElementById('bookingsBody');
+    if (!tbody) return;
+    const filter = document.getElementById('bookingsFilter')?.value || 'all';
+    let filtered = bookings.filter(b => b.is_new !== true);
+    filtered.sort((a, b) => {
+        if (!a.date) return 1;
+        if (!b.date) return -1;
+        return new Date(b.date) - new Date(a.date);
+    });
+    if (filter === 'closed') filtered = filtered.filter(b => CLOSED_STATUSES.includes(b.status));
+    else if (filter !== 'all') filtered = filtered.filter(b => b.status === filter);
+
+    const totalEl = document.getElementById('bookingsTotal');
+    if (totalEl) totalEl.textContent = bookings.filter(b => b.is_new !== true).length;
+    tbody.innerHTML = '';
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="12" style="text-align:center;padding:20px;color:#4a6f82;">Нет записей</td></tr>`;
+        return;
+    }
+
+    filtered.forEach((b, idx) => {
+        const isClosed = CLOSED_STATUSES.includes(b.status);
+        const disabled = isClosed ? 'disabled' : '';
+
+        // СТОЛБЕЦ "СВЯЗЬ"
+        let linkHtml = '';
+        if (b.linkedDiagId) {
+            const diagEntry = journal.find(e => e.id === b.linkedDiagId);
+            const label = diagEntry ? diagEntry.car : 'Диагностика';
+            linkHtml = `<button class="btn-link" onclick="openLinkedDiag(${b.linkedDiagId})" title="Открыть диагностику">🔍 ${label}</button>`;
+        } else if (b.linkedRepairId) {
+            const repairEntry = journal.find(e => e.id === b.linkedRepairId);
+            const label = repairEntry ? repairEntry.car : 'Ремонт';
+            linkHtml = `<button class="btn-link" onclick="openLinkedRepair(${b.linkedRepairId})" title="Открыть ремонт">🔧 ${label}</button>`;
+        } else {
+            linkHtml = `
+                <button class="btn-sm" style="background:#6c5b7b;color:white;padding:2px 6px;border-radius:15px;border:none;cursor:pointer;font-size:0.6rem;" onclick="manualLinkBookingToDiag(${b.id})" title="Привязать к диагностике">+ Диагн.</button>
+                <button class="btn-sm" style="background:#6c5b7b;color:white;padding:2px 6px;border-radius:15px;border:none;cursor:pointer;font-size:0.6rem;" onclick="manualLinkBookingToRepair(${b.id})" title="Привязать к ремонту">+ Ремонт</button>
+            `;
+        }
+
+        tbody.innerHTML += `<tr class="${isClosed ? 'inactive-row' : ''}">
+            <td>${idx+1}</td>
+            <td><input type="text" value="${b.name}" ${disabled} onchange="updateBooking(${b.id},'name',this.value)"></td>
+            <td><input type="text" value="${b.phone}" ${disabled} onchange="updateBooking(${b.id},'phone',this.value)"></td>
+            <td><input type="text" value="${b.plate || ''}" ${disabled} onchange="updateBooking(${b.id},'plate',this.value)" style="text-transform:uppercase;font-weight:700;"></td>
+            <td><input type="date" value="${b.date}" ${disabled} onchange="updateBooking(${b.id},'date',this.value)"></td>
+            <td><input type="time" value="${b.time || ''}" ${disabled} onchange="updateBooking(${b.id},'time',this.value)"></td>
+            <td><input type="text" value="${b.car}" ${disabled} onchange="updateBooking(${b.id},'car',this.value)"></td>
+            <td>
+                <select ${disabled} onchange="updateBooking(${b.id},'type',this.value)" style="width:100%;padding:4px;border-radius:6px;">
+                    <option value="diagnostic" ${b.type==='diagnostic'?'selected':''}>🔍 Диагностика</option>
+                    <option value="repair" ${b.type==='repair'?'selected':''}>🔧 Ремонт</option>
+                    <option value="maintenance" ${b.type==='maintenance'?'selected':''}>🛠️ ТО</option>
+                </select>
+            </td>
+            <td>
+                <select ${disabled} onchange="updateBooking(${b.id},'status',this.value)" class="status-select">
+                    ${BOOKING_STATUSES.map(s => `<option value="${s}" ${b.status===s?'selected':''}>${s}</option>`).join('')}
+                </select>
+            </td>
+            <td><input type="text" value="${b.reason||''}" ${disabled} onchange="updateBooking(${b.id},'reason',this.value)"></td>
+            <td>${linkHtml}</td>
+            <td>
+                <button class="btn-sm" style="background:#2d6b84;color:white;padding:4px 10px;border-radius:30px;border:none;cursor:pointer;" onclick="showBookingDetail(${b.id})" title="Детали">ℹ️</button>
+                <button class="btn-copy" onclick="copyBooking(${b.id})" title="Копировать">📋</button>
+                <button class="btn-danger" onclick="deleteBooking(${b.id})" title="Удалить">✕</button>
+            </td>
+        </tr>`;
+    });
+}
+
+function addBookingFromForm() {
+    const name = document.getElementById('bk_name').value.trim();
+    const phone = document.getElementById('bk_phone').value.trim();
+    const car = document.getElementById('bk_car').value.trim();
+    const plate = document.getElementById('bk_plate').value.trim().toUpperCase();
+    const date = document.getElementById('bk_date').value;
+    const time = document.getElementById('bk_time').value;
+    const type = document.getElementById('bk_type').value;
+    const reason = document.getElementById('bk_reason').value.trim();
+
+    if (!name || !phone || !car || !date) {
+        alert('Заполните имя, телефон, марку и дату');
+        return;
+    }
+
+    let clientId = null;
+    const existing = clients.find(c => c.phone === phone || (c.plate && c.plate === plate));
+    if (existing) clientId = existing.id;
+    else {
+        const accessCode = String(Math.floor(1000 + Math.random() * 9000));
+        const newClient = {
+            id: clientIdCounter++, name, phone, plate: plate || '', car,
+            access_code: accessCode, carType: 'import', is_new: false
+        };
+        clients.push(newClient);
+        clientId = newClient.id;
+        renderClients();
+        updateClientSelect();
+    }
+
+    const newBooking = {
+        id: bookingIdCounter++, name, phone, date, time: time || '',
+        car, plate: plate || '', type, status: 'новая',
+        reason: reason || '', linkedDiagId: null, linkedRepairId: null,
+        client_id: clientId, is_new: false
+    };
+    bookings.unshift(newBooking);
+    updateBookingsStorage();
+    renderBookings();
+    ['bk_name','bk_phone','bk_car','bk_plate','bk_reason'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.value = '';
+    });
+    showNotification('✅ Запись добавлена', 'success');
+    autoSaveToLocalStorage();
+}
+
+function updateBookingsStorage() {
+    try { localStorage.setItem('palych_bookings', JSON.stringify(bookings)); } catch(e) {}
+}
+
+function updateBooking(id, field, value) {
+    const b = bookings.find(x => x.id === id);
+    if (!b) return;
+    if (CLOSED_STATUSES.includes(b.status) && field !== 'status') return;
+    
+    const oldStatus = b[field];
+    b[field] = value;
+    updateBookingsStorage();
+    renderBookings();
+    autoSaveToLocalStorage();
+
+    // ✅ Уведомление при смене статуса
+    if (field === 'status' && oldStatus !== value) {
+        showNotification(`✅ Статус изменён: ${value}`, 'success');
+        
+        // Уведомление для клиента при "готово"
+        if (value === 'готово') {
+            showNotification('🔔 Клиент уведомлён о готовности', 'info');
+            // Здесь можно добавить вызов sendSMS(b.phone, '...')
+        }
+    }
+}
+
+function deleteBooking(id) {
+    if (!confirm('Удалить запись?')) return;
+    bookings = bookings.filter(b => b.id !== id);
+    updateBookingsStorage();
+    renderBookings();
+    autoSaveToLocalStorage();
+}
+
+function copyBooking(id) {
+    const b = bookings.find(x => x.id === id);
+    if (!b) return;
+    document.getElementById('bk_name').value = b.name || '';
+    document.getElementById('bk_phone').value = b.phone || '';
+    document.getElementById('bk_car').value = b.car || '';
+    document.getElementById('bk_plate').value = b.plate || '';
+    document.getElementById('bk_type').value = b.type || 'diagnostic';
+    document.getElementById('bk_reason').value = b.reason || '';
+    showNotification('📋 Данные скопированы', 'success');
+}
+
+// ============================================================
+// РУЧНАЯ ПРИВЯЗКА
+// ============================================================
+function manualLinkBookingToDiag(bookingId) {
+    const diagEntries = journal.filter(e => e.type === 'diagnostic');
+    if (diagEntries.length === 0) { alert('Нет сохранённых диагностик'); return; }
+    let msg = 'Выберите диагностику:\n\n';
+    diagEntries.forEach((e, i) => {
+        msg += `${i+1}. ${e.car} (${e.plate || '—'}) — ${e.date}\n`;
+    });
+    msg += '\nНомер:';
+    const choice = prompt(msg);
+    if (choice && !isNaN(choice) && choice > 0 && choice <= diagEntries.length) {
+        const b = bookings.find(x => x.id === bookingId);
+        if (b) {
+            b.linkedDiagId = diagEntries[choice-1].id;
+            b.linkedRepairId = null;
+            const entry = journal.find(e => e.id === diagEntries[choice-1].id);
+            if (entry) {
+                const client = clients.find(c =>
+                    (c.phone && c.phone === b.phone) ||
+                    (c.plate && c.plate === b.plate)
+                );
+                if (client) entry.clientId = client.id;
+            }
+            updateBookingsStorage();
+            renderBookings();
+            autoSaveToLocalStorage();
+            showNotification('✅ Привязано к диагностике', 'success');
+        }
+    }
+}
+
+function manualLinkBookingToRepair(bookingId) {
+    const repairEntries = journal.filter(e => e.type === 'repair');
+    if (repairEntries.length === 0) { alert('Нет сохранённых ремонтов'); return; }
+    let msg = 'Выберите ремонт:\n\n';
+    repairEntries.forEach((e, i) => {
+        msg += `${i+1}. ${e.car} (${e.plate || '—'}) — ${e.date}\n`;
+    });
+    msg += '\nНомер:';
+    const choice = prompt(msg);
+    if (choice && !isNaN(choice) && choice > 0 && choice <= repairEntries.length) {
+        const b = bookings.find(x => x.id === bookingId);
+        if (b) {
+            b.linkedRepairId = repairEntries[choice-1].id;
+            b.linkedDiagId = null;
+            const entry = journal.find(e => e.id === repairEntries[choice-1].id);
+            if (entry) {
+                const client = clients.find(c =>
+                    (c.phone && c.phone === b.phone) ||
+                    (c.plate && c.plate === b.plate)
+                );
+                if (client) entry.clientId = client.id;
+            }
+            updateBookingsStorage();
+            renderBookings();
+            autoSaveToLocalStorage();
+            showNotification('✅ Привязано к ремонту', 'success');
+        }
+    }
+}
+
+function openLinkedDiag(diagId) {
+    const entry = journal.find(e => e.id === diagId);
+    if (!entry) { alert('Диагностика не найдена'); return; }
+    viewJournalEntry(diagId);
+}
+
+function openLinkedRepair(repairId) {
+    const entry = journal.find(e => e.id === repairId);
+    if (!entry) { alert('Ремонт не найден'); return; }
+    viewJournalEntry(repairId);
+}
+
+// ============================================================
+// ДЕТАЛИ ЗАПИСИ + ВСТАВКА В ДИАГНОСТИКУ / РЕМОНТ
+// ============================================================
+function showBookingDetail(id) {
+    const b = bookings.find(x => x.id === id);
+    if (!b) return;
+    currentBookingId = id;
+    const modal = document.getElementById('bookingDetailModal');
+    const content = document.getElementById('bookingDetailContent');
+    const typeLabels = { diagnostic: '🔍 Диагностика', repair: '🔧 Ремонт', maintenance: '🛠️ ТО' };
+    content.innerHTML = `
+        <div class="detail-row"><span class="label">Имя:</span><span class="value">${b.name || '—'}</span></div>
+        <div class="detail-row"><span class="label">Телефон:</span><span class="value">${b.phone || '—'}</span></div>
+        <div class="detail-row"><span class="label">Марка:</span><span class="value">${b.car || '—'}</span></div>
+        <div class="detail-row"><span class="label">Гос. номер:</span><span class="value">${b.plate || '—'}</span></div>
+        <div class="detail-row"><span class="label">Дата:</span><span class="value">${b.date || '—'}</span></div>
+        <div class="detail-row"><span class="label">Время:</span><span class="value">${b.time || '—'}</span></div>
+        <div class="detail-row"><span class="label">Тип:</span><span class="value">${typeLabels[b.type] || b.type}</span></div>
+        <div class="detail-row"><span class="label">Статус:</span><span class="value">${b.status || 'новая'}</span></div>
+        <div class="detail-row"><span class="label">Причина:</span><span class="value">${b.reason || '—'}</span></div>
+    `;
+    modal.classList.add('active');
+    const fb = document.getElementById('bookingInsertFeedback');
+    if (fb) fb.innerHTML = '';
+}
+
+function closeBookingDetailModal() {
+    document.getElementById('bookingDetailModal').classList.remove('active');
+    currentBookingId = null;
+}
+
+function insertBookingToDiag() {
+    const b = bookings.find(x => x.id === currentBookingId);
+    if (!b) return;
+
+    const carMake = document.getElementById('carMake');
+    const carPlate = document.getElementById('carPlate');
+    const carComplaints = document.getElementById('carComplaints');
+    const diagDate = document.getElementById('diagDate');
+
+    if (carMake) carMake.value = b.car || '';
+    if (carPlate) carPlate.value = b.plate || '';
+    if (carComplaints) carComplaints.value = b.reason || '';
+    if (diagDate) diagDate.value = b.date || new Date().toISOString().slice(0,10);
+
+    savedCarData = {
+        make: b.car || 'не указано',
+        plate: b.plate || 'не указан',
+        year: document.getElementById('carYear')?.value || '----',
+        mileage: document.getElementById('carMileage')?.value || '0',
+        date: b.date || new Date().toISOString().slice(0,10),
+        complaints: b.reason || '—'
+    };
+
+    closeBookingDetailModal();
+    switchMode('diag');
+    document.querySelectorAll('#page-diag .tabs .tab-btn').forEach(btn => btn.classList.remove('active'));
+    const diagTab = document.querySelector('#page-diag .tabs .tab-btn[data-tab="diag1"]');
+    if (diagTab) diagTab.classList.add('active');
+    document.querySelectorAll('#page-diag .tab-content').forEach(tc => tc.classList.remove('active'));
+    const diag1 = document.getElementById('diag1');
+    if (diag1) diag1.classList.add('active');
+
+    updateReport();
+    showNotification('✅ Данные записи перенесены в диагностику', 'success');
+}
+
+function insertBookingToRepair() {
+    const b = bookings.find(x => x.id === currentBookingId);
+    if (!b) return;
+
+    const repairMake = document.getElementById('repairMake');
+    const repairPlate = document.getElementById('repairPlate');
+    const repairComplaints = document.getElementById('repairComplaints');
+    const repairDate = document.getElementById('repairDate');
+
+    if (repairMake) repairMake.value = b.car || '';
+    if (repairPlate) repairPlate.value = b.plate || '';
+    if (repairComplaints) repairComplaints.value = b.reason || '';
+    if (repairDate) repairDate.value = b.date || new Date().toISOString().slice(0,10);
+
+    parts = [];
+    works = [];
+
+    if (b.type === 'maintenance') {
+        parts = [
+            { id: partIdCounter++, name: 'Масло моторное', qty: 1, price: 0 },
+            { id: partIdCounter++, name: 'Фильтр масляный', qty: 1, price: 0 },
+            { id: partIdCounter++, name: 'Фильтр воздушный', qty: 1, price: 0 },
+            { id: partIdCounter++, name: 'Фильтр салонный', qty: 1, price: 0 }
+        ];
+        works = [
+            { id: workIdCounter++, name: 'Замена масла в двигателе', cost: 450, note: '' },
+            { id: workIdCounter++, name: 'Замена воздушного фильтра', cost: 100, note: '' },
+            { id: workIdCounter++, name: 'Замена салонного фильтра', cost: 100, note: '' }
+        ];
+    }
+
+    repairCarData = {
+        make: b.car || 'не указано',
+        plate: b.plate || 'не указан',
+        year: document.getElementById('repairYear')?.value || '----',
+        mileage: document.getElementById('repairMileage')?.value || '0',
+        date: b.date || new Date().toISOString().slice(0,10),
+        complaints: b.reason || '—',
+        discount: 'none'
+    };
+
+    renderParts();
+    renderWorks();
+    updateAct();
+
+    closeBookingDetailModal();
+    switchMode('repair');
+    document.querySelectorAll('#page-repair .tabs .tab-btn').forEach(btn => btn.classList.remove('active'));
+    const repairTab = document.querySelector('#page-repair .tabs .tab-btn[data-tab="repair1"]');
+    if (repairTab) repairTab.classList.add('active');
+    document.querySelectorAll('#page-repair .tab-content').forEach(tc => tc.classList.remove('active'));
+    const repair1 = document.getElementById('repair1');
+    if (repair1) repair1.classList.add('active');
+
+    if (b.type === 'maintenance') {
+        showNotification('✅ ТО перенесено. Запчасти и работы автозаполнены!', 'success');
+    } else {
+        showNotification('✅ Данные записи перенесены в ремонт', 'success');
+    }
+}
+
+// ============================================================
+// КЛИЕНТЫ — С ТИПОМ АВТО
+// ============================================================
+function renderClients() {
+    const tbody = document.getElementById('clientsBody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    const accepted = clients.filter(c => c.is_new !== true);
+    if (accepted.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:20px;color:#4a6f82;">Нет клиентов</td></tr>`;
+        return;
+    }
+    accepted.forEach((c, idx) => {
+        const diagCount = journal.filter(e => e.type === 'diagnostic' && e.clientId === c.id).length;
+        const repairCount = journal.filter(e => e.type === 'repair' && e.clientId === c.id).length;
+        const carType = c.carType || 'import';
+        tbody.innerHTML += `<tr>
+            <td>${idx+1}</td>
+            <td><strong>${c.name}</strong></td>
+            <td>${c.phone || '—'}</td>
+            <td>${c.plate || '—'}</td>
+            <td>${c.car || '—'}</td>
+            <td>
+                <select onchange="updateClientCarType(${c.id},this.value)" style="padding:4px 8px;border:1px solid #d0dce8;border-radius:6px;font-size:0.8rem;background:white;">
+                    <option value="import" ${carType==='import'?'selected':''}>🚗 Иномарка</option>
+                    <option value="domestic" ${carType==='domestic'?'selected':''}>🚙 Отечественная</option>
+                </select>
+            </td>
+            <td><span class="client-badge">${c.access_code || '—'}</span></td>
+            <td>${diagCount}</td>
+            <td>${repairCount}</td>
+            <td>
+                <button class="btn-sm" style="background:#0b2b3c;color:white;padding:4px 10px;border-radius:30px;border:none;cursor:pointer;" onclick="viewClientHistory(${c.id})" title="История">📋</button>
+                <button class="btn-sm" style="background:#d4a017;color:white;padding:4px 10px;border-radius:30px;border:none;cursor:pointer;" onclick="regenerateClientCode(${c.id})" title="Новый код">🔑</button>
+                <button class="btn-danger" onclick="deleteClient(${c.id})">✕</button>
+            </td>
+        </tr>`;
+    });
+}
+
+function updateClientCarType(clientId, carType) {
+    const client = clients.find(c => c.id === clientId);
+    if (client) {
+        client.carType = carType;
+        showNotification(`✅ Тип авто: ${carType === 'domestic' ? 'Отечественная' : 'Иномарка'}`, 'success');
+        autoSaveToLocalStorage();
+    }
+}
+
+function addClientForm() {
+    const name = prompt('Имя клиента:'); if (!name || !name.trim()) return;
+    const phone = prompt('Телефон:') || '';
+    const plate = (prompt('Гос. номер:') || '').trim().toUpperCase();
+    const car = prompt('Марка авто:') || '';
+    const carType = confirm('Клиент с иномаркой?\nOK = Иномарка, Отмена = Отечественная') ? 'import' : 'domestic';
+    const accessCode = String(Math.floor(1000 + Math.random() * 9000));
+    clients.push({
+        id: clientIdCounter++, name: name.trim(), phone, plate, car,
+        access_code: accessCode, carType, is_new: false
+    });
+    renderClients();
+    updateClientSelect();
+    alert(`✅ Клиент добавлен!\n\n🔑 Код доступа: ${accessCode}`);
+    autoSaveToLocalStorage();
+}
+
+function deleteClient(id) {
+    if (!confirm('Удалить клиента?')) return;
+    clients = clients.filter(c => c.id !== id);
+    renderClients();
+    updateClientSelect();
+    autoSaveToLocalStorage();
+}
+
+function viewClientHistory(id) {
+    const client = clients.find(c => c.id === id);
+    if (!client) return;
+    const entries = journal.filter(e => e.clientId === id);
+    if (entries.length === 0) { alert(`У клиента ${client.name} нет записей`); return; }
+    let msg = `📋 История: ${client.name}\n\n`;
+    entries.forEach(e => {
+        const type = e.type === 'diagnostic' ? '🔍 Диагностика' : '🔧 Ремонт';
+        msg += `${type} — ${e.car} (${e.plate || '—'}) — ${e.date}\n`;
+    });
+    alert(msg);
+}
+
+function updateClientSelect() {
+    const select = document.getElementById('bk_client');
+    if (!select) return;
+    select.innerHTML = '<option value="">Выберите...</option>';
+    clients.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = `${c.name} (${c.phone || '—'})`;
+        select.appendChild(opt);
+    });
+}
+
+function selectClientForBooking() {
+    const id = parseInt(document.getElementById('bk_client').value);
+    if (!id) return;
+    const c = clients.find(x => x.id === id);
+    if (!c) return;
+    document.getElementById('bk_name').value = c.name || '';
+    document.getElementById('bk_phone').value = c.phone || '';
+    document.getElementById('bk_car').value = c.car || '';
+    document.getElementById('bk_plate').value = c.plate || '';
+}
+
+// ============================================================
+// СИНХРОНИЗАЦИЯ КОДОВ / РЕГЕНЕРАЦИЯ / ВОССТАНОВЛЕНИЕ
+// ============================================================
+window.syncClientCodes = async function() {
+    const btn = document.querySelector('button[onclick="syncClientCodes()"]');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; }
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData || !jsonData.clients) { alert('Нет данных на сервере'); return; }
+        let synced = 0;
+        for (const cc of jsonData.clients) {
+            const local = clients.find(c => c.plate === cc.plate && c.name === cc.name);
+            if (local) {
+                if (local.access_code !== cc.access_code) { local.access_code = cc.access_code; synced++; }
+                if (cc.carType && local.carType !== cc.carType) { local.carType = cc.carType; synced++; }
+            } else {
+                clients.push({
+                    id: clientIdCounter++, name: cc.name, phone: cc.phone || '',
+                    plate: cc.plate || '', car: cc.car || '',
+                    access_code: cc.access_code || String(Math.floor(1000 + Math.random() * 9000)),
+                    carType: cc.carType || 'import', is_new: false
+                });
+                synced++;
+            }
+        }
+        renderClients();
+        updateClientSelect();
+        autoSaveToLocalStorage();
+        alert(`✅ Синхронизировано: ${synced}`);
+    } catch (e) {
+        alert('❌ Ошибка: ' + e.message);
+    }
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-sync"></i> Синхр. коды'; }
+};
+
+window.regenerateClientCode = async function(clientId) {
+    if (!confirm('Сгенерировать новый код?')) return;
+    const client = clients.find(c => c.id === clientId);
+    if (!client) return;
+    const newCode = String(Math.floor(1000 + Math.random() * 9000));
+    const oldCode = client.access_code;
+    client.access_code = newCode;
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (jsonData && jsonData.clients) {
+            const cc = jsonData.clients.find(c => c.plate === client.plate && c.name === client.name);
+            if (cc) { cc.access_code = newCode; await saveJsonToServer(jsonData); }
+        }
+    } catch(e) {}
+    renderClients();
+    autoSaveToLocalStorage();
+    alert(`✅ Код обновлён!\n\nКлиент: ${client.name}\nСтарый: ${oldCode || '—'}\nНовый: ${newCode}`);
+};
+
+window.restoreClientStats = function() {
+    let restored = 0;
+    journal.forEach(entry => {
+        if (!entry.clientId) {
+            let client = null;
+            if (entry.plate && entry.plate !== 'не указан') {
+                client = clients.find(c => c.plate === entry.plate);
+            }
+            if (!client && entry.car && entry.car !== 'не указано') {
+                client = clients.find(c => c.car === entry.car || c.name === entry.car);
+            }
+            if (client) { entry.clientId = client.id; restored++; }
+        }
+    });
+    if (restored > 0) {
+        autoSaveToLocalStorage();
+        renderClients();
+        renderJournal();
+        alert(`✅ Восстановлено: ${restored}`);
+    } else {
+        alert('⚠️ Нет записей');
+    }
+};
+
+// ============================================================
+// ПРАЙС-ЛИСТ
+// ============================================================
+function renderPrices() {
+    const container = document.getElementById('pricesContainer');
+    if (!container) return;
+    const search = (document.getElementById('priceSearch')?.value || '').toLowerCase().trim();
+    let filtered = priceData;
+    if (search) filtered = filtered.filter(p => p.service.toLowerCase().includes(search) || p.category.toLowerCase().includes(search));
+    if (filtered.length === 0) {
+        container.innerHTML = `<div style="color:#4f6f82;background:#edf3fa;padding:30px;border-radius:16px;text-align:center;">
+            <i class="fas fa-search" style="font-size:2rem;display:block;margin-bottom:8px;"></i>
+            <p>${search ? 'Ничего не найдено' : 'Нет услуг'}</p>
+        </div>`;
+        return;
+    }
+    const categories = {};
+    filtered.forEach(item => {
+        if (!categories[item.category]) categories[item.category] = [];
+        categories[item.category].push(item);
+    });
+    let html = `<div style="font-size:0.85rem;color:#3a657e;margin-bottom:8px;">Найдено: <strong>${filtered.length}</strong></div>`;
+    Object.keys(categories).forEach(cat => {
+        html += `<div class="price-section">
+            <div class="section-title" onclick="togglePriceSection(this)">
+                <span>${cat}</span><span><i class="fas fa-chevron-down"></i></span>
+            </div>
+            <div class="price-body">
+                <div class="price-row header"><span>Услуга</span><span>Отеч.</span><span>Иномарки</span>${priceEditMode ? '<span>Действия</span>' : ''}</div>`;
+        categories[cat].forEach(item => {
+            const gi = priceData.indexOf(item);
+            html += `<div class="price-row">
+                <span class="service-name">${item.service}</span>
+                ${priceEditMode ?
+                    `<input type="text" value="${item.domestic}" onchange="updatePriceItem(${gi},'domestic',this.value)" style="width:100%;padding:4px;border-radius:6px;border:1px solid #d0dce8;">` :
+                    `<span class="price-dom">${item.domestic} ₽</span>`}
+                ${priceEditMode ?
+                    `<input type="text" value="${item.import}" onchange="updatePriceItem(${gi},'import',this.value)" style="width:100%;padding:4px;border-radius:6px;border:1px solid #d0dce8;">` :
+                    `<span class="price-import">${item.import} ₽</span>`}
+                ${priceEditMode ? `<span><button class="btn-danger" style="padding:2px 8px;" onclick="removePriceItem(${gi})">✕</button></span>` : ''}
+            </div>`;
+        });
+        html += `</div></div>`;
+    });
+    container.innerHTML = html;
+}
+
+function togglePriceSection(el) {
+    const body = el.nextElementSibling;
+    if (body.style.display === 'none') {
+        body.style.display = 'block';
+        el.querySelector('i').className = 'fas fa-chevron-down';
+    } else {
+        body.style.display = 'none';
+        el.querySelector('i').className = 'fas fa-chevron-right';
+    }
+}
+
+function editPriceMode() {
+    priceEditMode = !priceEditMode;
+    renderPrices();
+    document.getElementById('priceFeedback').innerHTML = priceEditMode ?
+        `<i class="fas fa-info-circle" style="color:#f6b83d;"></i> Режим редактирования включён` :
+        `<i class="fas fa-check-circle" style="color:#2a8b5a;"></i> Режим выключен`;
+    setTimeout(() => document.getElementById('priceFeedback').innerHTML = '', 3000);
+}
+
+function updatePriceItem(idx, field, value) {
+    if (priceData[idx]) { priceData[idx][field] = value; autoSaveToLocalStorage(); }
+}
+
+function removePriceItem(idx) {
+    if (!confirm('Удалить?')) return;
+    priceData.splice(idx, 1);
+    renderPrices();
+    autoSaveToLocalStorage();
+}
+
+function addPriceItem() {
+    const category = prompt('Категория:') || 'Другое';
+    const service = prompt('Название услуги:');
+    if (!service) return;
+    const domestic = prompt('Цена для отечественных:') || '0';
+    const importPrice = prompt('Цена для иномарок:') || '0';
+    priceData.push({ category, service, domestic, import: importPrice });
+    renderPrices();
+    autoSaveToLocalStorage();
+}
+
+// ============================================================
+// ПРАЙС-ВЫБОР С УЧЁТОМ ТИПА АВТО
+// ============================================================
+function addWorkFromPrice() {
+    document.getElementById('priceSelectModal').classList.add('active');
+    renderPriceSelect();
+}
+
+function renderPriceSelect() {
+    const container = document.getElementById('priceSelectContainer');
+    if (!container) return;
+    const search = (document.getElementById('priceSelectSearch')?.value || '').toLowerCase().trim();
+
+    const plate = repairCarData.plate || document.getElementById('repairPlate')?.value || '';
+    const name = repairCarData.make || document.getElementById('repairMake')?.value || '';
+    const carType = getClientCarType(plate, name, '');
+    const typeLabel = carType === 'domestic' ? '🚙 Отечественная' : '🚗 Иномарка';
+
+    let filtered = priceData;
+    if (search) filtered = filtered.filter(p => p.service.toLowerCase().includes(search));
+
+    if (filtered.length === 0) {
+        container.innerHTML = `<div style="padding:20px; text-align:center; color:#4a6f82;">Нет услуг</div>`;
+        return;
+    }
+
+    let html = `<div style="background:#eef3f8; padding:8px 14px; border-radius:8px; margin-bottom:10px; font-size:0.85rem;">
+        <strong>Тип авто клиента:</strong> <span style="color:${carType === 'domestic' ? '#1f7b4a' : '#d4a017'};">${typeLabel}</span>
+    </div>`;
+
+    filtered.forEach(item => {
+        const price = carType === 'domestic' ? item.domestic : item.import;
+        html += `
+            <div style="display:grid; grid-template-columns:2fr 1fr 0.5fr; padding:8px 12px; border-bottom:1px solid #eef2f7; align-items:center; cursor:pointer;"
+                 onclick="selectWorkFromPrice('${item.service.replace(/'/g,"\\'")}', ${price})"
+                 onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
+                <span style="font-weight:600;color:#0b2b3c;">${item.service}</span>
+                <span style="color:${carType === 'domestic' ? '#1f7b4a' : '#d4a017'}; font-weight:700;">${price} ₽</span>
+                <span style="color:#3a657e;font-size:0.7rem;">${item.category}</span>
+            </div>
+        `;
+    });
+    container.innerHTML = html;
+}
+
+function selectWorkFromPrice(name, price) {
+    const cost = parseFloat(price) || 0;
+    works.push({ id: workIdCounter++, name: name, cost: cost, note: '' });
+    renderWorks();
+    updateAct();
+    closePriceSelectModal();
+    showNotification(`✅ Работа "${name}" добавлена (${cost} ₽)`, 'success');
+    autoSaveToLocalStorage();
+}
+
+function closePriceSelectModal() {
+    document.getElementById('priceSelectModal').classList.remove('active');
+}
+
+// ============================================================
+// ЖУРНАЛ
+// ============================================================
+function renderJournal() {
+    const list = document.getElementById('journalList');
+    const empty = document.getElementById('emptyJournal');
+    if (!list) return;
+    const filter = document.getElementById('journalFilter')?.value || 'all';
+    const search = (document.getElementById('journalSearch')?.value || '').toLowerCase().trim();
+    let filtered = journal;
+    if (filter !== 'all') filtered = filtered.filter(e => e.type === filter);
+    if (search) filtered = filtered.filter(e =>
+        (e.car && e.car.toLowerCase().includes(search)) ||
+        (e.plate && e.plate.toLowerCase().includes(search)));
+    const fc = document.getElementById('journalFilterCount');
+    if (fc) fc.textContent = `Найдено: ${filtered.length}`;
+    list.innerHTML = '';
+    if (filtered.length === 0) { if (empty) empty.style.display = 'block'; return; }
+    if (empty) empty.style.display = 'none';
+    filtered.slice().reverse().forEach(entry => {
+        const div = document.createElement('div');
+        div.className = 'journal-item';
+        const typeLabel = entry.type === 'diagnostic' ? '🔍 Диагностика' : '🔧 Ремонт';
+        const typeClass = entry.type === 'diagnostic' ? 'diag' : 'repair';
+        div.innerHTML = `
+            <div class="info">
+                <span class="type ${typeClass}">${typeLabel}</span>
+                <span class="car">${entry.car}</span>
+                <span class="plate">${entry.plate || '—'}</span>
+                <span class="date"><i class="far fa-calendar-alt"></i> ${entry.date}</span>
+            </div>
+            <div class="actions">
+                <button class="btn-sm" style="background:#0b2b3c;color:white;padding:4px 10px;border-radius:30px;border:none;cursor:pointer;" onclick="viewJournalEntry(${entry.id})"><i class="fas fa-eye"></i></button>
+                <button class="btn-danger" onclick="deleteJournalEntry(${entry.id})">✕</button>
+            </div>
+        `;
+        list.appendChild(div);
+    });
+    updateFileStatus();
+}
+
+function deleteJournalEntry(id) {
+    if (confirm('Удалить запись?')) {
+        journal = journal.filter(e => e.id !== id);
+        renderJournal();
+        updateFileStatus();
+        autoSaveToLocalStorage();
+    }
+}
+
+function viewJournalEntry(id) {
+    const entry = journal.find(e => e.id === id);
+    if (!entry) return;
+    if (entry.type === 'diagnostic') {
+        if (entry.tables) DIAG_TABLES = JSON.parse(JSON.stringify(entry.tables));
+        if (entry.carData) savedCarData = JSON.parse(JSON.stringify(entry.carData));
+        if (entry.systems) selectedSystems = new Set(entry.systems);
+        renderSystemsGrid();
+        updateDiagnosticsTab();
+        updateReport();
+        switchMode('diag');
+        const tabs = document.querySelectorAll('#page-diag .tabs .tab-btn');
+        tabs.forEach(b => b.classList.remove('active'));
+        const tab4 = document.querySelector('#page-diag .tabs .tab-btn[data-tab="diag4"]');
+        if (tab4) tab4.classList.add('active');
+        document.querySelectorAll('#page-diag .tab-content').forEach(tc => tc.classList.remove('active'));
+        const d4 = document.getElementById('diag4');
+        if (d4) d4.classList.add('active');
+    } else if (entry.type === 'repair') {
+        if (entry.carData) repairCarData = JSON.parse(JSON.stringify(entry.carData));
+        if (entry.parts) parts = JSON.parse(JSON.stringify(entry.parts));
+        if (entry.works) works = JSON.parse(JSON.stringify(entry.works));
+        renderParts();
+        renderWorks();
+        updateAct();
+        switchMode('repair');
+        const tabs = document.querySelectorAll('#page-repair .tabs .tab-btn');
+        tabs.forEach(b => b.classList.remove('active'));
+        const tab4 = document.querySelector('#page-repair .tabs .tab-btn[data-tab="repair4"]');
+        if (tab4) tab4.classList.add('active');
+        document.querySelectorAll('#page-repair .tab-content').forEach(tc => tc.classList.remove('active'));
+        const r4 = document.getElementById('repair4');
+        if (r4) r4.classList.add('active');
+    }
+}
+
+// ============================================================
+// ЭТАЛОНЫ
+// ============================================================
+function renderEtalons() {
+    const container = document.getElementById('etalonsContainer');
+    if (!container) return;
+    if (!etalonData || Object.keys(etalonData).length === 0) {
+        container.innerHTML = `<div style="color:#4f6f82;background:#edf3fa;padding:30px;border-radius:16px;text-align:center;">
+            <i class="fas fa-database" style="font-size:2rem;display:block;margin-bottom:8px;"></i>
+            <p>Нет эталонных значений</p>
+            <button class="btn-primary" style="margin-top:12px;" onclick="initEtalonsFromDiag()"><i class="fas fa-sync"></i> Инициализировать</button>
+        </div>`;
+        return;
+    }
+    const search = (document.getElementById('etalonSearch')?.value || '').toLowerCase().trim();
+    let html = '';
+    SYSTEMS.forEach(sys => {
+        const params = etalonData[sys.id] || {};
+        const paramNames = Object.keys(params);
+        if (paramNames.length === 0) return;
+        const filtered = paramNames.filter(p => !search || p.toLowerCase().includes(search) || sys.name.toLowerCase().includes(search));
+        if (filtered.length === 0) return;
+        html += `<div style="margin-top:14px;border:1px solid #e4ecf4;border-radius:8px;overflow:hidden;">
+            <div style="background:#0b2b3c;color:white;padding:8px 14px;font-weight:700;">🔧 ${sys.name}</div>
+            <div style="padding:6px 0;">`;
+        filtered.forEach(param => {
+            const e = params[param];
+            html += `<div style="display:grid;grid-template-columns:2fr 1.2fr 1fr 0.5fr;padding:6px 12px;border-bottom:1px solid #eef2f7;font-size:0.85rem;align-items:center;">
+                <span style="font-weight:600;color:#0b2b3c;">${param}</span>
+                <input type="text" value="${e.norm||''}" onchange="updateEtalon('${sys.id}','${param.replace(/'/g,"\\'")}','norm',this.value)" style="width:100%;padding:4px 6px;border:1px solid #d0dce8;border-radius:6px;font-size:0.8rem;">
+                <input type="text" value="${e.note||''}" onchange="updateEtalon('${sys.id}','${param.replace(/'/g,"\\'")}','note',this.value)" style="width:100%;padding:4px 6px;border:1px solid #d0dce8;border-radius:6px;font-size:0.8rem;">
+                <button class="btn-danger" style="padding:2px 8px;" onclick="removeEtalonParam('${sys.id}','${param.replace(/'/g,"\\'")}')">✕</button>
+            </div>`;
+        });
+        html += `</div></div>`;
+    });
+    container.innerHTML = html || '<p style="text-align:center;color:#3a657e;padding:20px;">Ничего не найдено</p>';
+}
+
+function initEtalonsFromDiag() {
+    etalonData = {};
+    SYSTEMS.forEach(sys => {
+        const tableData = DIAG_TABLES[sys.id] || [];
+        if (tableData.length > 0) {
+            etalonData[sys.id] = {};
+            tableData.forEach(row => {
+                if (row.param) etalonData[sys.id][row.param] = { norm: '', note: '' };
+            });
+        }
+    });
+    renderEtalons();
+    autoSaveToLocalStorage();
+    showNotification('✅ Эталоны инициализированы', 'success');
+}
+
+function updateEtalon(sysId, param, field, value) {
+    if (!etalonData[sysId]) etalonData[sysId] = {};
+    if (!etalonData[sysId][param]) etalonData[sysId][param] = { norm: '', note: '' };
+    etalonData[sysId][param][field] = value;
+    autoSaveToLocalStorage();
+}
+
+function addEtalonParam(sysId) {
+    const input = document.getElementById(`new_param_${sysId}`);
+    if (!input) return;
+    const name = input.value.trim();
+    if (!name) return;
+    if (!etalonData[sysId]) etalonData[sysId] = {};
+    if (etalonData[sysId][name]) { alert('Уже существует'); return; }
+    etalonData[sysId][name] = { norm: '', note: '' };
+    renderEtalons();
+    autoSaveToLocalStorage();
+}
+
+function removeEtalonParam(sysId, param) {
+    if (!confirm('Удалить?')) return;
+    if (etalonData[sysId]) delete etalonData[sysId][param];
+    renderEtalons();
+    autoSaveToLocalStorage();
+}
+
+// ============================================================
+// НАСТРОЙКИ
+// ============================================================
+function renderSettings() {
+    const container = document.getElementById('settingsContainer');
+    if (!container) return;
+    let html = '';
+    SYSTEMS.forEach(sys => {
+        const params = PARAMS[sys.id] || [];
+        html += `<div class="settings-group">
+            <div class="flex-between">
+                <h4>${sys.name}</h4>
+                <div>
+                    <button class="btn-warning" onclick="editSystem('${sys.id}')">✏️</button>
+                    <button class="btn-danger" onclick="removeSystem('${sys.id}')">✕</button>
+                </div>
+            </div>
+            <div class="settings-item">
+                <span class="param-name">Описание:</span>
+                <input type="text" id="desc_${sys.id}" value="${sys.desc}" style="flex:1;">
+            </div>
+            <div class="settings-item" style="flex-wrap:wrap;gap:4px;">
+                <span class="param-name">Параметры:</span>
+                <div class="settings-param-list">
+                    ${params.map((p, pi) => `<span class="param-tag">${p}<span class="remove" onclick="removeParam('${sys.id}',${pi})">×</span></span>`).join('')}
+                </div>
+                <button class="btn-sm btn-success" onclick="addParam('${sys.id}')" style="padding:2px 10px;">+</button>
+            </div>
+        </div>`;
+    });
+    container.innerHTML = html;
+}
+
+function editSystem(sysId) {
+    const sys = SYSTEMS.find(s => s.id === sysId);
+    if (!sys) return;
+    const newName = prompt('Новое название:', sys.name);
+    if (newName && newName.trim()) {
+        sys.name = newName.trim();
+        const d = document.getElementById('desc_' + sysId);
+        if (d) sys.desc = d.value;
+        renderSettings();
+        renderSystemsGrid();
+        autoSaveToLocalStorage();
+    }
+}
+
+function removeSystem(sysId) {
+    if (!confirm('Удалить систему?')) return;
+    SYSTEMS = SYSTEMS.filter(s => s.id !== sysId);
+    delete PARAMS[sysId];
+    delete DIAG_TABLES[sysId];
+    selectedSystems.delete(sysId);
+    renderSettings();
+    renderSystemsGrid();
+    autoSaveToLocalStorage();
+}
+
+function addParam(sysId) {
+    const p = prompt('Название параметра:');
+    if (!p || !p.trim()) return;
+    if (!PARAMS[sysId]) PARAMS[sysId] = [];
+    PARAMS[sysId].push(p.trim());
+    if (DIAG_TABLES[sysId]) DIAG_TABLES[sysId].push({ param: p.trim(), value: '', status: 'unknown', checked: false, note: '' });
+    renderSettings();
+    renderSystemsGrid();
+    autoSaveToLocalStorage();
+}
+
+function removeParam(sysId, idx) {
+    if (!PARAMS[sysId]) return;
+    if (!confirm('Удалить?')) return;
+    PARAMS[sysId].splice(idx, 1);
+    if (DIAG_TABLES[sysId]) DIAG_TABLES[sysId].splice(idx, 1);
+    renderSettings();
+    renderSystemsGrid();
+    autoSaveToLocalStorage();
+}
+
+function addNewSystem() {
+    const name = prompt('Название системы:');
+    if (!name || !name.trim()) return;
+    const desc = prompt('Описание:') || '';
+    const id = 'custom_' + systemIdCounter++;
+    SYSTEMS.push({ id, name: name.trim(), desc });
+    PARAMS[id] = ['Параметр 1', 'Параметр 2', 'Параметр 3'];
+    DIAG_TABLES[id] = PARAMS[id].map(p => ({ param: p, value: '', status: 'unknown', checked: false, note: '' }));
+    renderSettings();
+    renderSystemsGrid();
+    autoSaveToLocalStorage();
+}
+
+function saveSettings() {
+    SYSTEMS.forEach(sys => {
+        const d = document.getElementById('desc_' + sys.id);
+        if (d) sys.desc = d.value;
+    });
+    showNotification('✅ Настройки сохранены', 'success');
+    autoSaveToLocalStorage();
+}
+
+// ============================================================
+// СКИДКИ
+// ============================================================
+function renderDiscounts() {
+    const container = document.getElementById('discountsList');
+    if (!container) return;
+    container.innerHTML = '';
+    if (discounts.length === 0) { container.innerHTML = '<div style="padding:6px 12px;color:#4a6f82;">Нет скидок</div>'; return; }
+    discounts.forEach(d => {
+        container.innerHTML += `<div class="settings-item" style="border-bottom:1px solid #eef2f7;">
+            <span class="param-name">${d.name}</span>
+            <span style="min-width:80px;font-weight:700;">${d.percent}%</span>
+            <button class="btn-danger" style="padding:2px 10px;" onclick="removeDiscount(${d.id})">✕</button>
+        </div>`;
+    });
+    const sel = document.getElementById('repairDiscount');
+    if (sel) {
+        const cur = sel.value;
+        sel.innerHTML = '<option value="none">Без скидки</option>';
+        discounts.forEach(d => {
+            const opt = document.createElement('option');
+            opt.value = d.id;
+            opt.textContent = `${d.name} (${d.percent}%)`;
+            sel.appendChild(opt);
+        });
+        if (cur) sel.value = cur;
+    }
+}
+
+function addDiscount() {
+    const name = document.getElementById('newDiscountName').value.trim();
+    const percent = parseInt(document.getElementById('newDiscountPercent').value);
+    if (!name || isNaN(percent) || percent <= 0 || percent > 100) { alert('Заполните корректно'); return; }
+    discounts.push({ id: discountIdCounter++, name, percent });
+    document.getElementById('newDiscountName').value = '';
+    document.getElementById('newDiscountPercent').value = '';
+    renderDiscounts();
+    autoSaveToLocalStorage();
+}
+
+function removeDiscount(id) {
+    if (!confirm('Удалить?')) return;
+    discounts = discounts.filter(d => d.id !== id);
+    renderDiscounts();
+    autoSaveToLocalStorage();
+}
+
+// ============================================================
+// ОНЛАЙН ЗАЯВКИ
+// ============================================================
+async function loadNewRequests() {
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData) { renderNewRequests([], []); return; }
+        newRequests = (jsonData.bookings || []).filter(b => b.is_new === true);
+        newClients = (jsonData.clients || []).filter(c => c.is_new === true);
+        renderNewRequests(newRequests, newClients);
+    } catch (e) { console.error(e); }
+}
+
+function renderNewRequests(reqs, clis) {
+    const container = document.getElementById('newRequestsContainer');
+    const countEl = document.getElementById('newRequestsCount');
+    const total = reqs.length + clis.length;
+    if (countEl) countEl.textContent = total;
+    if (total === 0) {
+        container.innerHTML = `<div style="color:#3a657e;font-size:0.85rem;text-align:center;padding:20px;">
+            <i class="fas fa-inbox" style="font-size:1.5rem;display:block;margin-bottom:6px;"></i>
+            Нет новых заявок
+        </div>`;
+        return;
+    }
+    const typeLabels = { diagnostic: '🔍 Диагностика', repair: '🔧 Ремонт', maintenance: '🛠️ ТО' };
+    let html = '';
+    clis.forEach(c => {
+        html += `<div class="request-item client-item">
+            <div><span class="name">👤 ${c.name}</span><span style="font-size:0.8rem;color:#3a657e;margin-left:8px;">${c.plate || ''}</span>
+                <span class="badge-new" style="background:#f6b83d;color:#0b2b3c;">Новый клиент</span></div>
+            <button class="btn-sm btn-success" onclick="acceptNewClient(${c.id})"><i class="fas fa-check"></i> Принять</button>
+        </div>`;
+    });
+    reqs.forEach(b => {
+        html += `<div class="request-item">
+            <div><span class="name">📋 ${b.name}</span><span style="font-size:0.8rem;color:#3a657e;margin-left:8px;">${b.plate || ''}</span>
+                <span class="badge-new" style="background:#2d6b84;color:white;">${typeLabels[b.type] || b.type}</span></div>
+            <button class="btn-sm btn-success" onclick="acceptNewBooking(${b.id})"><i class="fas fa-check"></i> Принять</button>
+        </div>`;
+    });
+    container.innerHTML = html;
+}
+
+async function acceptNewClient(clientId) {
+    if (!confirm('Принять клиента?')) return;
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData) return;
+        const c = jsonData.clients.find(x => x.id === clientId);
+        if (c) {
+            c.is_new = false;
+            if (!clients.some(x => x.id === clientId)) clients.push(c);
+        }
+        await saveJsonToServer(jsonData);
+        renderClients();
+        updateClientSelect();
+        await loadNewRequests();
+        showNotification('✅ Клиент принят', 'success');
+    } catch (e) { alert('❌ ' + e.message); }
+}
+
+async function acceptNewBooking(id) {
+    if (!confirm('Принять заявку?')) return;
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData) return;
+        const b = jsonData.bookings.find(x => x.id === id);
+        if (b) {
+            b.is_new = false;
+            if (!bookings.some(x => x.id === id)) bookings.push(b);
+        }
+        await saveJsonToServer(jsonData);
+        renderBookings();
+        await loadNewRequests();
+        showNotification('✅ Заявка принята', 'success');
+    } catch (e) { alert('❌ ' + e.message); }
+}
+
+// ============================================================
+// ЗАПРОСЫ СТОИМОСТИ
+// ============================================================
+async function loadPriceRequests() {
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (jsonData && jsonData.priceRequests) priceRequests = jsonData.priceRequests;
+        else priceRequests = [];
+        renderPriceRequests();
+    } catch (e) { console.error(e); }
+}
+
+function renderPriceRequests() {
+    const container = document.getElementById('priceRequestsContainer');
+    const countEl = document.getElementById('priceRequestsCount');
+    if (!container) return;
+
+    const activeRequests = priceRequests.filter(r => r.status === 'active');
+    if (countEl) countEl.textContent = activeRequests.length;
+
+    if (activeRequests.length === 0) {
+        container.innerHTML = `<div style="color:#3a657e;font-size:0.85rem;text-align:center;padding:20px;">
+            <i class="fas fa-inbox" style="font-size:1.5rem;display:block;margin-bottom:6px;"></i>
+            Нет активных запросов стоимости
+        </div>`;
+        return;
+    }
+
+    let html = '';
+    activeRequests.forEach(req => {
+        const client = clients.find(c => c.id === req.client_id);
+        const clientName = client ? client.name : 'Клиент';
+        const plate = client ? (client.plate || '') : '';
+        const date = new Date(req.timestamp).toLocaleString();
+        const daysLeft = Math.max(0, 10 - Math.floor((Date.now() - new Date(req.timestamp).getTime()) / (1000*60*60*24)));
+
+        html += `<div class="price-request-item">
+            <div class="req-header">
+                <div>
+                    <strong>👤 ${clientName}</strong>
+                    ${plate ? `<span style="font-size:0.8rem;color:#3a657e;"> (${plate})</span>` : ''}
+                    <span style="font-size:0.7rem;color:#6c5b7b;margin-left:8px;">📅 ${date}</span>
+                    <span style="font-size:0.7rem;color:#b33c3c;margin-left:8px;">⏳ Осталось: ${daysLeft} дн.</span>
+                </div>
+            </div>
+            <div class="req-text">
+                <strong>Что нужно сделать:</strong><br>
+                ${req.request_text}
+            </div>
+            <div class="req-reply">
+                <textarea id="reply_${req.id}" rows="2" placeholder="Введите стоимость и комментарий..."></textarea>
+                <button class="btn-sm btn-success" onclick="replyToPriceRequest(${req.id})" style="margin-top:6px;">
+                    <i class="fas fa-paper-plane"></i> Ответить
+                </button>
+                <button class="btn-sm btn-danger" onclick="deletePriceRequest(${req.id})" style="margin-top:6px;">
+                    <i class="fas fa-archive"></i> В архив
+                </button>
+            </div>
+        </div>`;
+    });
+    container.innerHTML = html;
+}
+
+async function replyToPriceRequest(requestId) {
+    const replyEl = document.getElementById(`reply_${requestId}`);
+    const reply = replyEl ? replyEl.value.trim() : '';
+    if (!reply) { alert('Введите ответ'); return; }
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData || !jsonData.priceRequests) { alert('Ошибка'); return; }
+        const req = jsonData.priceRequests.find(r => r.id === requestId);
+        if (req) {
+            req.reply_text = reply;
+            req.reply_date = new Date().toISOString();
+            req.status = 'replied';
+        }
+        await saveJsonToServer(jsonData);
+        priceRequests = jsonData.priceRequests;
+        renderPriceRequests();
+        showNotification('✅ Ответ отправлен клиенту!', 'success');
+    } catch (e) {
+        alert('❌ Ошибка: ' + e.message);
+    }
+}
+
+async function deletePriceRequest(requestId) {
+    if (!confirm('Удалить запрос?')) return;
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData || !jsonData.priceRequests) return;
+        jsonData.priceRequests = jsonData.priceRequests.filter(r => r.id !== requestId);
+        await saveJsonToServer(jsonData);
+        priceRequests = jsonData.priceRequests;
+        renderPriceRequests();
+        showNotification('🗄️ Запрос в архиве', 'success');
+    } catch (e) {
+        alert('❌ Ошибка: ' + e.message);
+    }
+}
+
+// ============================================================
+// ИНИЦИАЛИЗАЦИЯ
+// ============================================================
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date().toISOString().slice(0,10);
+    ['diagDate','repairDate','bk_date'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = today;
+    });
+    loadFromLocalStorage();
+    try {
+        const saved = localStorage.getItem('palych_bookings');
+        if (saved) bookings = JSON.parse(saved);
+    } catch(e) {}
+    if (bookings.length > 0) {
+        bookingIdCounter = Math.max(...bookings.map(b => b.id || 0)) + 1;
+    }
+    renderAll();
+    loadNewRequests();
+    loadPriceRequests();
+    setInterval(autoSaveToLocalStorage, 30000);
+    setInterval(loadNewRequests, 30000);
+    setInterval(loadPriceRequests, 30000);
+});
+
+// Обработчики внутренних табов
+document.querySelectorAll('#page-diag .tabs .tab-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const parent = this.closest('.tabs');
+        parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        const tabId = this.dataset.tab;
+        const content = document.getElementById('page-diag');
+        content.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+        content.querySelector('#' + tabId).classList.add('active');
+    });
+});
+
+document.querySelectorAll('#page-repair .tabs .tab-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const parent = this.closest('.tabs');
+        parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        const tabId = this.dataset.tab;
+        const content = document.getElementById('page-repair');
+        content.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+        content.querySelector('#' + tabId).classList.add('active');
+        if (tabId === 'repair4') updateAct();
+    });
+});
+
+console.log('🚀 PalЫCH Car Diagnost v4.7 загружен!');
+console.log('✅ Тип записи "ТО", автозаполнение, тип авто, запросы стоимости, связь записей');
+</script>
+</body>
+</html>

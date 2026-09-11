@@ -3,81 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PalЫCH - Клиент</title>
+    <title>PalЫCH - Клиентский кабинет</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Roboto, sans-serif; }
-        body { background:#f4f7fb; min-height:100vh; display:flex; justify-content:center; align-items:center; padding:20px; }
-        .app { max-width:520px; width:100%; background:white; border-radius:32px; box-shadow:0 20px 40px rgba(0,0,0,0.15); overflow:hidden; }
-        .header { background:#0b2b3c; padding:24px 28px; color:white; text-align:center; border-bottom:4px solid #f6b83d; }
-        .header h1 { font-size:1.6rem; } .header h1 i { color:#f6b83d; }
-        .header p { font-size:0.85rem; color:#8ab4c9; margin-top:4px; }
-        .content { padding:24px 28px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
+        body { background: #f4f7fb; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .app { max-width: 520px; width: 100%; background: white; border-radius: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); overflow: hidden; }
+        .header { background: #0b2b3c; padding: 24px 28px; color: white; text-align: center; border-bottom: 4px solid #f6b83d; }
+        .header h1 { font-size: 1.6rem; font-weight: 600; }
+        .header h1 i { color: #f6b83d; }
+        .header p { font-size: 0.85rem; color: #8ab4c9; margin-top: 4px; }
+        .content { padding: 24px 28px; }
 
-        .form-group { margin-bottom:14px; }
-        .form-group label { display:block; font-weight:600; margin-bottom:4px; color:#1f4055; font-size:0.85rem; }
-        .form-group input, .form-group select, .form-group textarea { width:100%; padding:12px 16px; border:2px solid #d4dee9; border-radius:12px; font-size:1rem; background:white; }
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color:#f6b83d; outline:none; box-shadow:0 0 0 3px rgba(246,184,61,0.15); }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 4px; color: #1f4055; font-size: 0.85rem; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 16px; border: 2px solid #d4dee9; border-radius: 12px; font-size: 1rem; background: white; }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: #f6b83d; outline: none; box-shadow: 0 0 0 3px rgba(246,184,61,0.15); }
 
-        .btn { width:100%; padding:14px; background:#0b2b3c; color:white; border:none; border-radius:50px; font-size:1rem; font-weight:700; cursor:pointer; margin-top:8px; }
-        .btn i { color:#f6b83d; margin-right:8px; }
-        .btn-success { background:#1f7b4a; }
-        .btn-success i { color:#f6b83d; }
-        .btn-warning { background:#f6b83d; color:#0b2b3c; }
-        .btn-warning i { color:#0b2b3c; }
-        .btn-cancel { background:#b33c3c; }
-        .btn-cancel i { color:white; }
+        .btn { width: 100%; padding: 14px; background: #0b2b3c; color: white; border: none; border-radius: 50px; font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 8px; }
+        .btn i { color: #f6b83d; margin-right: 8px; }
+        .btn-success { background: #1f7b4a; }
+        .btn-success i { color: #f6b83d; }
+        .btn-warning { background: #f6b83d; color: #0b2b3c; }
+        .btn-warning i { color: #0b2b3c; }
+        .btn-cancel { background: #b33c3c; }
+        .btn-cancel i { color: white; }
+        .btn-refresh { background: #2d6b84; }
+        .btn-refresh i { color: white; }
 
-        .btn-refresh { background:#2d6b84; }
-        .btn-refresh i { color:white; }
+        .hidden { display: none !important; }
+        .auth-error { color: #b33c3c; font-size: 0.85rem; margin-top: 8px; display: none; background: #fadad8; padding: 10px; border-radius: 10px; }
+        .btn-link { background: transparent; border: none; color: #2d6b84; cursor: pointer; text-decoration: underline; margin-top: 12px; display: block; text-align: center; width: 100%; }
 
-        .hidden { display:none !important; }
-        .auth-error { color:#b33c3c; font-size:0.85rem; margin-top:8px; display:none; background:#fadad8; padding:10px; border-radius:10px; }
-        .btn-link { background:transparent; border:none; color:#2d6b84; cursor:pointer; text-decoration:underline; margin-top:12px; }
+        .card { background: #f8fafc; border-radius: 16px; padding: 16px 20px; margin-bottom: 16px; border-left: 4px solid #f6b83d; }
+        .card .plate { font-size: 1.3rem; font-weight: 700; color: #0b2b3c; }
+        .card .info { color: #3a657e; font-size: 0.9rem; margin-top: 4px; }
+        .card .info i { width: 20px; color: #f6b83d; }
 
-        .card { background:#f8fafc; border-radius:16px; padding:16px 20px; margin-bottom:16px; border-left:4px solid #f6b83d; }
-        .card .plate { font-size:1.3rem; font-weight:700; color:#0b2b3c; }
-        .card .info { color:#3a657e; font-size:0.9rem; margin-top:4px; }
-        .card .info i { width:20px; color:#f6b83d; }
+        .status-card { background: #eef3f8; border-radius: 16px; padding: 16px 20px; margin-bottom: 16px; }
+        .status-title { font-size: 0.8rem; color: #3a657e; font-weight: 600; text-transform: uppercase; }
+        .badge-status { display: inline-block; padding: 4px 16px; border-radius: 40px; font-size: 0.9rem; margin-top: 4px; font-weight: 600; }
 
-        .status-card { background:#eef3f8; border-radius:16px; padding:16px 20px; margin-bottom:16px; }
-        .status-title { font-size:0.8rem; color:#3a657e; font-weight:600; text-transform:uppercase; }
-        .badge-status { display:inline-block; padding:4px 16px; border-radius:40px; font-size:0.9rem; margin-top:4px; }
-        .status-new { background:#f6b83d; color:#0b2b3c; }
-        .status-work { background:#2d6b84; color:white; }
-        .status-wait { background:#d4a017; color:white; }
-        .status-done { background:#1f7b4a; color:white; }
-        .status-fail { background:#b33c3c; color:white; }
-        .status-cancel { background:#888; color:white; }
+        /* Статусы */
+        .status-new { background: #f6b83d; color: #0b2b3c; }
+        .status-work { background: #2d6b84; color: white; }
+        .status-wait { background: #d4a017; color: white; }
+        .status-ready { background: #2d6b84; color: white; animation: pulse 2s infinite; }
+        .status-done { background: #1f7b4a; color: white; }
+        .status-fail { background: #b33c3c; color: white; }
+        .status-cancel { background: #888; color: white; }
 
-        .history-card { background:white; border:1px solid #e4ecf4; border-radius:12px; padding:12px; margin-bottom:8px; display:flex; justify-content:space-between; }
-        .history-card .h-status { font-size:0.7rem; padding:2px 10px; border-radius:20px; background:#d3f0d8; color:#0a6030; }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(45,107,132,0.7); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(45,107,132,0); }
+        }
 
-        .active-booking { background:white; border:1px solid #e4ecf4; border-radius:12px; padding:12px 16px; margin-bottom:8px; border-left:4px solid #2d6b84; }
-        .active-booking .b-status { font-size:0.7rem; padding:2px 10px; border-radius:20px; font-weight:600; }
-        .active-booking .b-reason { font-size:0.8rem; color:#3a657e; margin-top:4px; }
+        .history-card { background: white; border: 1px solid #e4ecf4; border-radius: 12px; padding: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .history-card .h-status { font-size: 0.7rem; padding: 2px 10px; border-radius: 20px; background: #d3f0d8; color: #0a6030; }
 
-        /* Запрос стоимости */
-        .price-request-card { background:#fff8e6; border:2px solid #f6b83d; border-radius:16px; padding:16px; margin-bottom:16px; }
-        .price-request-card .req-status { font-size:0.7rem; padding:2px 10px; border-radius:20px; font-weight:600; }
-        .price-request-card .req-status.active { background:#f6b83d; color:#0b2b3c; }
-        .price-request-card .req-status.replied { background:#1f7b4a; color:white; }
-        .price-request-card .req-text { margin-top:8px; font-size:0.9rem; color:#0b2b3c; }
-        .price-request-card .req-reply { margin-top:8px; padding:10px; background:#e8f5e9; border-radius:8px; font-size:0.9rem; color:#0a6030; }
+        .active-booking { background: white; border: 1px solid #e4ecf4; border-radius: 12px; padding: 12px 16px; margin-bottom: 8px; border-left: 4px solid #2d6b84; }
+        .active-booking .b-status { font-size: 0.7rem; padding: 2px 10px; border-radius: 20px; font-weight: 600; }
+        .active-booking .b-reason { font-size: 0.8rem; color: #3a657e; margin-top: 4px; }
 
-        .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); justify-content:center; align-items:center; z-index:999; }
-        .modal-overlay.active { display:flex; }
-        .modal-box { background:white; max-width:450px; width:90%; border-radius:24px; padding:24px; }
+        .price-request-card { background: #fff8e6; border: 2px solid #f6b83d; border-radius: 16px; padding: 16px; margin-bottom: 16px; }
+        .price-request-card .req-status { font-size: 0.7rem; padding: 2px 10px; border-radius: 20px; font-weight: 600; }
+        .price-request-card .req-status.active { background: #f6b83d; color: #0b2b3c; }
+        .price-request-card .req-status.replied { background: #1f7b4a; color: white; }
+        .price-request-card .req-text { margin-top: 8px; font-size: 0.9rem; color: #0b2b3c; }
+        .price-request-card .req-reply { margin-top: 8px; padding: 10px; background: #e8f5e9; border-radius: 8px; font-size: 0.9rem; color: #0a6030; }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); justify-content: center; align-items: center; z-index: 999; }
+        .modal-overlay.active { display: flex; }
+        .modal-box { background: white; max-width: 450px; width: 90%; border-radius: 24px; padding: 24px; }
 
         .notification {
-            position:fixed; top:20px; left:50%; transform:translateX(-50%);
-            background:#0b2b3c; color:white; padding:16px 24px; border-radius:16px;
-            box-shadow:0 10px 30px rgba(0,0,0,0.3); z-index:1000; max-width:90%; text-align:center;
-            font-weight:600; border-left:4px solid #f6b83d;
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: #0b2b3c; color: white; padding: 16px 24px; border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 1000; max-width: 90%; text-align: center;
+            font-weight: 600; border-left: 4px solid #f6b83d;
         }
-        .notification.success { border-left-color:#1f7b4a; }
-        .notification.error { border-left-color:#b33c3c; }
-        .notification.info { border-left-color:#2d6b84; }
+        .notification.success { border-left-color: #1f7b4a; }
+        .notification.error { border-left-color: #b33c3c; }
+        .notification.info { border-left-color: #2d6b84; }
+
+        .section-title { color: #0b2b3c; font-size: 1rem; margin: 16px 0 10px; }
+        .section-title i { color: #f6b83d; }
+
+        .empty-state { color: #3a657e; font-size: 0.85rem; text-align: center; padding: 20px; }
     </style>
 </head>
 <body>
@@ -90,7 +102,7 @@
 
     <div class="content">
 
-        <!-- АВТОРИЗАЦИЯ -->
+        <!-- ===== АВТОРИЗАЦИЯ ===== -->
         <div id="authForm">
             <h2 style="color:#0b2b3c; font-size:1.2rem; margin-bottom:16px;"><i class="fas fa-lock" style="color:#f6b83d;"></i> Вход</h2>
             <div class="form-group">
@@ -106,7 +118,7 @@
             <button class="btn-link" onclick="showRegister()">Нет кабинета? Зарегистрироваться</button>
         </div>
 
-        <!-- РЕГИСТРАЦИЯ -->
+        <!-- ===== РЕГИСТРАЦИЯ ===== -->
         <div id="registerForm" class="hidden">
             <h2 style="color:#0b2b3c; font-size:1.2rem; margin-bottom:16px;"><i class="fas fa-user-plus" style="color:#f6b83d;"></i> Регистрация</h2>
             <div class="form-group"><label>Имя</label><input type="text" id="regName" placeholder="Иван Петров"></div>
@@ -126,7 +138,7 @@
             <button class="btn-link" onclick="showLogin()">Назад ко входу</button>
         </div>
 
-        <!-- ЛИЧНЫЙ КАБИНЕТ -->
+        <!-- ===== ЛИЧНЫЙ КАБИНЕТ ===== -->
         <div id="dashboard" class="hidden">
             <div class="card">
                 <div class="plate" id="clientPlate">—</div>
@@ -135,21 +147,21 @@
                 <div class="info"><i class="fas fa-phone"></i> <span id="clientPhone">—</span></div>
             </div>
 
-            <!-- СТАТУС -->
+            <!-- ТЕКУЩИЙ СТАТУС -->
             <div class="status-card">
                 <div class="status-title"><i class="fas fa-clock"></i> Текущий статус</div>
-                <div class="badge-status status-new" id="statusBadge">Нет активных записей</div>
+                <div><span class="badge-status status-new" id="statusBadge">Нет активных записей</span></div>
                 <div style="margin-top:8px;font-size:0.85rem;color:#3a657e;" id="statusDetail">Вы можете записаться</div>
                 <button class="btn btn-cancel hidden" id="cancelBtn" onclick="cancelBooking()" style="margin-top:8px;"><i class="fas fa-times-circle"></i> Отменить запись</button>
                 <button class="btn btn-refresh" onclick="refreshStatus()" style="margin-top:8px;"><i class="fas fa-sync"></i> Проверить статус</button>
             </div>
 
             <!-- АКТИВНЫЕ ЗАПИСИ -->
-            <h3 style="color:#0b2b3c;font-size:1rem;margin:16px 0 10px;"><i class="fas fa-list" style="color:#f6b83d;"></i> Мои активные записи <span id="activeCount" style="background:#2d6b84;color:white;padding:2px 10px;border-radius:20px;font-size:0.7rem;">0</span></h3>
+            <h3 class="section-title"><i class="fas fa-list"></i> Мои активные записи <span id="activeCount" style="background:#2d6b84;color:white;padding:2px 10px;border-radius:20px;font-size:0.7rem;">0</span></h3>
             <div id="activeBookings"></div>
 
             <!-- ЗАПРОС СТОИМОСТИ -->
-            <h3 style="color:#0b2b3c;font-size:1rem;margin:16px 0 10px;"><i class="fas fa-calculator" style="color:#6c5b7b;"></i> Запрос стоимости</h3>
+            <h3 class="section-title"><i class="fas fa-calculator"></i> Запрос стоимости</h3>
             <button class="btn btn-warning" onclick="openPriceRequestModal()"><i class="fas fa-calculator"></i> Запросить стоимость</button>
             <div id="myPriceRequest" style="margin-top:12px;"></div>
 
@@ -173,7 +185,7 @@
                 <button class="btn" onclick="toggleBookingForm()" style="background:#888;"><i class="fas fa-times"></i> Закрыть</button>
             </div>
 
-            <h3 style="color:#0b2b3c;font-size:1rem;margin:20px 0 10px;"><i class="fas fa-history" style="color:#f6b83d;"></i> История обслуживания</h3>
+            <h3 class="section-title"><i class="fas fa-history"></i> История обслуживания</h3>
             <div id="historyContainer"></div>
 
             <button class="btn" onclick="logout()" style="background:#888;margin-top:16px;"><i class="fas fa-sign-out-alt"></i> Выйти</button>
@@ -377,6 +389,9 @@ async function loadClientData() {
     await loadMyPriceRequest();
 }
 
+// ============================================================
+// АКТИВНАЯ ЗАПИСЬ (для главного статуса)
+// ============================================================
 async function loadBooking() {
     try {
         const jsonData = await loadJsonFromServer();
@@ -399,27 +414,36 @@ async function loadBooking() {
     } catch (e) { console.error(e); }
 }
 
+// ============================================================
+// ОБНОВЛЕНИЕ ГЛАВНОГО СТАТУСА
+// ============================================================
 function updateStatusDisplay(b) {
     const map = {
         'новая': { t: 'Новая', c: 'status-new', d: 'Ожидайте подтверждения' },
         'в работе': { t: 'В работе', c: 'status-work', d: 'Мастер занимается авто' },
         'ожидается': { t: 'Ожидается', c: 'status-wait', d: 'Ожидаем запчасти' },
-        'отремонтирована': { t: '✅ Готово', c: 'status-done', d: 'Работы выполнены' },
+        'готово': { t: '✅ Автомобиль готов', c: 'status-ready', d: 'Можете забрать автомобиль' },
+        'отремонтирована': { t: '✅ Отремонтирована', c: 'status-done', d: 'Работы выполнены' },
         'не отремонтирована': { t: '❌ Не отремонтирована', c: 'status-fail', d: 'Обратитесь к мастеру' },
-        'продиагностирована': { t: '🔍 Диагностика завершена', c: 'status-done', d: 'Готово' },
+        'продиагностирована': { t: '🔍 Продиагностирована', c: 'status-done', d: 'Диагностика завершена' },
         'отменена': { t: 'Отменена', c: 'status-cancel', d: 'Запись отменена' }
     };
     const info = map[b.status] || { t: b.status, c: 'status-new', d: '' };
     document.getElementById('statusBadge').textContent = info.t;
     document.getElementById('statusBadge').className = 'badge-status ' + info.c;
     document.getElementById('statusDetail').textContent = info.d;
-    if (['новая','в работе','ожидается'].includes(b.status)) {
+
+    // Кнопка отмены — для активных статусов, КРОМЕ "готово" (нельзя отменить готовый заказ)
+    if (['новая', 'в работе', 'ожидается'].includes(b.status)) {
         document.getElementById('cancelBtn').classList.remove('hidden');
     } else {
         document.getElementById('cancelBtn').classList.add('hidden');
     }
 }
 
+// ============================================================
+// АКТИВНЫЕ ЗАПИСИ
+// ============================================================
 async function loadActiveBookings() {
     try {
         const jsonData = await loadJsonFromServer();
@@ -429,7 +453,7 @@ async function loadActiveBookings() {
             b.client_id === currentClient.id &&
             !['отремонтирована', 'не отремонтирована', 'продиагностирована', 'отменена'].includes(b.status));
 
-        activeBookings.sort((a,b) => new Date(b.date) - new Date(a.date));
+        activeBookings.sort((a, b) => new Date(b.date) - new Date(a.date));
         renderActiveBookings(activeBookings);
     } catch (e) { console.error(e); }
 }
@@ -440,7 +464,7 @@ function renderActiveBookings(bookings) {
     if (countEl) countEl.textContent = bookings.length;
 
     if (!bookings || bookings.length === 0) {
-        container.innerHTML = '<div style="color:#3a657e;font-size:0.85rem;text-align:center;padding:20px;">Нет активных записей</div>';
+        container.innerHTML = '<div class="empty-state">Нет активных записей</div>';
         return;
     }
 
@@ -448,7 +472,8 @@ function renderActiveBookings(bookings) {
     const statusLabels = {
         'новая': { t: 'Новая', c: 'status-new' },
         'в работе': { t: 'В работе', c: 'status-work' },
-        'ожидается': { t: 'Ожидается', c: 'status-wait' }
+        'ожидается': { t: 'Ожидается', c: 'status-wait' },
+        'готово': { t: '✅ Готово', c: 'status-ready' }
     };
 
     container.innerHTML = bookings.map(b => {
@@ -465,17 +490,20 @@ function renderActiveBookings(bookings) {
     }).join('');
 }
 
+// ============================================================
+// ИСТОРИЯ
+// ============================================================
 async function loadHistory() {
     const container = document.getElementById('historyContainer');
     try {
         const jsonData = await loadJsonFromServer();
         if (!jsonData || !jsonData.journal) {
-            container.innerHTML = '<div style="color:#3a657e;font-size:0.85rem;text-align:center;padding:20px;">История пуста</div>';
+            container.innerHTML = '<div class="empty-state">История пуста</div>';
             return;
         }
-        const history = jsonData.journal.filter(j => j.clientId === currentClient.id).slice(0,10);
+        const history = jsonData.journal.filter(j => j.clientId === currentClient.id).slice(0, 10);
         if (history.length === 0) {
-            container.innerHTML = '<div style="color:#3a657e;font-size:0.85rem;text-align:center;padding:20px;">История пуста</div>';
+            container.innerHTML = '<div class="empty-state">История пуста</div>';
             return;
         }
         container.innerHTML = history.map(e => {
@@ -547,11 +575,10 @@ async function loadMyPriceRequest() {
     try {
         const jsonData = await loadJsonFromServer();
         if (!jsonData || !jsonData.priceRequests) {
-            container.innerHTML = '<div style="color:#3a657e;font-size:0.85rem;text-align:center;padding:12px;">Нет запросов</div>';
+            container.innerHTML = '<div class="empty-state" style="padding:12px;">Нет запросов</div>';
             return;
         }
 
-        // Ищем активный запрос (не старше 10 дней)
         const now = Date.now();
         const tenDays = 10 * 24 * 60 * 60 * 1000;
 
@@ -564,7 +591,7 @@ async function loadMyPriceRequest() {
             .sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
 
         if (myRequests.length === 0) {
-            container.innerHTML = '<div style="color:#3a657e;font-size:0.85rem;text-align:center;padding:12px;">Нет активных запросов</div>';
+            container.innerHTML = '<div class="empty-state" style="padding:12px;">Нет активных запросов</div>';
             return;
         }
 
@@ -596,7 +623,7 @@ async function loadMyPriceRequest() {
 }
 
 // ============================================================
-// ЗАПИСЬ
+// ЗАПИСЬ НА ОБСЛУЖИВАНИЕ
 // ============================================================
 function toggleBookingForm() {
     const form = document.getElementById('bookingForm');
@@ -672,7 +699,7 @@ async function cancelBooking() {
 }
 
 // ============================================================
-// ПРОВЕРКА СТАТУСА
+// ОБНОВЛЕНИЕ
 // ============================================================
 async function refreshStatus() {
     if (!currentClient) return;
@@ -741,6 +768,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch(e) {}
     }
 });
+
+console.log('🚀 PalЫCH Client v4.7 загружен!');
+console.log('✅ Статус "готово", тип ТО, запрос стоимости, тип авто');
 </script>
 </body>
 </html>

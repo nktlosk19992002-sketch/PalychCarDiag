@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GoCash Admin</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -42,10 +43,8 @@
   .btn-icon:hover { background:#e2e6ee; }
   .btn-danger-outline { background:#fee2e2; color:#991b1b; padding:6px 10px; border:none; border-radius:6px;
                         cursor:pointer; font-size:12px; font-weight:500; font-family:inherit; }
-  .btn-danger-outline:hover { background:#fecaca; }
   .btn-success-outline { background:#dcfce7; color:#166534; padding:6px 10px; border:none; border-radius:6px;
                          cursor:pointer; font-size:12px; font-weight:500; font-family:inherit; }
-  .btn-success-outline:hover { background:#bbf7d0; }
 
   .card { background:var(--card); border-radius:var(--radius); padding:20px;
           box-shadow:var(--shadow-sm); border:1px solid var(--border); }
@@ -175,7 +174,6 @@
 
 <main class="app-main">
 
-  <!-- ===== ГЛАВНАЯ ===== -->
   <section class="screen active" id="screen-home">
     <div class="home-top">
       <div class="filters">
@@ -210,7 +208,6 @@
     <div class="home-list" id="home-list"><div class="loader">Загрузка…</div></div>
   </section>
 
-  <!-- ===== РАСХОДЫ ===== -->
   <section class="screen" id="screen-expenses">
     <h2>Расходы</h2>
     <div class="expenses-toolbar">
@@ -229,7 +226,6 @@
     <div class="expense-months" id="expense-months"></div>
   </section>
 
-  <!-- ===== ПОЛЬЗОВАТЕЛИ ===== -->
   <section class="screen" id="screen-users">
     <h2>Пользователи</h2>
     <div class="expenses-toolbar">
@@ -242,7 +238,6 @@
     </table>
   </section>
 
-  <!-- ===== ЧЕКИ ===== -->
   <section class="screen" id="screen-receipts">
     <h2>Чеки и причины</h2>
     <table>
@@ -254,13 +249,11 @@
     </table>
   </section>
 
-  <!-- ===== ПРЕДЛОЖЕНИЯ ===== -->
   <section class="screen" id="screen-suggestions">
     <h2>Предложения</h2>
     <div id="suggestions-list"><div class="loader">Загрузка…</div></div>
   </section>
 
-  <!-- ===== ИСТОРИЯ ===== -->
   <section class="screen" id="screen-history">
     <h2>История</h2>
     <div class="filters">
@@ -282,7 +275,6 @@
     </table>
   </section>
 
-  <!-- ===== НАСТРОЙКИ ===== -->
   <section class="screen" id="screen-settings">
     <h2>Настройки</h2>
     <div class="card" style="max-width:520px;">
@@ -303,8 +295,6 @@
     </div>
   </section>
 </main>
-
-<!-- ===== Модалки ===== -->
 
 <div class="modal-overlay" id="modal-add">
   <div class="modal">
@@ -368,567 +358,544 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// =================== НАСТРОЙКИ SUPABASE ===================
-const SUPABASE_URL = 'https://xpaqczxqukuzfwmnimzsx.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhwYXFjenhxa3V6ZndtbmltenN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5Njg4NDcsImV4cCI6MjEwNDU0NDg0N30.hH62d6aCsgBchg4MVPey714O3-FR9bNaqnsm_T32zAk';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-// ==========================================================
+(function(){
+  'use strict';
 
-const MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-const MONTHS_SHORT = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
-const STATUS_LABELS = { paid:'Сдал', unpaid:'Не сдал', otp:'Отп', kmd:'Кмд' };
+  const SUPABASE_URL = 'https://xpaqczxqukuzfwmnimzsx.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhwYXFjenhxa3V6ZndtbmltenN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5Njg4NDcsImV4cCI6MjEwNDU0NDg0N30.hH62d6aCsgBchg4MVPey714O3-FR9bNaqnsm_T32zAk';
 
-let state = { monthlyFee: 1000, users: [], expenses: [], payments: [], suggestions: [] };
-let editingId = null, infoId = null, editMode = false, deleteExpenseMode = false;
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// =================== Саратовское время ===================
-function getSaratovNow() {
-  const fmt = new Intl.DateTimeFormat('ru-RU', {
-    timeZone:'Europe/Saratov', year:'numeric', month:'numeric', day:'numeric',
-    hour:'numeric', minute:'numeric', hour12:false
-  });
-  const o = {}; fmt.formatToParts(new Date()).forEach(p => o[p.type] = p.value);
-  return { year:+o.year, month:+o.month-1, day:+o.day, hour:+o.hour, minute:+o.minute };
-}
-function isCurrentMonthBillable() { return getSaratovNow().day >= 15; }
-function effectiveStatus(user, mIdx) {
-  const s = user.paid[mIdx];
-  if (s) return s;
-  const now = getSaratovNow();
-  if (mIdx < now.month) return 'unpaid';
-  if (mIdx === now.month && isCurrentMonthBillable()) return 'unpaid';
-  return null;
-}
+  const MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  const MONTHS_SHORT = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
+  const STATUS_LABELS = { paid:'Сдал', unpaid:'Не сдал', otp:'Отп', kmd:'Кмд' };
 
-// =================== Загрузка данных ===================
-async function loadAll() {
-  const [u, m, e, p, s, c] = await Promise.all([
-    supabase.from('users').select('*').order('fio'),
-    supabase.from('months').select('*'),
-    supabase.from('expenses').select('*').order('date', { ascending:false }),
-    supabase.from('payments').select('*').order('created_at', { ascending:false }),
-    supabase.from('suggestions').select('*').order('created_at', { ascending:false }),
-    supabase.from('config').select('*').eq('id',1).single()
-  ]);
-  if (u.error) console.error('users:', u.error);
-  if (m.error) console.error('months:', m.error);
-  if (e.error) console.error('expenses:', e.error);
-  if (p.error) console.error('payments:', p.error);
-  if (s.error) console.error('suggestions:', s.error);
+  const state = { monthlyFee: 1000, users: [], expenses: [], payments: [], suggestions: [] };
+  let editingId = null, infoId = null, editMode = false, deleteExpenseMode = false;
 
-  state.monthlyFee = c.data?.monthly_fee || 1000;
-  state.expenses = e.data || [];
-  state.payments = p.data || [];
-  state.suggestions = s.data || [];
-  state.users = (u.data || []).map(x => ({ ...x, paid: Array(12).fill(null) }));
-  const year = new Date().getFullYear();
-  (m.data || []).forEach(row => {
-    const usr = state.users.find(x => x.id === row.user_id);
-    if (usr && row.year === year) usr.paid[row.month] = row.status;
-  });
-  document.getElementById('input-fee').value = state.monthlyFee;
-}
-
-// =================== Расчёты ===================
-function calcDebt(user) {
-  const now = getSaratovNow();
-  const last = isCurrentMonthBillable() ? now.month : now.month - 1;
-  if (last < 0) return 0;
-  let n = 0;
-  for (let i = 0; i <= last; i++) if (effectiveStatus(user, i) === 'unpaid') n++;
-  return n * state.monthlyFee;
-}
-function calcIncome() {
-  let n = 0;
-  state.users.forEach(u => u.paid.forEach(s => { if (s === 'paid') n++; }));
-  return n * state.monthlyFee;
-}
-function calcSpent() { return state.expenses.reduce((s,e) => s + (Number(e.qty)||0)*(Number(e.price)||0), 0); }
-function calcBalance() { return calcIncome() - calcSpent(); }
-
-// =================== Навигация ===================
-const navButtons = document.querySelectorAll('.nav-btn');
-const screens = document.querySelectorAll('.screen');
-function showScreen(name) {
-  screens.forEach(s => s.classList.toggle('active', s.id === `screen-${name}`));
-  navButtons.forEach(b => b.classList.toggle('active', b.dataset.screen === name));
-  location.hash = name;
-  if (name === 'home') renderHome();
-  if (name === 'expenses') renderExpenses();
-  if (name === 'users') renderUsers();
-  if (name === 'receipts') renderReceipts();
-  if (name === 'suggestions') renderSuggestions();
-  if (name === 'history') renderHistory();
-}
-navButtons.forEach(b => b.addEventListener('click', () => showScreen(b.dataset.screen)));
-
-// =================== Модалки ===================
-function openModal(id) { document.getElementById(id).classList.add('active'); }
-function closeModal(el) { el.closest('.modal-overlay').classList.remove('active'); }
-document.querySelectorAll('[data-close-modal]').forEach(b => b.addEventListener('click', e => closeModal(e.target)));
-document.querySelectorAll('.modal-overlay').forEach(ov => ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('active'); }));
-
-// =================== ГЛАВНАЯ ===================
-function renderHome() {
-  const bal = calcBalance();
-  document.getElementById('wallet-balance').textContent = bal.toLocaleString('ru-RU') + ' ₽';
-  document.getElementById('wallet-sub').textContent = `+${calcIncome().toLocaleString('ru-RU')} · −${calcSpent().toLocaleString('ru-RU')}`;
-  document.getElementById('wallet').classList.toggle('negative', bal < 0);
-
-  const list = document.getElementById('home-list');
-  list.innerHTML = '';
-  const fM = document.getElementById('filter-month').value;
-  const fS = document.getElementById('filter-status').value;
-  const sorted = [...state.users].sort((a,b) => a.fio.localeCompare(b.fio,'ru'));
-
-  let shown = 0;
-  sorted.forEach(u => {
-    if (fM !== 'all') {
-      const idx = Number(fM);
-      const st = effectiveStatus(u, idx);
-      if (fS !== 'all') {
-        const wanted = fS === 'none' ? null : fS;
-        if (st !== wanted) return;
-      }
-    }
-    shown++;
-    const row = document.createElement('div');
-    row.className = 'home-row';
-    row.innerHTML = `<div class="home-row-info"><span class="home-row-name">${u.fio}</span></div>`;
-
-    const monthsRow = document.createElement('div');
-    monthsRow.className = 'months-row';
-    MONTHS_SHORT.forEach((mn, i) => {
-      const st = effectiveStatus(u, i);
-      const b = document.createElement('div');
-      b.className = 'mini-badge ' + (st || 'none');
-      b.title = `${MONTHS[i]}: ${st ? STATUS_LABELS[st] : 'Не отмечено'}`;
-      b.textContent = mn;
-      monthsRow.appendChild(b);
+  function getSaratovNow() {
+    const fmt = new Intl.DateTimeFormat('ru-RU', {
+      timeZone:'Europe/Saratov', year:'numeric', month:'numeric', day:'numeric',
+      hour:'numeric', minute:'numeric', hour12:false
     });
-    row.appendChild(monthsRow);
-    list.appendChild(row);
-  });
-
-  if (!shown) list.innerHTML = '<div class="card empty">Нет пользователей под фильтр</div>';
-}
-
-// заполним select месяцев
-(function initMonthFilter() {
-  const sel = document.getElementById('filter-month');
-  MONTHS.forEach((m,i) => {
-    const o = document.createElement('option');
-    o.value = i; o.textContent = m;
-    sel.appendChild(o);
-  });
-  sel.value = String(getSaratovNow().month);
-})();
-document.getElementById('filter-month').addEventListener('change', renderHome);
-document.getElementById('filter-status').addEventListener('change', renderHome);
-
-// =================== ПОЛЬЗОВАТЕЛИ ===================
-function renderUsers() {
-  const tbody = document.getElementById('users-tbody');
-  tbody.innerHTML = '';
-  state.users.forEach(u => {
-    const debt = calcDebt(u);
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${u.fio}</td>
-      <td>${u.code}</td>
-      <td class="debt ${debt>0?'has-debt':'no-debt'}">${debt>0 ? debt.toLocaleString('ru-RU')+' ₽' : '—'}</td>
-      <td>
-        <button class="btn-icon" data-info="${u.id}">Инфо</button>
-        ${editMode ? `<button class="btn-icon" data-edit="${u.id}">Ред.</button>` : ''}
-      </td>`;
-    tbody.appendChild(tr);
-  });
-  if (!state.users.length) tbody.innerHTML = '<tr><td colspan="4" class="empty">Пока нет пользователей</td></tr>';
-}
-
-document.getElementById('btn-add-user').addEventListener('click', () => {
-  document.getElementById('input-fio').value = '';
-  document.getElementById('input-code').value = '';
-  openModal('modal-add');
-});
-document.getElementById('btn-save-user').addEventListener('click', async () => {
-  const fio = document.getElementById('input-fio').value.trim();
-  const code = document.getElementById('input-code').value.trim();
-  if (!fio || !code) { alert('Заполните все поля'); return; }
-  const { error } = await supabase.from('users').insert({ fio, code });
-  if (error) { alert('Ошибка: ' + error.message); return; }
-  await loadAll();
-  renderUsers(); renderHome();
-  closeModal(document.getElementById('btn-save-user'));
-});
-
-document.getElementById('users-tbody').addEventListener('click', e => {
-  const i = e.target.closest('[data-info]');
-  if (i) { infoId = Number(i.dataset.info); renderInfo(); openModal('modal-info'); return; }
-  const ed = e.target.closest('[data-edit]');
-  if (ed) {
-    editingId = Number(ed.dataset.edit);
-    const u = state.users.find(x => x.id === editingId);
-    document.getElementById('edit-fio').value = u.fio;
-    document.getElementById('edit-code').value = u.code;
-    openModal('modal-edit');
+    const o = {}; fmt.formatToParts(new Date()).forEach(p => o[p.type] = p.value);
+    return { year:+o.year, month:+o.month-1, day:+o.day, hour:+o.hour, minute:+o.minute };
   }
-});
+  function isCurrentMonthBillable() { return getSaratovNow().day >= 15; }
+  function effectiveStatus(user, mIdx) {
+    const s = user.paid[mIdx];
+    if (s) return s;
+    const now = getSaratovNow();
+    if (mIdx < now.month) return 'unpaid';
+    if (mIdx === now.month && isCurrentMonthBillable()) return 'unpaid';
+    return null;
+  }
 
-function renderInfo() {
-  const user = state.users.find(u => u.id === infoId);
-  if (!user) return;
-  document.getElementById('info-title').textContent = `${user.fio} (${user.code})`;
-  const grid = document.getElementById('months-grid');
-  grid.innerHTML = '';
-  MONTHS.forEach((name, i) => {
-    const box = document.createElement('div');
-    box.className = 'month-box';
-    box.innerHTML = `<div class="month-box-name">${name}</div>`;
-    const sts = document.createElement('div');
-    sts.className = 'month-statuses';
-    ['paid','unpaid','otp','kmd'].forEach(st => {
-      const b = document.createElement('button');
-      b.className = 'status-btn ' + st + (user.paid[i]===st ? ' active' : '');
-      b.textContent = STATUS_LABELS[st];
-      b.addEventListener('click', async () => {
-        const newStatus = user.paid[i] === st ? null : st;
-        const year = new Date().getFullYear();
-        if (newStatus === null) {
-          await supabase.from('months').delete().match({ user_id: user.id, year, month: i });
-        } else {
-          await supabase.from('months').upsert(
-            { user_id: user.id, year, month: i, status: newStatus },
-            { onConflict: 'user_id,year,month' }
-          );
+  async function loadAll() {
+    const [u, m, e, p, s, c] = await Promise.all([
+      db.from('users').select('*').order('fio'),
+      db.from('months').select('*'),
+      db.from('expenses').select('*').order('date', { ascending:false }),
+      db.from('payments').select('*').order('created_at', { ascending:false }),
+      db.from('suggestions').select('*').order('created_at', { ascending:false }),
+      db.from('config').select('*').eq('id',1).single()
+    ]);
+    if (u.error) console.error('users:', u.error);
+    if (m.error) console.error('months:', m.error);
+    if (e.error) console.error('expenses:', e.error);
+    if (p.error) console.error('payments:', p.error);
+    if (s.error) console.error('suggestions:', s.error);
+    if (c.error) console.error('config:', c.error);
+
+    state.monthlyFee = (c.data && c.data.monthly_fee) || 1000;
+    state.expenses = e.data || [];
+    state.payments = p.data || [];
+    state.suggestions = s.data || [];
+    state.users = (u.data || []).map(x => ({ ...x, paid: Array(12).fill(null) }));
+    const year = new Date().getFullYear();
+    (m.data || []).forEach(row => {
+      const usr = state.users.find(x => x.id === row.user_id);
+      if (usr && row.year === year) usr.paid[row.month] = row.status;
+    });
+    document.getElementById('input-fee').value = state.monthlyFee;
+  }
+
+  function calcDebt(user) {
+    const now = getSaratovNow();
+    const last = isCurrentMonthBillable() ? now.month : now.month - 1;
+    if (last < 0) return 0;
+    let n = 0;
+    for (let i = 0; i <= last; i++) if (effectiveStatus(user, i) === 'unpaid') n++;
+    return n * state.monthlyFee;
+  }
+  function calcIncome() {
+    let n = 0;
+    state.users.forEach(u => u.paid.forEach(s => { if (s === 'paid') n++; }));
+    return n * state.monthlyFee;
+  }
+  function calcSpent() { return state.expenses.reduce((s,e) => s + (Number(e.qty)||0)*(Number(e.price)||0), 0); }
+  function calcBalance() { return calcIncome() - calcSpent(); }
+
+  const navButtons = document.querySelectorAll('.nav-btn');
+  const screens = document.querySelectorAll('.screen');
+  function showScreen(name) {
+    screens.forEach(s => s.classList.toggle('active', s.id === 'screen-' + name));
+    navButtons.forEach(b => b.classList.toggle('active', b.dataset.screen === name));
+    location.hash = name;
+    if (name === 'home') renderHome();
+    if (name === 'expenses') renderExpenses();
+    if (name === 'users') renderUsers();
+    if (name === 'receipts') renderReceipts();
+    if (name === 'suggestions') renderSuggestions();
+    if (name === 'history') renderHistory();
+  }
+  navButtons.forEach(b => b.addEventListener('click', function(){ showScreen(this.dataset.screen); }));
+
+  function openModal(id) { document.getElementById(id).classList.add('active'); }
+  function closeModal(el) { el.closest('.modal-overlay').classList.remove('active'); }
+  document.querySelectorAll('[data-close-modal]').forEach(b => b.addEventListener('click', function(e){ closeModal(e.target); }));
+  document.querySelectorAll('.modal-overlay').forEach(ov => ov.addEventListener('click', function(e){ if (e.target === ov) ov.classList.remove('active'); }));
+
+  function renderHome() {
+    const bal = calcBalance();
+    document.getElementById('wallet-balance').textContent = bal.toLocaleString('ru-RU') + ' ₽';
+    document.getElementById('wallet-sub').textContent = '+' + calcIncome().toLocaleString('ru-RU') + ' · −' + calcSpent().toLocaleString('ru-RU');
+    document.getElementById('wallet').classList.toggle('negative', bal < 0);
+
+    const list = document.getElementById('home-list');
+    list.innerHTML = '';
+    const fM = document.getElementById('filter-month').value;
+    const fS = document.getElementById('filter-status').value;
+    const sorted = state.users.slice().sort(function(a,b){ return a.fio.localeCompare(b.fio,'ru'); });
+
+    let shown = 0;
+    sorted.forEach(function(u){
+      if (fM !== 'all') {
+        const idx = Number(fM);
+        const st = effectiveStatus(u, idx);
+        if (fS !== 'all') {
+          const wanted = fS === 'none' ? null : fS;
+          if (st !== wanted) return;
         }
-        user.paid[i] = newStatus;
-        renderInfo(); renderUsers(); renderHome();
-      });
-      sts.appendChild(b);
-    });
-    box.appendChild(sts);
-    grid.appendChild(box);
-  });
-}
-
-const editModeBtn = document.getElementById('btn-edit-mode');
-editModeBtn.addEventListener('click', () => {
-  editMode = !editMode;
-  editModeBtn.textContent = editMode ? 'Готово' : 'Редактировать';
-  editModeBtn.classList.toggle('btn-primary', editMode);
-  editModeBtn.classList.toggle('btn-secondary', !editMode);
-  renderUsers();
-});
-
-document.getElementById('btn-update-user').addEventListener('click', async () => {
-  const fio = document.getElementById('edit-fio').value.trim();
-  const code = document.getElementById('edit-code').value.trim();
-  if (!fio || !code) { alert('Заполните все поля'); return; }
-  const { error } = await supabase.from('users').update({ fio, code }).eq('id', editingId);
-  if (error) { alert('Ошибка: ' + error.message); return; }
-  await loadAll();
-  renderUsers(); renderHome();
-  closeModal(document.getElementById('btn-update-user'));
-});
-document.getElementById('btn-delete-user').addEventListener('click', async () => {
-  if (!confirm('Удалить пользователя?')) return;
-  await supabase.from('users').delete().eq('id', editingId);
-  await loadAll();
-  renderUsers(); renderHome();
-  closeModal(document.getElementById('btn-delete-user'));
-});
-
-// =================== РАСХОДЫ ===================
-function renderExpenses() {
-  const tbody = document.getElementById('expenses-tbody');
-  tbody.innerHTML = '';
-  document.getElementById('expense-actions-col').textContent = deleteExpenseMode ? 'Действия' : '';
-  const sorted = [...state.expenses].sort((a,b) => (b.date||'').localeCompare(a.date||''));
-
-  sorted.forEach(e => {
-    const sum = (Number(e.qty)||0)*(Number(e.price)||0);
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${e.date}</td>
-      <td>${e.name}</td>
-      <td>${e.qty}</td>
-      <td>${(Number(e.price)||0).toLocaleString('ru-RU')} ₽</td>
-      <td><b>${sum.toLocaleString('ru-RU')} ₽</b></td>
-      <td>${deleteExpenseMode ? `<button class="btn-danger-outline" data-del-exp="${e.id}">🗑</button>` : ''}</td>`;
-    tbody.appendChild(tr);
-  });
-  if (!state.expenses.length) tbody.innerHTML = '<tr><td colspan="6" class="empty">Расходов пока нет</td></tr>';
-
-  const box = document.getElementById('expense-months');
-  box.innerHTML = '';
-  const currentYear = new Date().getFullYear();
-  let anyShown = false;
-  MONTHS.forEach((name, mi) => {
-    const items = state.expenses.filter(e => {
-      const d = new Date(e.date);
-      return d.getFullYear() === currentYear && d.getMonth() === mi;
-    });
-    if (!items.length) return;
-    anyShown = true;
-    const total = items.reduce((s,e) => s + (Number(e.qty)||0)*(Number(e.price)||0), 0);
-    const div = document.createElement('div');
-    div.className = 'expense-month-box';
-    div.innerHTML = `<div class="expense-month-title"><span>${name}</span><span class="expense-month-total">${total.toLocaleString('ru-RU')} ₽</span></div>`;
-    items.forEach(e => {
-      const sum = (Number(e.qty)||0)*(Number(e.price)||0);
-      const r = document.createElement('div');
-      r.className = 'expense-item';
-      r.innerHTML = `<span>${e.name} ×${e.qty}</span><span class="expense-item-price">${sum.toLocaleString('ru-RU')} ₽</span>`;
-      div.appendChild(r);
-    });
-    box.appendChild(div);
-  });
-  if (!anyShown) box.innerHTML = '<div class="card empty">За этот год расходов нет</div>';
-}
-
-document.getElementById('btn-add-expense').addEventListener('click', () => {
-  document.getElementById('exp-date').value = new Date().toISOString().slice(0,10);
-  document.getElementById('exp-name').value = '';
-  document.getElementById('exp-qty').value = 1;
-  document.getElementById('exp-price').value = 0;
-  openModal('modal-add-expense');
-});
-document.getElementById('btn-save-expense').addEventListener('click', async () => {
-  const date = document.getElementById('exp-date').value;
-  const name = document.getElementById('exp-name').value.trim();
-  const qty = Number(document.getElementById('exp-qty').value) || 1;
-  const price = Number(document.getElementById('exp-price').value) || 0;
-  if (!date || !name) { alert('Заполните дату и название'); return; }
-  const { error } = await supabase.from('expenses').insert({ date, name, qty, price });
-  if (error) { alert('Ошибка: ' + error.message); return; }
-  await loadAll();
-  renderExpenses(); renderHome();
-  closeModal(document.getElementById('btn-save-expense'));
-});
-
-const delModeBtn = document.getElementById('btn-delete-mode');
-delModeBtn.addEventListener('click', () => {
-  deleteExpenseMode = !deleteExpenseMode;
-  delModeBtn.textContent = deleteExpenseMode ? 'Готово' : 'Удалить';
-  delModeBtn.classList.toggle('btn-danger', deleteExpenseMode);
-  delModeBtn.classList.toggle('btn-secondary', !deleteExpenseMode);
-  renderExpenses();
-});
-document.getElementById('expenses-tbody').addEventListener('click', async e => {
-  const d = e.target.closest('[data-del-exp]');
-  if (!d) return;
-  if (!confirm('Удалить расход?')) return;
-  await supabase.from('expenses').delete().eq('id', Number(d.dataset.delExp));
-  await loadAll();
-  renderExpenses(); renderHome();
-});
-
-// =================== ЧЕКИ / ПРИЧИНЫ ===================
-function renderReceipts() {
-  const tbody = document.getElementById('receipts-tbody');
-  tbody.innerHTML = '';
-  const list = [...state.payments].sort((a,b) => (b.created_at||'').localeCompare(a.created_at||''));
-  if (!list.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="empty">Пока нет заявок</td></tr>';
-    return;
-  }
-  list.forEach(p => {
-    const u = state.users.find(x => x.id === p.user_id);
-    const mName = MONTHS[p.month];
-    let statusHtml = '';
-    if (p.status === 'pending') statusHtml = '<span class="badge-status pending">⏳ На проверке</span>';
-    if (p.status === 'reason') statusHtml = `<span class="badge-status reason">📌 ${p.reason==='otp'?'Отпуск':'Командировка'}</span>`;
-    if (p.status === 'approved') statusHtml = '<span class="badge-status approved">✅ Одобрено</span>';
-    if (p.status === 'rejected') statusHtml = '<span class="badge-status rejected">❌ Отклонено</span>';
-
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${new Date(p.created_at).toLocaleString('ru-RU')}</td>
-      <td>${u ? u.fio : '—'}</td>
-      <td>${mName} ${p.year}</td>
-      <td>${statusHtml}</td>
-      <td>${p.receipt_url ? `<img src="${p.receipt_url}" class="receipt-thumb" data-view="${p.receipt_url}">` : '—'}</td>
-      <td>
-        ${p.status === 'pending' ? `
-          <button class="btn-success-outline" data-approve="${p.id}">Одобрить</button>
-          <button class="btn-danger-outline" data-reject="${p.id}">Отклонить</button>
-        ` : ''}
-        ${p.status === 'reason' ? `<span style="font-size:12px;color:var(--muted);">причина</span>` : ''}
-      </td>`;
-    tbody.appendChild(tr);
-  });
-}
-
-document.getElementById('receipts-tbody').addEventListener('click', async e => {
-  const view = e.target.closest('[data-view]');
-  if (view) {
-    document.getElementById('receipt-view-img').src = view.dataset.view;
-    openModal('modal-receipt-view');
-    return;
-  }
-  const ap = e.target.closest('[data-approve]');
-  if (ap) {
-    const id = Number(ap.dataset.approve);
-    const p = state.payments.find(x => x.id === id);
-    if (!p) return;
-    // обновляем payment -> approved
-    await supabase.from('payments').update({ status: 'approved' }).eq('id', id);
-    // ставим месяц paid
-    await supabase.from('months').upsert(
-      { user_id: p.user_id, year: p.year, month: p.month, status: 'paid' },
-      { onConflict: 'user_id,year,month' }
-    );
-    await loadAll();
-    renderReceipts(); renderHome(); renderUsers();
-    return;
-  }
-  const rj = e.target.closest('[data-reject]');
-  if (rj) {
-    await supabase.from('payments').update({ status: 'rejected' }).eq('id', Number(rj.dataset.reject));
-    await loadAll();
-    renderReceipts();
-  }
-});
-
-// =================== ПРЕДЛОЖЕНИЯ ===================
-function renderSuggestions() {
-  const list = document.getElementById('suggestions-list');
-  const items = [...state.suggestions].sort((a,b) => (b.created_at||'').localeCompare(a.created_at||''));
-  if (!items.length) { list.innerHTML = '<div class="card empty">Пока нет предложений</div>'; return; }
-  list.innerHTML = items.map(s => {
-    const u = state.users.find(x => x.id === s.user_id);
-    return `<div class="suggestion-card">
-      <div class="suggestion-meta">${u ? u.fio : 'Аноним'} · ${new Date(s.created_at).toLocaleString('ru-RU')}</div>
-      <div>${escapeHtml(s.text)}</div>
-    </div>`;
-  }).join('');
-}
-
-// =================== ИСТОРИЯ ===================
-function buildHistory() {
-  const items = [];
-  // пополнения = все "paid" месяцы всех юзеров (год текущий)
-  const year = new Date().getFullYear();
-  state.users.forEach(u => {
-    u.paid.forEach((s, i) => {
-      if (s === 'paid') {
-        items.push({
-          type: 'income',
-          date: `${year}-${String(i+1).padStart(2,'0')}-15`,
-          description: `${u.fio} — взнос за ${MONTHS[i]}`,
-          amount: state.monthlyFee,
-          monthIndex: i,
-          userId: u.id
-        });
       }
+      shown++;
+      const row = document.createElement('div');
+      row.className = 'home-row';
+      row.innerHTML = '<div class="home-row-info"><span class="home-row-name">' + escapeHtml(u.fio) + '</span></div>';
+      const monthsRow = document.createElement('div');
+      monthsRow.className = 'months-row';
+      MONTHS_SHORT.forEach(function(mn, i){
+        const st = effectiveStatus(u, i);
+        const b = document.createElement('div');
+        b.className = 'mini-badge ' + (st || 'none');
+        b.title = MONTHS[i] + ': ' + (st ? STATUS_LABELS[st] : 'Не отмечено');
+        b.textContent = mn;
+        monthsRow.appendChild(b);
+      });
+      row.appendChild(monthsRow);
+      list.appendChild(row);
     });
-  });
-  // расходы
-  state.expenses.forEach(e => {
-    const d = e.date || '';
-    const mi = d ? new Date(d).getMonth() : null;
-    items.push({
-      type: 'expense',
-      date: d,
-      description: `${e.name} ×${e.qty}`,
-      amount: -((Number(e.qty)||0)*(Number(e.price)||0)),
-      monthIndex: mi,
-      userId: null
-    });
-  });
-  return items.sort((a,b) => (b.date||'').localeCompare(a.date||''));
-}
+    if (!shown) list.innerHTML = '<div class="card empty">Нет пользователей под фильтр</div>';
+  }
 
-function renderHistory() {
-  // фильтр месяцев
-  const selM = document.getElementById('hist-filter-month');
-  if (selM.options.length === 1) {
-    MONTHS.forEach((m,i) => {
-      const o = document.createElement('option'); o.value = i; o.textContent = m; selM.appendChild(o);
+  (function initMonthFilter(){
+    const sel = document.getElementById('filter-month');
+    MONTHS.forEach(function(m,i){
+      const o = document.createElement('option'); o.value = i; o.textContent = m; sel.appendChild(o);
+    });
+    sel.value = String(getSaratovNow().month);
+  })();
+  document.getElementById('filter-month').addEventListener('change', renderHome);
+  document.getElementById('filter-status').addEventListener('change', renderHome);
+
+  function renderUsers() {
+    const tbody = document.getElementById('users-tbody');
+    tbody.innerHTML = '';
+    state.users.forEach(function(u){
+      const debt = calcDebt(u);
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td>' + escapeHtml(u.fio) + '</td>' +
+        '<td>' + escapeHtml(u.code) + '</td>' +
+        '<td class="debt ' + (debt>0?'has-debt':'no-debt') + '">' + (debt>0 ? debt.toLocaleString('ru-RU')+' ₽' : '—') + '</td>' +
+        '<td><button class="btn-icon" data-info="' + u.id + '">Инфо</button>' +
+        (editMode ? ' <button class="btn-icon" data-edit="' + u.id + '">Ред.</button>' : '') + '</td>';
+      tbody.appendChild(tr);
+    });
+    if (!state.users.length) tbody.innerHTML = '<tr><td colspan="4" class="empty">Пока нет пользователей</td></tr>';
+  }
+
+  document.getElementById('btn-add-user').addEventListener('click', function(){
+    document.getElementById('input-fio').value = '';
+    document.getElementById('input-code').value = '';
+    openModal('modal-add');
+  });
+  document.getElementById('btn-save-user').addEventListener('click', async function(){
+    const fio = document.getElementById('input-fio').value.trim();
+    const code = document.getElementById('input-code').value.trim();
+    if (!fio || !code) { alert('Заполните все поля'); return; }
+    const res = await db.from('users').insert({ fio: fio, code: code });
+    if (res.error) { alert('Ошибка: ' + res.error.message); return; }
+    await loadAll();
+    renderUsers(); renderHome();
+    closeModal(document.getElementById('btn-save-user'));
+  });
+
+  document.getElementById('users-tbody').addEventListener('click', function(e){
+    const i = e.target.closest('[data-info]');
+    if (i) { infoId = Number(i.dataset.info); renderInfo(); openModal('modal-info'); return; }
+    const ed = e.target.closest('[data-edit]');
+    if (ed) {
+      editingId = Number(ed.dataset.edit);
+      const u = state.users.find(function(x){ return x.id === editingId; });
+      document.getElementById('edit-fio').value = u.fio;
+      document.getElementById('edit-code').value = u.code;
+      openModal('modal-edit');
+    }
+  });
+
+  function renderInfo() {
+    const user = state.users.find(function(u){ return u.id === infoId; });
+    if (!user) return;
+    document.getElementById('info-title').textContent = user.fio + ' (' + user.code + ')';
+    const grid = document.getElementById('months-grid');
+    grid.innerHTML = '';
+    MONTHS.forEach(function(name, i){
+      const box = document.createElement('div');
+      box.className = 'month-box';
+      box.innerHTML = '<div class="month-box-name">' + name + '</div>';
+      const sts = document.createElement('div');
+      sts.className = 'month-statuses';
+      ['paid','unpaid','otp','kmd'].forEach(function(st){
+        const b = document.createElement('button');
+        b.className = 'status-btn ' + st + (user.paid[i]===st ? ' active' : '');
+        b.textContent = STATUS_LABELS[st];
+        b.addEventListener('click', async function(){
+          const newStatus = user.paid[i] === st ? null : st;
+          const year = new Date().getFullYear();
+          if (newStatus === null) {
+            await db.from('months').delete().match({ user_id: user.id, year: year, month: i });
+          } else {
+            await db.from('months').upsert(
+              { user_id: user.id, year: year, month: i, status: newStatus },
+              { onConflict: 'user_id,year,month' }
+            );
+          }
+          user.paid[i] = newStatus;
+          renderInfo(); renderUsers(); renderHome();
+        });
+        sts.appendChild(b);
+      });
+      box.appendChild(sts);
+      grid.appendChild(box);
     });
   }
-  // фильтр пользователей
-  const selU = document.getElementById('hist-filter-user');
-  const curVal = selU.value;
-  selU.innerHTML = '<option value="all">Все</option>';
-  [...state.users].sort((a,b) => a.fio.localeCompare(b.fio,'ru')).forEach(u => {
-    const o = document.createElement('option'); o.value = u.id; o.textContent = u.fio; selU.appendChild(o);
+
+  const editModeBtn = document.getElementById('btn-edit-mode');
+  editModeBtn.addEventListener('click', function(){
+    editMode = !editMode;
+    editModeBtn.textContent = editMode ? 'Готово' : 'Редактировать';
+    editModeBtn.classList.toggle('btn-primary', editMode);
+    editModeBtn.classList.toggle('btn-secondary', !editMode);
+    renderUsers();
   });
-  selU.value = curVal || 'all';
 
-  const fT = document.getElementById('hist-filter-type').value;
-  const fM = selM.value;
-  const fU = selU.value;
-
-  let items = buildHistory();
-  if (fT !== 'all') items = items.filter(x => x.type === fT);
-  if (fM !== 'all') items = items.filter(x => String(x.monthIndex) === fM);
-  if (fU !== 'all') items = items.filter(x => String(x.userId) === fU);
-
-  const tbody = document.getElementById('history-tbody');
-  tbody.innerHTML = '';
-  if (!items.length) { tbody.innerHTML = '<tr><td colspan="4" class="empty">Записей нет</td></tr>'; return; }
-
-  items.forEach(it => {
-    const typeLabel = it.type === 'income' ? 'Пополнение' : 'Расход';
-    const color = it.type === 'income' ? 'var(--green)' : 'var(--red)';
-    const sign = it.amount >= 0 ? '+' : '−';
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${it.date || '—'}</td>
-      <td><span style="color:${color};font-weight:600;">${typeLabel}</span></td>
-      <td>${it.description}</td>
-      <td style="font-weight:600;color:${color};">${sign}${Math.abs(it.amount).toLocaleString('ru-RU')} ₽</td>`;
-    tbody.appendChild(tr);
+  document.getElementById('btn-update-user').addEventListener('click', async function(){
+    const fio = document.getElementById('edit-fio').value.trim();
+    const code = document.getElementById('edit-code').value.trim();
+    if (!fio || !code) { alert('Заполните все поля'); return; }
+    const res = await db.from('users').update({ fio: fio, code: code }).eq('id', editingId);
+    if (res.error) { alert('Ошибка: ' + res.error.message); return; }
+    await loadAll();
+    renderUsers(); renderHome();
+    closeModal(document.getElementById('btn-update-user'));
   });
-}
-['hist-filter-type','hist-filter-month','hist-filter-user'].forEach(id =>
-  document.getElementById(id).addEventListener('change', renderHistory));
+  document.getElementById('btn-delete-user').addEventListener('click', async function(){
+    if (!confirm('Удалить пользователя?')) return;
+    await db.from('users').delete().eq('id', editingId);
+    await loadAll();
+    renderUsers(); renderHome();
+    closeModal(document.getElementById('btn-delete-user'));
+  });
 
-// =================== НАСТРОЙКИ ===================
-document.getElementById('btn-save-fee').addEventListener('click', async () => {
-  const val = Number(document.getElementById('input-fee').value);
-  if (!val || val < 0) { alert('Введите корректную сумму'); return; }
-  const { error } = await supabase.from('config').update({ monthly_fee: val }).eq('id', 1);
-  if (error) { alert('Ошибка: ' + error.message); return; }
-  state.monthlyFee = val;
-  document.getElementById('fee-saved-hint').textContent = 'Сохранено ✓';
-  setTimeout(() => document.getElementById('fee-saved-hint').textContent = '', 2000);
-  renderHome(); renderUsers();
-});
+  function renderExpenses() {
+    const tbody = document.getElementById('expenses-tbody');
+    tbody.innerHTML = '';
+    document.getElementById('expense-actions-col').textContent = deleteExpenseMode ? 'Действия' : '';
+    const sorted = state.expenses.slice().sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
 
-// =================== ЭКСПОРТ ===================
-document.getElementById('btn-export').addEventListener('click', async () => {
-  await loadAll();
-  const dump = {
-    monthlyFee: state.monthlyFee,
-    users: state.users.map(u => ({ id: u.id, fio: u.fio, code: u.code, paid: u.paid })),
-    expenses: state.expenses,
-    payments: state.payments,
-    suggestions: state.suggestions,
-    exportedAt: new Date().toISOString()
-  };
-  const blob = new Blob([JSON.stringify(dump, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `gocash-backup-${new Date().toISOString().slice(0,10)}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-  document.getElementById('file-hint').textContent = 'Файл скачан ✓';
-  setTimeout(() => document.getElementById('file-hint').textContent = '', 2000);
-});
+    sorted.forEach(function(e){
+      const sum = (Number(e.qty)||0)*(Number(e.price)||0);
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td>' + (e.date || '') + '</td>' +
+        '<td>' + escapeHtml(e.name) + '</td>' +
+        '<td>' + e.qty + '</td>' +
+        '<td>' + (Number(e.price)||0).toLocaleString('ru-RU') + ' ₽</td>' +
+        '<td><b>' + sum.toLocaleString('ru-RU') + ' ₽</b></td>' +
+        '<td>' + (deleteExpenseMode ? '<button class="btn-danger-outline" data-del-exp="' + e.id + '">🗑</button>' : '') + '</td>';
+      tbody.appendChild(tr);
+    });
+    if (!state.expenses.length) tbody.innerHTML = '<tr><td colspan="6" class="empty">Расходов пока нет</td></tr>';
 
-// =================== Утилиты ===================
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
+    const box = document.getElementById('expense-months');
+    box.innerHTML = '';
+    const currentYear = new Date().getFullYear();
+    let anyShown = false;
+    MONTHS.forEach(function(name, mi){
+      const items = state.expenses.filter(function(e){
+        const d = new Date(e.date);
+        return d.getFullYear() === currentYear && d.getMonth() === mi;
+      });
+      if (!items.length) return;
+      anyShown = true;
+      const total = items.reduce(function(s,e){ return s + (Number(e.qty)||0)*(Number(e.price)||0); }, 0);
+      const div = document.createElement('div');
+      div.className = 'expense-month-box';
+      div.innerHTML = '<div class="expense-month-title"><span>' + name + '</span><span class="expense-month-total">' + total.toLocaleString('ru-RU') + ' ₽</span></div>';
+      items.forEach(function(e){
+        const sum = (Number(e.qty)||0)*(Number(e.price)||0);
+        const r = document.createElement('div');
+        r.className = 'expense-item';
+        r.innerHTML = '<span>' + escapeHtml(e.name) + ' ×' + e.qty + '</span><span class="expense-item-price">' + sum.toLocaleString('ru-RU') + ' ₽</span>';
+        div.appendChild(r);
+      });
+      box.appendChild(div);
+    });
+    if (!anyShown) box.innerHTML = '<div class="card empty">За этот год расходов нет</div>';
+  }
 
-// =================== СТАРТ ===================
-(async () => {
-  await loadAll();
-  showScreen(location.hash.replace('#','') || 'home');
+  document.getElementById('btn-add-expense').addEventListener('click', function(){
+    document.getElementById('exp-date').value = new Date().toISOString().slice(0,10);
+    document.getElementById('exp-name').value = '';
+    document.getElementById('exp-qty').value = 1;
+    document.getElementById('exp-price').value = 0;
+    openModal('modal-add-expense');
+  });
+  document.getElementById('btn-save-expense').addEventListener('click', async function(){
+    const date = document.getElementById('exp-date').value;
+    const name = document.getElementById('exp-name').value.trim();
+    const qty = Number(document.getElementById('exp-qty').value) || 1;
+    const price = Number(document.getElementById('exp-price').value) || 0;
+    if (!date || !name) { alert('Заполните дату и название'); return; }
+    const res = await db.from('expenses').insert({ date: date, name: name, qty: qty, price: price });
+    if (res.error) { alert('Ошибка: ' + res.error.message); return; }
+    await loadAll();
+    renderExpenses(); renderHome();
+    closeModal(document.getElementById('btn-save-expense'));
+  });
+
+  const delModeBtn = document.getElementById('btn-delete-mode');
+  delModeBtn.addEventListener('click', function(){
+    deleteExpenseMode = !deleteExpenseMode;
+    delModeBtn.textContent = deleteExpenseMode ? 'Готово' : 'Удалить';
+    delModeBtn.classList.toggle('btn-danger', deleteExpenseMode);
+    delModeBtn.classList.toggle('btn-secondary', !deleteExpenseMode);
+    renderExpenses();
+  });
+  document.getElementById('expenses-tbody').addEventListener('click', async function(e){
+    const d = e.target.closest('[data-del-exp]');
+    if (!d) return;
+    if (!confirm('Удалить расход?')) return;
+    await db.from('expenses').delete().eq('id', Number(d.dataset.delExp));
+    await loadAll();
+    renderExpenses(); renderHome();
+  });
+
+  function renderReceipts() {
+    const tbody = document.getElementById('receipts-tbody');
+    tbody.innerHTML = '';
+    const list = state.payments.slice().sort(function(a,b){ return (b.created_at||'').localeCompare(a.created_at||''); });
+    if (!list.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty">Пока нет заявок</td></tr>'; return; }
+    list.forEach(function(p){
+      const u = state.users.find(function(x){ return x.id === p.user_id; });
+      let statusHtml = '';
+      if (p.status === 'pending') statusHtml = '<span class="badge-status pending">⏳ На проверке</span>';
+      if (p.status === 'reason') statusHtml = '<span class="badge-status reason">📌 ' + (p.reason==='otp'?'Отпуск':'Командировка') + '</span>';
+      if (p.status === 'approved') statusHtml = '<span class="badge-status approved">✅ Одобрено</span>';
+      if (p.status === 'rejected') statusHtml = '<span class="badge-status rejected">❌ Отклонено</span>';
+
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td>' + new Date(p.created_at).toLocaleString('ru-RU') + '</td>' +
+        '<td>' + (u ? escapeHtml(u.fio) : '—') + '</td>' +
+        '<td>' + MONTHS[p.month] + ' ' + p.year + '</td>' +
+        '<td>' + statusHtml + '</td>' +
+        '<td>' + (p.receipt_url ? '<img src="' + p.receipt_url + '" class="receipt-thumb" data-view="' + p.receipt_url + '">' : '—') + '</td>' +
+        '<td>' + (p.status === 'pending' ? '<button class="btn-success-outline" data-approve="' + p.id + '">Одобрить</button> <button class="btn-danger-outline" data-reject="' + p.id + '">Отклонить</button>' : '') + '</td>';
+      tbody.appendChild(tr);
+    });
+  }
+
+  document.getElementById('receipts-tbody').addEventListener('click', async function(e){
+    const view = e.target.closest('[data-view]');
+    if (view) {
+      document.getElementById('receipt-view-img').src = view.dataset.view;
+      openModal('modal-receipt-view');
+      return;
+    }
+    const ap = e.target.closest('[data-approve]');
+    if (ap) {
+      const id = Number(ap.dataset.approve);
+      const p = state.payments.find(function(x){ return x.id === id; });
+      if (!p) return;
+      await db.from('payments').update({ status: 'approved' }).eq('id', id);
+      await db.from('months').upsert(
+        { user_id: p.user_id, year: p.year, month: p.month, status: 'paid' },
+        { onConflict: 'user_id,year,month' }
+      );
+      await loadAll();
+      renderReceipts(); renderHome(); renderUsers();
+      return;
+    }
+    const rj = e.target.closest('[data-reject]');
+    if (rj) {
+      await db.from('payments').update({ status: 'rejected' }).eq('id', Number(rj.dataset.reject));
+      await loadAll();
+      renderReceipts();
+    }
+  });
+
+  function renderSuggestions() {
+    const list = document.getElementById('suggestions-list');
+    const items = state.suggestions.slice().sort(function(a,b){ return (b.created_at||'').localeCompare(a.created_at||''); });
+    if (!items.length) { list.innerHTML = '<div class="card empty">Пока нет предложений</div>'; return; }
+    list.innerHTML = items.map(function(s){
+      const u = state.users.find(function(x){ return x.id === s.user_id; });
+      return '<div class="suggestion-card">' +
+        '<div class="suggestion-meta">' + (u ? escapeHtml(u.fio) : 'Аноним') + ' · ' + new Date(s.created_at).toLocaleString('ru-RU') + '</div>' +
+        '<div>' + escapeHtml(s.text) + '</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  function buildHistory() {
+    const items = [];
+    const year = new Date().getFullYear();
+    state.users.forEach(function(u){
+      u.paid.forEach(function(s, i){
+        if (s === 'paid') {
+          items.push({
+            type: 'income',
+            date: year + '-' + String(i+1).padStart(2,'0') + '-15',
+            description: u.fio + ' — взнос за ' + MONTHS[i],
+            amount: state.monthlyFee,
+            monthIndex: i,
+            userId: u.id
+          });
+        }
+      });
+    });
+    state.expenses.forEach(function(e){
+      const d = e.date || '';
+      const mi = d ? new Date(d).getMonth() : null;
+      items.push({
+        type: 'expense',
+        date: d,
+        description: e.name + ' ×' + e.qty,
+        amount: -((Number(e.qty)||0)*(Number(e.price)||0)),
+        monthIndex: mi,
+        userId: null
+      });
+    });
+    return items.sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
+  }
+
+  function renderHistory() {
+    const selM = document.getElementById('hist-filter-month');
+    if (selM.options.length === 1) {
+      MONTHS.forEach(function(m,i){
+        const o = document.createElement('option'); o.value = i; o.textContent = m; selM.appendChild(o);
+      });
+    }
+    const selU = document.getElementById('hist-filter-user');
+    const curVal = selU.value;
+    selU.innerHTML = '<option value="all">Все</option>';
+    state.users.slice().sort(function(a,b){ return a.fio.localeCompare(b.fio,'ru'); }).forEach(function(u){
+      const o = document.createElement('option'); o.value = u.id; o.textContent = u.fio; selU.appendChild(o);
+    });
+    selU.value = curVal || 'all';
+
+    const fT = document.getElementById('hist-filter-type').value;
+    const fM = selM.value;
+    const fU = selU.value;
+
+    let items = buildHistory();
+    if (fT !== 'all') items = items.filter(function(x){ return x.type === fT; });
+    if (fM !== 'all') items = items.filter(function(x){ return String(x.monthIndex) === fM; });
+    if (fU !== 'all') items = items.filter(function(x){ return String(x.userId) === fU; });
+
+    const tbody = document.getElementById('history-tbody');
+    tbody.innerHTML = '';
+    if (!items.length) { tbody.innerHTML = '<tr><td colspan="4" class="empty">Записей нет</td></tr>'; return; }
+
+    items.forEach(function(it){
+      const typeLabel = it.type === 'income' ? 'Пополнение' : 'Расход';
+      const color = it.type === 'income' ? 'var(--green)' : 'var(--red)';
+      const sign = it.amount >= 0 ? '+' : '−';
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td>' + (it.date || '—') + '</td>' +
+        '<td><span style="color:' + color + ';font-weight:600;">' + typeLabel + '</span></td>' +
+        '<td>' + escapeHtml(it.description) + '</td>' +
+        '<td style="font-weight:600;color:' + color + ';">' + sign + Math.abs(it.amount).toLocaleString('ru-RU') + ' ₽</td>';
+      tbody.appendChild(tr);
+    });
+  }
+  ['hist-filter-type','hist-filter-month','hist-filter-user'].forEach(function(id){
+    document.getElementById(id).addEventListener('change', renderHistory);
+  });
+
+  document.getElementById('btn-save-fee').addEventListener('click', async function(){
+    const val = Number(document.getElementById('input-fee').value);
+    if (!val || val < 0) { alert('Введите корректную сумму'); return; }
+    const res = await db.from('config').update({ monthly_fee: val }).eq('id', 1);
+    if (res.error) { alert('Ошибка: ' + res.error.message); return; }
+    state.monthlyFee = val;
+    document.getElementById('fee-saved-hint').textContent = 'Сохранено ✓';
+    setTimeout(function(){ document.getElementById('fee-saved-hint').textContent = ''; }, 2000);
+    renderHome(); renderUsers();
+  });
+
+  document.getElementById('btn-export').addEventListener('click', async function(){
+    await loadAll();
+    const dump = {
+      monthlyFee: state.monthlyFee,
+      users: state.users.map(function(u){ return { id: u.id, fio: u.fio, code: u.code, paid: u.paid }; }),
+      expenses: state.expenses,
+      payments: state.payments,
+      suggestions: state.suggestions,
+      exportedAt: new Date().toISOString()
+    };
+    const blob = new Blob([JSON.stringify(dump, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'gocash-backup-' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    document.getElementById('file-hint').textContent = 'Файл скачан ✓';
+    setTimeout(function(){ document.getElementById('file-hint').textContent = ''; }, 2000);
+  });
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  // =================== СТАРТ ===================
+  (async function(){
+    showScreen(location.hash.replace('#','') || 'home');
+    try {
+      await loadAll();
+      renderHome();
+    } catch (err) {
+      console.error('Ошибка загрузки данных:', err);
+      document.getElementById('home-list').innerHTML =
+        '<div class="card empty" style="color:#ef4444;">Ошибка загрузки: ' + (err.message || err) + '<br>Открой F12 → Console</div>';
+    }
+  })();
 })();
 </script>
 </body>

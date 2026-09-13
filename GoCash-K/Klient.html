@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GoCash</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -17,7 +18,6 @@
          min-height:100vh; font-size:14px; -webkit-font-smoothing:antialiased; }
   .container { max-width:480px; margin:0 auto; padding:20px; }
 
-  /* ===== Авторизация ===== */
   .auth-card { background:#fff; border-radius:var(--radius); padding:28px; margin-top:60px;
                box-shadow:0 4px 20px rgba(0,0,0,.06); }
   .auth-logo { text-align:center; margin-bottom:22px; }
@@ -32,7 +32,6 @@
   .auth-card input:focus { border-color:var(--primary); }
   .auth-error { color:var(--red); font-size:13px; text-align:center; margin-top:10px; min-height:18px; }
 
-  /* ===== Основной экран ===== */
   .header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
   .header-logo { font-size:18px; font-weight:700; display:flex; align-items:center; gap:8px; }
   .header-logo-icon { width:28px; height:28px; border-radius:8px;
@@ -41,6 +40,8 @@
   .header-logo-text span { color:#22c55e; }
   .header-user { font-size:12px; color:var(--muted); text-align:right; }
   .header-user b { display:block; font-size:13px; color:var(--text); font-weight:600; }
+  .header-user a { color:var(--muted); text-decoration:none; }
+  .header-user a:hover { color:var(--red); }
 
   .balance-card { background:linear-gradient(135deg,#0f172a,#1e293b); color:#fff;
                   border-radius:var(--radius); padding:22px; text-align:center; margin-bottom:20px;
@@ -61,6 +62,7 @@
   .btn-gray:hover { background:#f8fafc; }
   .btn-primary { background:var(--primary); color:#fff; }
   .btn-primary:hover { background:var(--primary-dark); }
+  .btn:disabled { opacity:.5; cursor:not-allowed; }
 
   .section-title { font-size:15px; font-weight:600; margin:24px 0 12px; }
 
@@ -68,7 +70,6 @@
                 border:1px solid var(--border); font-size:14px; line-height:1.45; box-shadow:0 1px 2px rgba(20,30,50,.04); }
   .suggestion-meta { font-size:11px; color:var(--muted); margin-top:8px; }
 
-  /* ===== Модалки ===== */
   .modal-overlay { display:none; position:fixed; inset:0; background:rgba(15,23,42,.5);
                    backdrop-filter:blur(2px); z-index:100; align-items:center; justify-content:center; padding:20px; }
   .modal-overlay.active { display:flex; }
@@ -87,7 +88,7 @@
   .month-btn { padding:11px 4px; border:1px solid var(--border); border-radius:10px;
                background:#fff; cursor:pointer; font-size:13px; font-weight:500; font-family:inherit;
                transition:all .15s; }
-  .month-btn:hover { border-color:var(--primary); }
+  .month-btn:hover:not(:disabled) { border-color:var(--primary); }
   .month-btn.selected { background:var(--primary); color:#fff; border-color:var(--primary); }
   .month-btn:disabled { opacity:.35; cursor:not-allowed; }
 
@@ -114,7 +115,6 @@
 </head>
 <body>
 
-<!-- ===== АВТОРИЗАЦИЯ ===== -->
 <div class="container" id="auth-screen">
   <div class="auth-card">
     <div class="auth-logo">
@@ -129,7 +129,6 @@
   </div>
 </div>
 
-<!-- ===== ОСНОВНОЙ ЭКРАН ===== -->
 <div class="container" id="main-screen" style="display:none;">
   <div class="header">
     <div class="header-logo">
@@ -138,7 +137,7 @@
     </div>
     <div class="header-user">
       <b id="user-fio">—</b>
-      <a href="#" id="btn-logout" style="color:var(--muted);">Выйти</a>
+      <a href="#" id="btn-logout">Выйти</a>
     </div>
   </div>
 
@@ -157,7 +156,6 @@
   <div id="suggestions-list"><div class="loader">Загрузка…</div></div>
 </div>
 
-<!-- ===== МОДАЛКА: СДАЛ ===== -->
 <div class="modal-overlay" id="modal-pay">
   <div class="modal">
     <h3>Оплата взноса</h3>
@@ -174,7 +172,6 @@
   </div>
 </div>
 
-<!-- ===== МОДАЛКА: НЕ СДАЮ ===== -->
 <div class="modal-overlay" id="modal-skip">
   <div class="modal">
     <h3>Причина пропуска</h3>
@@ -190,7 +187,6 @@
   </div>
 </div>
 
-<!-- ===== МОДАЛКА: РАСХОДЫ ===== -->
 <div class="modal-overlay" id="modal-expenses">
   <div class="modal">
     <h3>Расходы за месяц</h3>
@@ -201,7 +197,6 @@
   </div>
 </div>
 
-<!-- ===== МОДАЛКА: ПРЕДЛОЖЕНИЕ ===== -->
 <div class="modal-overlay" id="modal-suggest">
   <div class="modal">
     <h3>Предложить</h3>
@@ -217,298 +212,284 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// =================== НАСТРОЙКИ SUPABASE ===================
-const SUPABASE_URL = 'https://xpaqczxqukuzfwmnimzsx.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhwYXFjenhxa3V6ZndtbmltenN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5Njg4NDcsImV4cCI6MjEwNDU0NDg0N30.hH62d6aCsgBchg4MVPey714O3-FR9bNaqnsm_T32zAk';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-// ==========================================================
+(function(){
+  'use strict';
 
-const MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-const MONTHS_SHORT = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
+  const SUPABASE_URL = 'https://xpaqczxqukuzfwmnimzsx.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhwYXFjenhxa3V6ZndtbmltenN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5Njg4NDcsImV4cCI6MjEwNDU0NDg0N30.hH62d6aCsgBchg4MVPey714O3-FR9bNaqnsm_T32zAk';
 
-let currentUser = null;
-let selectedMonth = null;
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// =================== АВТОРИЗАЦИЯ ===================
-document.getElementById('btn-login').addEventListener('click', async () => {
-  const fio = document.getElementById('auth-name').value.trim();
-  const code = document.getElementById('auth-code').value.trim();
-  const errEl = document.getElementById('auth-error');
-  errEl.textContent = '';
+  const MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 
-  if (!fio || !code) { errEl.textContent = 'Заполните все поля'; return; }
+  let currentUser = null;
+  let selectedMonth = null;
 
-  const { data, error } = await supabase
-    .from('users')
-    .select('*')
-    .eq('fio', fio)
-    .eq('code', code)
-    .maybeSingle();
+  // ===== Авторизация =====
+  document.getElementById('btn-login').addEventListener('click', async function(){
+    const fio = document.getElementById('auth-name').value.trim();
+    const code = document.getElementById('auth-code').value.trim();
+    const errEl = document.getElementById('auth-error');
+    errEl.textContent = '';
 
-  if (error || !data) {
-    errEl.textContent = 'Неверное имя или код доступа';
-    return;
-  }
+    if (!fio || !code) { errEl.textContent = 'Заполните все поля'; return; }
 
-  currentUser = data;
-  sessionStorage.setItem('gocash_user', JSON.stringify(data));
-  await loadMain();
-});
+    const res = await db.from('users').select('*').eq('fio', fio).eq('code', code).maybeSingle();
 
-// Проверка сохранённой сессии
-(async () => {
-  const saved = sessionStorage.getItem('gocash_user');
-  if (saved) {
-    try {
-      currentUser = JSON.parse(saved);
-      await loadMain();
-    } catch {}
-  }
-})();
+    if (res.error || !res.data) {
+      errEl.textContent = 'Неверное имя или код доступа';
+      console.error(res.error);
+      return;
+    }
 
-// =================== ОСНОВНОЙ ЭКРАН ===================
-async function loadMain() {
-  document.getElementById('auth-screen').style.display = 'none';
-  document.getElementById('main-screen').style.display = 'block';
-  document.getElementById('user-fio').textContent = currentUser.fio;
-  await Promise.all([loadBalance(), loadSuggestions()]);
-}
-
-async function loadBalance() {
-  const [conf, months, expenses] = await Promise.all([
-    supabase.from('config').select('monthly_fee').eq('id',1).single(),
-    supabase.from('months').select('status'),
-    supabase.from('expenses').select('qty, price')
-  ]);
-  const fee = conf.data?.monthly_fee || 1000;
-  const income = (months.data||[]).filter(m => m.status === 'paid').length * fee;
-  const spent = (expenses.data||[]).reduce((s,e) => s + (Number(e.qty)||0)*(Number(e.price)||0), 0);
-  const bal = income - spent;
-
-  document.getElementById('user-balance').textContent = bal.toLocaleString('ru-RU') + ' ₽';
-  document.getElementById('balance-sub').textContent =
-    `Сдано: ${income.toLocaleString('ru-RU')} ₽ · Расходы: ${spent.toLocaleString('ru-RU')} ₽`;
-}
-
-// =================== ВЫБОР МЕСЯЦА ===================
-function renderMonthSelector(containerId, onSelect) {
-  const grid = document.getElementById(containerId);
-  grid.innerHTML = '';
-  const cur = new Date().getMonth();
-  selectedMonth = null;
-  MONTHS_SHORT.forEach((mn, i) => {
-    const b = document.createElement('button');
-    b.className = 'month-btn';
-    b.textContent = MONTHS[i];
-    if (i > cur) { b.disabled = true; b.title = 'Будущий месяц'; }
-    b.addEventListener('click', () => {
-      grid.querySelectorAll('.month-btn').forEach(x => x.classList.remove('selected'));
-      b.classList.add('selected');
-      selectedMonth = i;
-      if (onSelect) onSelect(i);
-    });
-    grid.appendChild(b);
+    currentUser = res.data;
+    try { sessionStorage.setItem('gocash_user', JSON.stringify(res.data)); } catch(e){}
+    await loadMain();
   });
-}
 
-// =================== СДАЛ ===================
-document.getElementById('btn-pay').addEventListener('click', () => {
-  renderMonthSelector('pay-months');
-  document.getElementById('pay-receipt').value = '';
-  document.getElementById('pay-file-label').textContent = '📎 Нажмите, чтобы выбрать файл';
-  document.getElementById('pay-preview').style.display = 'none';
-  document.getElementById('modal-pay').classList.add('active');
-});
+  // Авто-вход
+  (async function(){
+    let saved = null;
+    try { saved = sessionStorage.getItem('gocash_user'); } catch(e){}
+    if (saved) {
+      try {
+        currentUser = JSON.parse(saved);
+        await loadMain();
+      } catch(e){}
+    }
+  })();
 
-document.getElementById('pay-receipt').addEventListener('change', e => {
-  const f = e.target.files[0];
-  if (!f) return;
-  document.getElementById('pay-file-label').textContent = '📎 ' + f.name;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    const img = document.getElementById('pay-preview');
-    img.src = ev.target.result;
-    img.style.display = 'block';
-  };
-  reader.readAsDataURL(f);
-});
+  async function loadMain() {
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('main-screen').style.display = 'block';
+    document.getElementById('user-fio').textContent = currentUser.fio;
+    await Promise.all([loadBalance(), loadSuggestions()]);
+  }
 
-document.getElementById('btn-submit-pay').addEventListener('click', async () => {
-  if (selectedMonth === null) { alert('Выберите месяц'); return; }
-  const file = document.getElementById('pay-receipt').files[0];
-  if (!file) { alert('Загрузите скриншот чека'); return; }
+  async function loadBalance() {
+    const [conf, months, expenses] = await Promise.all([
+      db.from('config').select('monthly_fee').eq('id',1).single(),
+      db.from('months').select('status'),
+      db.from('expenses').select('qty, price')
+    ]);
+    const fee = (conf.data && conf.data.monthly_fee) || 1000;
+    const income = (months.data||[]).filter(function(m){ return m.status === 'paid'; }).length * fee;
+    const spent = (expenses.data||[]).reduce(function(s,e){ return s + (Number(e.qty)||0)*(Number(e.price)||0); }, 0);
+    const bal = income - spent;
 
-  const btn = document.getElementById('btn-submit-pay');
-  btn.disabled = true; btn.textContent = 'Отправляем…';
+    document.getElementById('user-balance').textContent = bal.toLocaleString('ru-RU') + ' ₽';
+    document.getElementById('balance-sub').textContent =
+      'Сдано: ' + income.toLocaleString('ru-RU') + ' ₽ · Расходы: ' + spent.toLocaleString('ru-RU') + ' ₽';
+  }
 
-  try {
-    // 1. загружаем файл в Storage
-    const ext = file.name.split('.').pop();
-    const path = `${currentUser.id}/${Date.now()}.${ext}`;
-    const { error: upErr } = await supabase.storage.from('receipts').upload(path, file);
-    if (upErr) throw upErr;
+  function renderMonthSelector(containerId) {
+    const grid = document.getElementById(containerId);
+    grid.innerHTML = '';
+    const cur = new Date().getMonth();
+    selectedMonth = null;
+    MONTHS.forEach(function(m, i){
+      const b = document.createElement('button');
+      b.className = 'month-btn';
+      b.textContent = m;
+      if (i > cur) { b.disabled = true; b.title = 'Будущий месяц'; }
+      b.addEventListener('click', function(){
+        grid.querySelectorAll('.month-btn').forEach(function(x){ x.classList.remove('selected'); });
+        b.classList.add('selected');
+        selectedMonth = i;
+      });
+      grid.appendChild(b);
+    });
+  }
 
-    const { data: urlData } = supabase.storage.from('receipts').getPublicUrl(path);
+  // ===== СДАЛ =====
+  document.getElementById('btn-pay').addEventListener('click', function(){
+    renderMonthSelector('pay-months');
+    document.getElementById('pay-receipt').value = '';
+    document.getElementById('pay-file-label').textContent = '📎 Нажмите, чтобы выбрать файл';
+    const prev = document.getElementById('pay-preview');
+    prev.style.display = 'none';
+    prev.src = '';
+    document.getElementById('modal-pay').classList.add('active');
+  });
 
-    // 2. создаём запись
-    const { error: insErr } = await supabase.from('payments').insert({
+  document.getElementById('pay-receipt').addEventListener('change', function(e){
+    const f = e.target.files[0];
+    if (!f) return;
+    document.getElementById('pay-file-label').textContent = '📎 ' + f.name;
+    const reader = new FileReader();
+    reader.onload = function(ev){
+      const img = document.getElementById('pay-preview');
+      img.src = ev.target.result;
+      img.style.display = 'block';
+    };
+    reader.readAsDataURL(f);
+  });
+
+  document.getElementById('btn-submit-pay').addEventListener('click', async function(){
+    if (selectedMonth === null) { alert('Выберите месяц'); return; }
+    const file = document.getElementById('pay-receipt').files[0];
+    if (!file) { alert('Загрузите скриншот чека'); return; }
+
+    const btn = document.getElementById('btn-submit-pay');
+    btn.disabled = true; btn.textContent = 'Отправляем…';
+
+    try {
+      const ext = file.name.split('.').pop();
+      const path = currentUser.id + '/' + Date.now() + '.' + ext;
+      const up = await db.storage.from('receipts').upload(path, file);
+      if (up.error) throw up.error;
+
+      const urlData = db.storage.from('receipts').getPublicUrl(path);
+
+      const ins = await db.from('payments').insert({
+        user_id: currentUser.id,
+        year: new Date().getFullYear(),
+        month: selectedMonth,
+        status: 'pending',
+        receipt_url: urlData.data.publicUrl,
+        receipt_path: path
+      });
+      if (ins.error) throw ins.error;
+
+      alert('Чек отправлен на проверку ✓\nПосле одобрения администратором месяц будет отмечен как «Сдал».');
+      document.getElementById('modal-pay').classList.remove('active');
+    } catch (err) {
+      console.error(err);
+      alert('Ошибка отправки: ' + (err.message || 'неизвестная'));
+    } finally {
+      btn.disabled = false; btn.textContent = 'Отправить';
+    }
+  });
+
+  // ===== НЕ СДАЮ =====
+  document.getElementById('btn-skip').addEventListener('click', function(){
+    renderMonthSelector('skip-months');
+    document.getElementById('modal-skip').classList.add('active');
+  });
+
+  document.getElementById('btn-submit-skip').addEventListener('click', async function(){
+    if (selectedMonth === null) { alert('Выберите месяц'); return; }
+    const reason = document.getElementById('skip-reason').value;
+
+    const res = await db.from('payments').insert({
       user_id: currentUser.id,
       year: new Date().getFullYear(),
       month: selectedMonth,
-      status: 'pending',
-      receipt_url: urlData.publicUrl,
-      receipt_path: path
+      status: 'reason',
+      reason: reason
     });
-    if (insErr) throw insErr;
+    if (res.error) { alert('Ошибка: ' + res.error.message); return; }
 
-    alert('Чек отправлен на проверку ✓\nПосле одобрения администратором месяц будет отмечен как «Сдал».');
-    document.getElementById('modal-pay').classList.remove('active');
-  } catch (err) {
-    console.error(err);
-    alert('Ошибка отправки: ' + (err.message || 'неизвестная'));
-  } finally {
-    btn.disabled = false; btn.textContent = 'Отправить';
-  }
-});
-
-// =================== НЕ СДАЮ ===================
-document.getElementById('btn-skip').addEventListener('click', () => {
-  renderMonthSelector('skip-months');
-  document.getElementById('modal-skip').classList.add('active');
-});
-
-document.getElementById('btn-submit-skip').addEventListener('click', async () => {
-  if (selectedMonth === null) { alert('Выберите месяц'); return; }
-  const reason = document.getElementById('skip-reason').value;
-
-  const { error } = await supabase.from('payments').insert({
-    user_id: currentUser.id,
-    year: new Date().getFullYear(),
-    month: selectedMonth,
-    status: 'reason',
-    reason: reason
+    alert('Причина отправлена ✓');
+    document.getElementById('modal-skip').classList.remove('active');
   });
-  if (error) { alert('Ошибка: ' + error.message); return; }
 
-  alert('Причина отправлена ✓');
-  document.getElementById('modal-skip').classList.remove('active');
-});
-
-// =================== РАСХОДЫ ===================
-document.getElementById('btn-expenses').addEventListener('click', async () => {
-  const sel = document.getElementById('exp-month-select');
-  sel.innerHTML = '';
-  MONTHS.forEach((m, i) => {
-    const o = document.createElement('option');
-    o.value = i; o.textContent = m;
-    sel.appendChild(o);
+  // ===== РАСХОДЫ =====
+  document.getElementById('btn-expenses').addEventListener('click', async function(){
+    const sel = document.getElementById('exp-month-select');
+    sel.innerHTML = '';
+    MONTHS.forEach(function(m, i){
+      const o = document.createElement('option');
+      o.value = i; o.textContent = m;
+      sel.appendChild(o);
+    });
+    sel.value = new Date().getMonth();
+    sel.onchange = function(){ loadExpenses(Number(sel.value)); };
+    await loadExpenses(new Date().getMonth());
+    document.getElementById('modal-expenses').classList.add('active');
   });
-  sel.value = new Date().getMonth();
-  sel.onchange = () => loadExpenses(Number(sel.value));
-  await loadExpenses(new Date().getMonth());
-  document.getElementById('modal-expenses').classList.add('active');
-});
 
-async function loadExpenses(monthIndex) {
-  const list = document.getElementById('exp-list');
-  list.innerHTML = '<div class="loader">Загрузка…</div>';
+  async function loadExpenses(monthIndex) {
+    const list = document.getElementById('exp-list');
+    list.innerHTML = '<div class="loader">Загрузка…</div>';
 
-  const year = new Date().getFullYear();
-  const start = `${year}-${String(monthIndex+1).padStart(2,'0')}-01`;
-  const end = new Date(year, monthIndex+1, 0).toISOString().slice(0,10);
+    const year = new Date().getFullYear();
+    const start = year + '-' + String(monthIndex+1).padStart(2,'0') + '-01';
+    const end = new Date(year, monthIndex+1, 0).toISOString().slice(0,10);
 
-  const { data, error } = await supabase
-    .from('expenses')
-    .select('*')
-    .gte('date', start)
-    .lte('date', end)
-    .order('date', { ascending: true });
+    const res = await db.from('expenses').select('*').gte('date', start).lte('date', end).order('date', { ascending: true });
 
-  if (error) { list.innerHTML = '<div class="alert alert-error">Ошибка загрузки</div>'; return; }
-  if (!data || !data.length) {
-    list.innerHTML = '<div class="empty">Расходов за этот месяц нет</div>';
-    return;
+    if (res.error) { list.innerHTML = '<div class="alert alert-error">Ошибка загрузки</div>'; return; }
+    if (!res.data || !res.data.length) {
+      list.innerHTML = '<div class="empty">Расходов за этот месяц нет</div>';
+      return;
+    }
+
+    const total = res.data.reduce(function(s,e){ return s + (Number(e.qty)||0)*(Number(e.price)||0); }, 0);
+    list.innerHTML = res.data.map(function(e){
+      return '<div class="expense-item">' +
+        '<span>' + escapeHtml(e.name) + ' ×' + e.qty + '</span>' +
+        '<span class="expense-item-total">' + ((e.qty||0)*(e.price||0)).toLocaleString('ru-RU') + ' ₽</span>' +
+        '</div>';
+    }).join('') +
+      '<div class="expense-item" style="border-top:2px solid var(--border);padding-top:14px;font-weight:700;">' +
+      '<span>Итого</span><span>' + total.toLocaleString('ru-RU') + ' ₽</span></div>';
   }
 
-  const total = data.reduce((s,e) => s + (Number(e.qty)||0)*(Number(e.price)||0), 0);
-  list.innerHTML = data.map(e => `
-    <div class="expense-item">
-      <span>${escapeHtml(e.name)} ×${e.qty}</span>
-      <span class="expense-item-total">${((e.qty||0)*(e.price||0)).toLocaleString('ru-RU')} ₽</span>
-    </div>
-  `).join('') + `
-    <div class="expense-item" style="border-top:2px solid var(--border);padding-top:14px;font-weight:700;">
-      <span>Итого</span>
-      <span>${total.toLocaleString('ru-RU')} ₽</span>
-    </div>`;
-}
-
-// =================== ПРЕДЛОЖЕНИЯ ===================
-document.getElementById('btn-suggest').addEventListener('click', () => {
-  document.getElementById('suggest-text').value = '';
-  document.getElementById('modal-suggest').classList.add('active');
-});
-
-document.getElementById('btn-submit-suggest').addEventListener('click', async () => {
-  const text = document.getElementById('suggest-text').value.trim();
-  if (!text) { alert('Введите текст'); return; }
-  if (text.length > 1000) { alert('Слишком длинное сообщение (макс 1000 символов)'); return; }
-
-  const { error } = await supabase.from('suggestions').insert({
-    user_id: currentUser.id,
-    text,
-    anonymous: true
+  // ===== ПРЕДЛОЖЕНИЯ =====
+  document.getElementById('btn-suggest').addEventListener('click', function(){
+    document.getElementById('suggest-text').value = '';
+    document.getElementById('modal-suggest').classList.add('active');
   });
-  if (error) { alert('Ошибка: ' + error.message); return; }
 
-  document.getElementById('modal-suggest').classList.remove('active');
-  await loadSuggestions();
-  alert('Спасибо! Предложение отправлено ✓');
-});
+  document.getElementById('btn-submit-suggest').addEventListener('click', async function(){
+    const text = document.getElementById('suggest-text').value.trim();
+    if (!text) { alert('Введите текст'); return; }
+    if (text.length > 1000) { alert('Слишком длинное сообщение (макс 1000 символов)'); return; }
 
-async function loadSuggestions() {
-  const list = document.getElementById('suggestions-list');
-  const { data, error } = await supabase
-    .from('suggestions')
-    .select('id, text, created_at')
-    .order('created_at', { ascending: false })
-    .limit(30);
+    const res = await db.from('suggestions').insert({
+      user_id: currentUser.id,
+      text: text,
+      anonymous: true
+    });
+    if (res.error) { alert('Ошибка: ' + res.error.message); return; }
 
-  if (error) { list.innerHTML = '<div class="alert alert-error">Не удалось загрузить</div>'; return; }
-  if (!data || !data.length) {
-    list.innerHTML = '<div class="empty">Пока нет предложений</div>';
-    return;
+    document.getElementById('modal-suggest').classList.remove('active');
+    await loadSuggestions();
+    alert('Спасибо! Предложение отправлено ✓');
+  });
+
+  async function loadSuggestions() {
+    const list = document.getElementById('suggestions-list');
+    const res = await db.from('suggestions').select('id, text, created_at').order('created_at', { ascending: false }).limit(30);
+
+    if (res.error) { list.innerHTML = '<div class="alert alert-error">Не удалось загрузить</div>'; return; }
+    if (!res.data || !res.data.length) {
+      list.innerHTML = '<div class="empty">Пока нет предложений</div>';
+      return;
+    }
+    list.innerHTML = res.data.map(function(s){
+      return '<div class="suggestion">' + escapeHtml(s.text) +
+        '<div class="suggestion-meta">' + new Date(s.created_at).toLocaleString('ru-RU') + '</div></div>';
+    }).join('');
   }
-  list.innerHTML = data.map(s => `
-    <div class="suggestion">
-      ${escapeHtml(s.text)}
-      <div class="suggestion-meta">${new Date(s.created_at).toLocaleString('ru-RU')}</div>
-    </div>
-  `).join('');
-}
 
-// =================== ВЫХОД ===================
-document.getElementById('btn-logout').addEventListener('click', e => {
-  e.preventDefault();
-  if (!confirm('Выйти из аккаунта?')) return;
-  sessionStorage.removeItem('gocash_user');
-  currentUser = null;
-  document.getElementById('auth-screen').style.display = 'block';
-  document.getElementById('main-screen').style.display = 'none';
-  document.getElementById('auth-name').value = '';
-  document.getElementById('auth-code').value = '';
-});
+  // ===== ВЫХОД =====
+  document.getElementById('btn-logout').addEventListener('click', function(e){
+    e.preventDefault();
+    if (!confirm('Выйти из аккаунта?')) return;
+    try { sessionStorage.removeItem('gocash_user'); } catch(e){}
+    currentUser = null;
+    document.getElementById('auth-screen').style.display = 'block';
+    document.getElementById('main-screen').style.display = 'none';
+    document.getElementById('auth-name').value = '';
+    document.getElementById('auth-code').value = '';
+  });
 
-// =================== МОДАЛКИ ===================
-document.querySelectorAll('[data-close-modal]').forEach(btn =>
-  btn.addEventListener('click', e => e.target.closest('.modal-overlay').classList.remove('active')));
-document.querySelectorAll('.modal-overlay').forEach(ov =>
-  ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('active'); }));
+  // ===== МОДАЛКИ =====
+  document.querySelectorAll('[data-close-modal]').forEach(function(btn){
+    btn.addEventListener('click', function(e){ e.target.closest('.modal-overlay').classList.remove('active'); });
+  });
+  document.querySelectorAll('.modal-overlay').forEach(function(ov){
+    ov.addEventListener('click', function(e){ if (e.target === ov) ov.classList.remove('active'); });
+  });
 
-// =================== УТИЛИТЫ ===================
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+})();
 </script>
 </body>
 </html>

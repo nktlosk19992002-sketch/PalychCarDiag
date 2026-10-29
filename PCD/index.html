@@ -155,6 +155,70 @@
         .booking-detail-modal .modal-box { max-width: 600px; }
         .booking-detail-modal .detail-row { display: flex; padding: 6px 0; border-bottom: 1px solid #eef2f7; }
         .booking-detail-modal .detail-row .label { font-weight: 600; min-width: 130px; color: #1f4055; }
+		/* ==== Модалка редактирования клиента ==== */
+.client-edit-modal .modal-box {
+    max-width: 560px;
+}
+.client-edit-modal .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+.client-edit-modal .form-row.full {
+    grid-template-columns: 1fr;
+}
+.client-edit-modal .code-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+}
+.client-edit-modal .code-row .form-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+.client-edit-modal .code-row button {
+    white-space: nowrap;
+    padding: 10px 16px;
+    border-radius: 12px;
+    border: none;
+    background: #d4a017;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+.client-edit-modal .code-row button:hover {
+    background: #b88a0e;
+}
+.client-edit-modal .client-id-info {
+    background: #eef3f8;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    color: #3a657e;
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.client-edit-modal .client-id-info b { color: #0b2b3c; }
+.client-edit-modal .modal-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 18px;
+    flex-wrap: wrap;
+}
+.client-edit-modal .warning-box {
+    background: #fff8e6;
+    border-left: 4px solid #d4a017;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    color: #6b4a00;
+    margin-bottom: 14px;
+}
 
         /* ===== КАРТА КЛИЕНТА 85x54 мм ===== */
         .client-card {
@@ -841,6 +905,78 @@
 </div>
     </div>
 </div>
+<!-- ===== МОДАЛКА РЕДАКТИРОВАНИЯ КЛИЕНТА ===== -->
+<div class="modal-overlay client-edit-modal" id="clientEditModal">
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeClientEdit()"><i class="fas fa-times"></i></button>
+        <div class="modal-title">✏️ Редактирование клиента</div>
+
+        <div class="client-id-info" id="clientEditInfo">
+            <span>ID: <b id="editClientId">—</b></span>
+            <span>Диагностик: <b id="editClientDiagCount">0</b></span>
+            <span>Ремонтов: <b id="editClientRepairCount">0</b></span>
+        </div>
+
+        <div class="warning-box" id="clientPlateWarning" style="display:none;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span id="clientPlateWarningText"></span>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Имя *</label>
+                <input type="text" id="editClientName" placeholder="Иван Петров">
+            </div>
+            <div class="form-group">
+                <label>Телефон *</label>
+                <input type="text" id="editClientPhone" placeholder="+7 999 123-45-67">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Марка / Модель</label>
+                <input type="text" id="editClientCar" placeholder="BMW X5">
+            </div>
+            <div class="form-group">
+                <label>Гос. номер *</label>
+                <input type="text" id="editClientPlate" placeholder="А123ВС777" style="text-transform:uppercase;">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Тип авто</label>
+                <select id="editClientCarType">
+                    <option value="import">🚗 Иномарка</option>
+                    <option value="domestic">🚙 Отечественная</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Код доступа (4 цифры)</label>
+                <div class="code-row">
+                    <div class="form-group">
+                        <input type="text" id="editClientCode" maxlength="4" inputmode="numeric" placeholder="0000" style="letter-spacing:4px;font-weight:700;text-align:center;">
+                    </div>
+                    <button onclick="generateNewClientCode()" title="Сгенерировать новый код">
+                        <i class="fas fa-dice"></i> Новый
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-primary" onclick="saveClientEdit()" style="background:#1f7b4a;">
+                <i class="fas fa-save"></i> Сохранить
+            </button>
+            <button class="btn-primary" onclick="closeClientEdit()" style="background:#888;">
+                <i class="fas fa-times"></i> Отмена
+            </button>
+        </div>
+
+        <div id="clientEditFeedback" style="margin-top:10px; font-weight:600;"></div>
+    </div>
+</div>
 
 <!-- Скрытая зона для печати карты -->
 <div id="printAreaCard" style="position:absolute; left:-9999px; top:0;"></div>
@@ -898,6 +1034,23 @@ let newClients = [];
 let priceRequests = [];
 let priceRequestIdCounter = 1;
 let currentCardClientId = null; // для модалки предпросмотра карты
+// ============================================================
+// УТИЛИТЫ: нормализация гос.номера (кириллица ↔ латиница)
+// ============================================================
+function normalizePlate(plate) {
+    if (!plate) return '';
+    const map = {
+        'А':'A', 'В':'B', 'Е':'E', 'К':'K', 'М':'M',
+        'Н':'H', 'О':'O', 'Р':'P', 'С':'C', 'Т':'T',
+        'У':'Y', 'Х':'X',
+        'а':'a', 'в':'b', 'е':'e', 'к':'k', 'м':'m',
+        'н':'h', 'о':'o', 'р':'p', 'с':'c', 'т':'t',
+        'у':'y', 'х':'x'
+    };
+    return plate.replace(/[АВЕКМНОРСТУХавекмнорстух]/g, ch => map[ch] || ch)
+                .toUpperCase()
+                .replace(/\s/g, '');
+}
 
 // ============================================================
 // ПРАЙС-ЛИСТ
@@ -2711,22 +2864,31 @@ function renderClients() {
     const tbody = document.getElementById('clientsBody');
     if (!tbody) return; tbody.innerHTML = '';
     const accepted = clients.filter(c => c.is_new !== true);
-    if (accepted.length === 0) { tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:20px;color:#4a6f82;">Нет клиентов</td></tr>`; return; }
+    if (accepted.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:20px;color:#4a6f82;">Нет клиентов</td></tr>`;
+        return;
+    }
     accepted.forEach((c, idx) => {
         const diagCount = journal.filter(e => e.type === 'diagnostic' && e.clientId === c.id).length;
         const repairCount = journal.filter(e => e.type === 'repair' && e.clientId === c.id).length;
         const carType = c.carType || 'import';
         tbody.innerHTML += `<tr>
-            <td>${idx+1}</td><td><strong>${c.name}</strong></td><td>${c.phone || '—'}</td><td>${c.plate || '—'}</td><td>${c.car || '—'}</td>
+            <td>${idx+1}</td>
+            <td><strong>${c.name}</strong></td>
+            <td>${c.phone || '—'}</td>
+            <td>${c.plate || '—'}</td>
+            <td>${c.car || '—'}</td>
             <td><select onchange="updateClientCarType(${c.id},this.value)" style="padding:4px 8px;border:1px solid #d0dce8;border-radius:6px;font-size:0.8rem;background:white;">
                 <option value="import" ${carType==='import'?'selected':''}>🚗 Иномарка</option>
                 <option value="domestic" ${carType==='domestic'?'selected':''}>🚙 Отечественная</option>
             </select></td>
             <td><span class="client-badge">${c.access_code || '—'}</span></td>
-            <td>${diagCount}</td><td>${repairCount}</td>
-            <td>
+            <td>${diagCount}</td>
+            <td>${repairCount}</td>
+            <td style="white-space:nowrap;">
                 <button class="btn-sm" style="background:#0b2b3c;color:white;padding:4px 10px;border-radius:30px;border:none;cursor:pointer;" onclick="viewClientHistory(${c.id})" title="История">📋</button>
                 <button class="btn-sm" style="background:#d4a017;color:white;padding:4px 10px;border-radius:30px;border:none;cursor:pointer;" onclick="regenerateClientCode(${c.id})" title="Новый код">🔑</button>
+                <button class="btn-sm" style="background:#2d6b84;color:white;padding:4px 10px;border-radius:30px;border:none;cursor:pointer;" onclick="openClientEdit(${c.id})" title="Редактировать">✏️</button>
                 <button class="btn-sm" style="background:#1f7b4a;color:white;padding:4px 10px;border-radius:30px;border:none;cursor:pointer;" onclick="openClientCard(${c.id})" title="Карта клиента с QR">🪪</button>
                 <button class="btn-danger" onclick="deleteClient(${c.id})">✕</button>
             </td>
@@ -2735,6 +2897,245 @@ function renderClients() {
 }
 
 function updateClientCarType(clientId, carType) { const client = clients.find(c => c.id === clientId); if (client) { client.carType = carType; showNotification(`✅ Тип авто обновлён`, 'success'); autoSaveToLocalStorage(); } }
+// ============================================================
+// РЕДАКТИРОВАНИЕ КЛИЕНТА
+// ============================================================
+let currentEditClientId = null;
+
+function openClientEdit(clientId) {
+    const client = clients.find(c => c.id === clientId);
+    if (!client) { alert('Клиент не найден'); return; }
+
+    currentEditClientId = clientId;
+
+    // Заполняем поля
+    document.getElementById('editClientId').textContent = client.id;
+    document.getElementById('editClientName').value = client.name || '';
+    document.getElementById('editClientPhone').value = client.phone || '';
+    document.getElementById('editClientCar').value = client.car || '';
+    document.getElementById('editClientPlate').value = client.plate || '';
+    document.getElementById('editClientCarType').value = client.carType || 'import';
+    document.getElementById('editClientCode').value = client.access_code || '';
+
+    // Статистика
+    const diagCount = journal.filter(e => e.type === 'diagnostic' && e.clientId === client.id).length;
+    const repairCount = journal.filter(e => e.type === 'repair' && e.clientId === client.id).length;
+    document.getElementById('editClientDiagCount').textContent = diagCount;
+    document.getElementById('editClientRepairCount').textContent = repairCount;
+
+    // Предупреждение о смене номера
+    document.getElementById('clientPlateWarning').style.display = 'none';
+    document.getElementById('clientEditFeedback').innerHTML = '';
+
+    document.getElementById('clientEditModal').classList.add('active');
+
+    // Автоподсказка при изменении номера
+    document.getElementById('editClientPlate').oninput = checkPlateDuplicate;
+}
+
+function closeClientEdit() {
+    document.getElementById('clientEditModal').classList.remove('active');
+    currentEditClientId = null;
+}
+
+function checkPlateDuplicate() {
+    const plate = normalizePlate(document.getElementById('editClientPlate').value);
+    const warning = document.getElementById('clientPlateWarning');
+    const warningText = document.getElementById('clientPlateWarningText');
+    const feedback = document.getElementById('clientEditFeedback');
+
+    feedback.innerHTML = '';
+
+    if (!plate) {
+        warning.style.display = 'none';
+        return;
+    }
+
+    // Ищем другого клиента с таким же номером
+    const dup = clients.find(c => c.id !== currentEditClientId && normalizePlate(c.plate) === plate);
+
+    if (dup) {
+        warning.style.display = 'block';
+        warningText.innerHTML = `Гос. номер <b>${escapeHtml(plate)}</b> уже занят клиентом <b>${escapeHtml(dup.name)}</b> (ID: ${dup.id}). Сохранение будет отклонено.`;
+    } else {
+        warning.style.display = 'none';
+    }
+}
+
+function generateNewClientCode() {
+    const newCode = String(Math.floor(1000 + Math.random() * 9000));
+    document.getElementById('editClientCode').value = newCode;
+    document.getElementById('clientEditFeedback').innerHTML =
+        `<span style="color:#d4a017;"><i class="fas fa-info-circle"></i> Сгенерирован новый код: <b>${newCode}</b>. Не забудьте сохранить.</span>`;
+}
+
+async function saveClientEdit() {
+    if (currentEditClientId === null) return;
+
+    const client = clients.find(c => c.id === currentEditClientId);
+    if (!client) { alert('Клиент не найден'); return; }
+
+    const feedback = document.getElementById('clientEditFeedback');
+
+    // Собираем данные
+    const newName = document.getElementById('editClientName').value.trim();
+    const newPhone = document.getElementById('editClientPhone').value.trim();
+    const newCar = document.getElementById('editClientCar').value.trim();
+    const rawPlate = document.getElementById('editClientPlate').value.trim();
+    const newPlate = normalizePlate(rawPlate);
+    const newCarType = document.getElementById('editClientCarType').value;
+    const newCode = document.getElementById('editClientCode').value.trim();
+
+    // Валидация
+    if (!newName) {
+        feedback.innerHTML = `<span style="color:#b33c3c;"><i class="fas fa-times-circle"></i> Введите имя клиента</span>`;
+        return;
+    }
+    if (!newPhone) {
+        feedback.innerHTML = `<span style="color:#b33c3c;"><i class="fas fa-times-circle"></i> Введите телефон</span>`;
+        return;
+    }
+    if (!newPlate) {
+        feedback.innerHTML = `<span style="color:#b33c3c;"><i class="fas fa-times-circle"></i> Введите гос. номер</span>`;
+        return;
+    }
+    if (!/^\d{4}$/.test(newCode)) {
+        feedback.innerHTML = `<span style="color:#b33c3c;"><i class="fas fa-times-circle"></i> Код доступа должен быть из 4 цифр</span>`;
+        return;
+    }
+
+    // Проверка дублей гос.номера
+    const dup = clients.find(c => c.id !== currentEditClientId && normalizePlate(c.plate) === newPlate);
+    if (dup) {
+        feedback.innerHTML = `<span style="color:#b33c3c;"><i class="fas fa-times-circle"></i> Гос. номер ${escapeHtml(newPlate)} уже занят клиентом "${escapeHtml(dup.name)}"</span>`;
+        return;
+    }
+
+    // Сохраняем старые значения для обновления связанных записей
+    const oldPlate = client.plate;
+    const oldId = client.id;
+
+    // Обновляем клиента
+    client.name = newName;
+    client.phone = newPhone;
+    client.car = newCar;
+    client.plate = newPlate;
+    client.carType = newCarType;
+    client.access_code = newCode;
+
+    // Если гос.номер изменился — обновляем его в связанных записях
+    if (normalizePlate(oldPlate) !== newPlate) {
+        let updatedBookings = 0;
+        let updatedJournal = 0;
+
+        bookings.forEach(b => {
+            if (b.client_id === oldId) {
+                b.plate = newPlate;
+                b.name = newName;
+                b.phone = newPhone;
+                b.car = newCar;
+                updatedBookings++;
+            }
+        });
+
+        journal.forEach(j => {
+            if (j.clientId === oldId) {
+                j.plate = newPlate;
+                j.car = newCar || j.car;
+                if (j.carData) {
+                    j.carData.plate = newPlate;
+                    if (newCar) j.carData.make = newCar;
+                }
+                updatedJournal++;
+            }
+        });
+
+        updateBookingsStorage();
+        console.log(`🔄 Обновлено: bookings=${updatedBookings}, journal=${updatedJournal}`);
+    }
+
+    // Сохраняем локально
+    autoSaveToLocalStorage();
+
+    // Синхронизируем с сервером (в фоне)
+    feedback.innerHTML = `<span style="color:#d4a017;"><i class="fas fa-spinner fa-spin"></i> Сохранение на сервер...</span>`;
+
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (jsonData && jsonData.clients) {
+            const remoteClient = jsonData.clients.find(c => c.id === oldId);
+            if (remoteClient) {
+                remoteClient.name = newName;
+                remoteClient.phone = newPhone;
+                remoteClient.car = newCar;
+                remoteClient.plate = newPlate;
+                remoteClient.carType = newCarType;
+                remoteClient.access_code = newCode;
+            } else {
+                // На сервере нет — добавляем
+                jsonData.clients.push({
+                    id: oldId, name: newName, phone: newPhone, car: newCar,
+                    plate: newPlate, carType: newCarType, access_code: newCode, is_new: false
+                });
+            }
+
+            // Обновляем связанные записи на сервере
+            if (normalizePlate(oldPlate) !== newPlate) {
+                if (jsonData.bookings) {
+                    jsonData.bookings.forEach(b => {
+                        if (b.client_id === oldId) {
+                            b.plate = newPlate;
+                            b.name = newName;
+                            b.phone = newPhone;
+                            b.car = newCar;
+                        }
+                    });
+                }
+                if (jsonData.journal) {
+                    jsonData.journal.forEach(j => {
+                        if (j.clientId === oldId) {
+                            j.plate = newPlate;
+                            if (newCar) j.car = newCar;
+                            if (j.carData) {
+                                j.carData.plate = newPlate;
+                                if (newCar) j.carData.make = newCar;
+                            }
+                        }
+                    });
+                }
+            }
+
+            await saveJsonToServer(jsonData);
+            feedback.innerHTML = `<span style="color:#0a6030;"><i class="fas fa-check-circle"></i> Сохранено на сервере!</span>`;
+        } else {
+            feedback.innerHTML = `<span style="color:#d4a017;"><i class="fas fa-exclamation-triangle"></i> Сохранено локально. Сервер недоступен.</span>`;
+        }
+    } catch (e) {
+        console.error('saveClientEdit:', e);
+        feedback.innerHTML = `<span style="color:#d4a017;"><i class="fas fa-exclamation-triangle"></i> Сохранено локально. Ошибка сервера: ${escapeHtml(e.message)}</span>`;
+    }
+
+    // Обновляем UI
+    renderClients();
+    updateClientSelect();
+    if (typeof renderBookings === 'function') renderBookings();
+
+    // Обновляем статистику в модалке
+    const diagCount = journal.filter(e => e.type === 'diagnostic' && e.clientId === oldId).length;
+    const repairCount = journal.filter(e => e.type === 'repair' && e.clientId === oldId).length;
+    document.getElementById('editClientDiagCount').textContent = diagCount;
+    document.getElementById('editClientRepairCount').textContent = repairCount;
+    document.getElementById('editClientPlate').value = newPlate;
+
+    showNotification('✅ Данные клиента обновлены', 'success');
+
+    // Автозакрытие через 2 секунды
+    setTimeout(() => {
+        if (currentEditClientId === oldId) {
+            closeClientEdit();
+        }
+    }, 2000);
+}
 function addClientForm() {
     const name = prompt('Имя клиента:'); if (!name || !name.trim()) return;
     const phone = prompt('Телефон:') || ''; const plate = (prompt('Гос. номер:') || '').trim().toUpperCase(); const car = prompt('Марка авто:') || '';
@@ -3376,7 +3777,7 @@ document.querySelectorAll('#page-repair .tabs .tab-btn').forEach(btn => { btn.ad
 
 // Закрытие модалки карты по клику на фон
 document.getElementById('cardPreviewModal')?.addEventListener('click', function(e) { if (e.target === this) closeCardPreview(); });
-
+document.getElementById('clientEditModal')?.addEventListener('click', function(e) { if (e.target === this) closeClientEdit(); });
 console.log('🚀 PalЫCH Car Diagnost v4.9 загружен!');
 console.log('✅ Добавлена печать карты клиента 85×54 мм с QR-кодом');
 </script>

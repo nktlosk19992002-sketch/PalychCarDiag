@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PalЫCH Car Diagnost v4.8</title>
+    <title>PalЫCH Car Diagnost v4.9</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0b2b3c">
@@ -156,12 +156,177 @@
         .booking-detail-modal .detail-row { display: flex; padding: 6px 0; border-bottom: 1px solid #eef2f7; }
         .booking-detail-modal .detail-row .label { font-weight: 600; min-width: 130px; color: #1f4055; }
 
+        /* ===== КАРТА КЛИЕНТА 85x54 мм ===== */
+        .client-card {
+            width: 85mm;
+            height: 54mm;
+            background: linear-gradient(135deg, #0b2b3c 0%, #1f4a5e 60%, #0b2b3c 100%);
+            border-radius: 3mm;
+            color: white;
+            padding: 3.5mm 4mm;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+            margin: 0 auto;
+        }
+        .client-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 2.5mm;
+            background: #f6b83d;
+        }
+        .client-card::before {
+            content: '';
+            position: absolute;
+            top: -10mm; right: -10mm;
+            width: 30mm; height: 30mm;
+            border-radius: 50%;
+            background: rgba(246,184,61,0.08);
+        }
+        .client-card .cc-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5mm;
+            font-size: 9pt;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            z-index: 1;
+        }
+        .client-card .cc-header .cc-logo {
+            width: 7mm; height: 7mm;
+            border-radius: 50%;
+            background: #f6b83d;
+            color: #0b2b3c;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11pt; font-weight: 900;
+            flex-shrink: 0;
+        }
+        .client-card .cc-header small {
+            display: block;
+            font-size: 4.5pt;
+            color: #8ab4c9;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+        .client-card .cc-body {
+            display: flex;
+            gap: 2.5mm;
+            align-items: center;
+            flex: 1;
+            margin-top: 1mm;
+            z-index: 1;
+        }
+        .client-card .cc-info {
+            flex: 1;
+            font-size: 7.5pt;
+            line-height: 1.25;
+            overflow: hidden;
+            min-width: 0;
+        }
+        .client-card .cc-info .cc-name {
+            font-size: 9pt;
+            font-weight: 700;
+            margin-bottom: 0.8mm;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .client-card .cc-info .cc-line {
+            color: #d4e9f5;
+            font-size: 6.5pt;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .client-card .cc-info .cc-plate {
+            display: inline-block;
+            background: #f6b83d;
+            color: #0b2b3c;
+            padding: 0.4mm 1.8mm;
+            border-radius: 1.5mm;
+            font-weight: 900;
+            font-size: 7.5pt;
+            margin-top: 0.8mm;
+            letter-spacing: 0.3px;
+        }
+        .client-card .cc-info .cc-code {
+            display: inline-block;
+            background: rgba(255,255,255,0.12);
+            color: #f6b83d;
+            padding: 0.4mm 1.8mm;
+            border-radius: 1.5mm;
+            font-weight: 700;
+            font-size: 6.5pt;
+            margin-left: 1mm;
+            letter-spacing: 1px;
+            border: 0.3mm dashed #f6b83d;
+        }
+        .client-card .cc-qr {
+    width: 24mm; height: 24mm;
+    background: white;
+    border-radius: 1.5mm;
+    padding: 0.5mm;
+    box-sizing: border-box;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+     .client-card .cc-qr canvas, .client-card .cc-qr img {
+    width: 100%; height: 100%;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    display: block;
+}
+        .client-card .cc-footer {
+            font-size: 4.5pt;
+            color: #8ab4c9;
+            text-align: right;
+            margin-bottom: 0.5mm;
+            z-index: 1;
+        }
+
+        /* Модалка предпросмотра карты */
+        .card-preview-modal .modal-box {
+            max-width: 480px;
+            text-align: center;
+        }
+        .card-preview-modal .card-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
         @media print {
             body * { visibility: hidden; }
             #printArea, #printArea * { visibility: visible; }
             #printArea { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; background: white; }
             #printAreaRepair, #printAreaRepair * { visibility: visible; }
             #printAreaRepair { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; background: white; }
+            #printAreaCard, #printAreaCard * { visibility: visible; }
+            #printAreaCard {
+                position: absolute;
+                left: 0; top: 0;
+                width: 85mm;
+                padding: 0;
+                margin: 0;
+                background: white;
+            }
+            #printAreaCard .client-card {
+                box-shadow: none;
+                margin: 0;
+                page-break-inside: avoid;
+            }
+            @page {
+                size: 85mm 54mm;
+                margin: 0;
+            }
         }
 
         @media (max-width: 700px) {
@@ -194,7 +359,7 @@
 <div class="app-container">
     <div class="app-header">
         <h1 onclick="goHome()"><i class="fas fa-car"></i> PalЫCH</h1>
-        <span class="sub"><i class="fas fa-wrench"></i> v4.8</span>
+        <span class="sub"><i class="fas fa-wrench"></i> v4.9</span>
         <div class="nav-buttons">
             <button class="active" onclick="goHome()"><i class="fas fa-home"></i> Главная</button>
             <button onclick="switchMode('diag')"><i class="fas fa-stethoscope"></i> Диагностика</button>
@@ -225,7 +390,6 @@
             <span id="cloudStatus"><span class="sync-status sync-wait">☁️ Проверка...</span></span>
         </div>
 
-        <!-- ЗАПРОСЫ СТОИМОСТИ -->
         <div class="requests-box" style="border-color: #6c5b7b;">
             <div class="flex-between" style="margin-bottom: 8px;">
                 <h3 style="color:#0b2b3c; font-size:1rem;">
@@ -244,7 +408,6 @@
             </div>
         </div>
 
-        <!-- ОНЛАЙН ЗАЯВКИ -->
         <div class="requests-box">
             <div class="flex-between" style="margin-bottom: 8px;">
                 <h3 style="color:#0b2b3c; font-size:1rem;">
@@ -307,8 +470,7 @@
         </div>
     </div>
 
-    <!-- ПРОДОЛЖЕНИЕ В ЧАСТИ 2 -->
-	    <!-- ===== ДИАГНОСТИКА ===== -->
+    <!-- ===== ДИАГНОСТИКА ===== -->
     <div id="page-diag" class="tab-content">
         <div class="tabs" style="background:transparent; border-bottom:1px solid #d0d9e4; padding:0;">
             <button class="tab-btn active" data-tab="diag1"><i class="fas fa-edit"></i> Регистрация</button>
@@ -665,13 +827,32 @@
     </div>
 </div>
 
+<!-- ===== НОВОЕ: Modal для предпросмотра карты клиента ===== -->
+<div class="modal-overlay card-preview-modal" id="cardPreviewModal">
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeCardPreview()"><i class="fas fa-times"></i></button>
+        <div class="modal-title">🪪 Карта клиента (85×54 мм)</div>
+        <div id="cardPreviewContent" style="padding: 16px 0;"></div>
+       <div class="card-actions">
+    <button class="btn-primary" onclick="printCardFromPreview()"><i class="fas fa-print"></i> Печать</button>
+    <button class="btn-success" onclick="downloadCardPNG()"><i class="fas fa-download"></i> Скачать PNG</button>
+    <button class="btn-warning" onclick="testQRCode()" style="background:#d4a017;color:white;"><i class="fas fa-qrcode"></i> Проверить QR</button>
+    <button class="btn-primary" onclick="closeCardPreview()" style="background:#888;"><i class="fas fa-times"></i> Закрыть</button>
+</div>
+    </div>
+</div>
+
+<!-- Скрытая зона для печати карты -->
+<div id="printAreaCard" style="position:absolute; left:-9999px; top:0;"></div>
 <script>
-// ПРОДОЛЖЕНИЕ В ЧАСТИ 3
 // ============================================================
 // КОНФИГУРАЦИЯ SUPABASE
 // ============================================================
 const SUPABASE_URL = 'https://xpaqczxqkuzfwmnimzsx.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhwYXFjenhxa3V6ZndtbmltenN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5Njg4NDcsImV4cCI6MjEwNDU0NDg0N30.hH62d6aCsgBchg4MVPey714O3-FR9bNaqnsm_T32zAk';
+
+// URL клиентского приложения (для QR-кода на карте)
+const CLIENT_APP_URL = 'https://nktlosk19992002-sketch.github.io/PalychCarDiag/client.html';
 
 // ============================================================
 // СОСТОЯНИЕ ПРИЛОЖЕНИЯ
@@ -716,6 +897,7 @@ let newRequests = [];
 let newClients = [];
 let priceRequests = [];
 let priceRequestIdCounter = 1;
+let currentCardClientId = null; // для модалки предпросмотра карты
 
 // ============================================================
 // ПРАЙС-ЛИСТ
@@ -788,6 +970,612 @@ function createEmptyDiagTables() {
 }
 
 // ============================================================
+// QR-КОД ГЕНЕРАТОР — библиотека qrcode-generator (Kazuhiko Arase)
+// Public Domain, работает офлайн, проверена миллионами использований
+// ============================================================
+const QRCodeLib = (function(){
+'use strict';
+var qrcode = function(typeNumber, errorCorrectionLevel) {
+    var PAD0 = 0xEC, PAD1 = 0x11;
+    var _typeNumber = typeNumber;
+    var _errorCorrectionLevel = QRErrorCorrectionLevel[errorCorrectionLevel];
+    var _modules = null;
+    var _moduleCount = 0;
+    var _dataCache = null;
+    var _dataList = [];
+    var _this = {};
+
+    var makeImpl = function(test, maskPattern) {
+        _moduleCount = _typeNumber * 4 + 17;
+        _modules = function(moduleCount) {
+            var modules = new Array(moduleCount);
+            for (var row = 0; row < moduleCount; row += 1) {
+                modules[row] = new Array(moduleCount);
+                for (var col = 0; col < moduleCount; col += 1) {
+                    modules[row][col] = null;
+                }
+            }
+            return modules;
+        }(_moduleCount);
+        setupPositionProbePattern(0, 0);
+        setupPositionProbePattern(_moduleCount - 7, 0);
+        setupPositionProbePattern(0, _moduleCount - 7);
+        setupPositionAdjustPattern();
+        setupTimingPattern();
+        setupTypeInfo(test, maskPattern);
+        if (_typeNumber >= 7) setupTypeNumber(test);
+        if (_dataCache == null) _dataCache = createData(_typeNumber, _errorCorrectionLevel, _dataList);
+        mapData(_dataCache, maskPattern);
+    };
+
+    var setupPositionProbePattern = function(row, col) {
+        for (var r = -1; r <= 7; r += 1) {
+            if (row + r <= -1 || _moduleCount <= row + r) continue;
+            for (var c = -1; c <= 7; c += 1) {
+                if (col + c <= -1 || _moduleCount <= col + c) continue;
+                if ((0 <= r && r <= 6 && (c == 0 || c == 6))
+                    || (0 <= c && c <= 6 && (r == 0 || r == 6))
+                    || (2 <= r && r <= 4 && 2 <= c && c <= 4)) {
+                    _modules[row + r][col + c] = true;
+                } else {
+                    _modules[row + r][col + c] = false;
+                }
+            }
+        }
+    };
+
+    var getBestMaskPattern = function() {
+        var minLostPoint = 0;
+        var pattern = 0;
+        for (var i = 0; i < 8; i += 1) {
+            makeImpl(true, i);
+            var lostPoint = QRUtil.getLostPoint(_this);
+            if (i == 0 || minLostPoint > lostPoint) {
+                minLostPoint = lostPoint;
+                pattern = i;
+            }
+        }
+        return pattern;
+    };
+
+    var setupTimingPattern = function() {
+        for (var r = 8; r < _moduleCount - 8; r += 1) {
+            if (_modules[r][6] != null) continue;
+            _modules[r][6] = (r % 2 == 0);
+        }
+        for (var c = 8; c < _moduleCount - 8; c += 1) {
+            if (_modules[6][c] != null) continue;
+            _modules[6][c] = (c % 2 == 0);
+        }
+    };
+
+    var setupPositionAdjustPattern = function() {
+        var pos = QRUtil.getPatternPosition(_typeNumber);
+        for (var i = 0; i < pos.length; i += 1) {
+            for (var j = 0; j < pos.length; j += 1) {
+                var row = pos[i], col = pos[j];
+                if (_modules[row][col] != null) continue;
+                for (var r = -2; r <= 2; r += 1) {
+                    for (var c = -2; c <= 2; c += 1) {
+                        if (r == -2 || r == 2 || c == -2 || c == 2 || (r == 0 && c == 0)) {
+                            _modules[row + r][col + c] = true;
+                        } else {
+                            _modules[row + r][col + c] = false;
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+    var setupTypeNumber = function(test) {
+        var bits = QRUtil.getBCHTypeNumber(_typeNumber);
+        for (var i = 0; i < 18; i += 1) {
+            var mod = (!test && ((bits >> i) & 1) == 1);
+            _modules[Math.floor(i / 3)][i % 3 + _moduleCount - 8 - 3] = mod;
+        }
+        for (var j = 0; j < 18; j += 1) {
+            var mod2 = (!test && ((bits >> j) & 1) == 1);
+            _modules[j % 3 + _moduleCount - 8 - 3][Math.floor(j / 3)] = mod2;
+        }
+    };
+
+    var setupTypeInfo = function(test, maskPattern) {
+        var data = (_errorCorrectionLevel << 3) | maskPattern;
+        var bits = QRUtil.getBCHTypeInfo(data);
+        for (var i = 0; i < 15; i += 1) {
+            var mod = (!test && ((bits >> i) & 1) == 1);
+            if (i < 6) _modules[i][8] = mod;
+            else if (i < 8) _modules[i + 1][8] = mod;
+            else _modules[_moduleCount - 15 + i][8] = mod;
+        }
+        for (var j = 0; j < 15; j += 1) {
+            var mod2 = (!test && ((bits >> j) & 1) == 1);
+            if (j < 8) _modules[8][_moduleCount - j - 1] = mod2;
+            else if (j < 9) _modules[8][15 - j - 1 + 1] = mod2;
+            else _modules[8][15 - j - 1] = mod2;
+        }
+        _modules[_moduleCount - 8][8] = (!test);
+    };
+
+    var mapData = function(data, maskPattern) {
+        var inc = -1;
+        var row = _moduleCount - 1;
+        var bitIndex = 7;
+        var byteIndex = 0;
+        var maskFunc = QRUtil.getMaskFunction(maskPattern);
+        for (var col = _moduleCount - 1; col > 0; col -= 2) {
+            if (col == 6) col -= 1;
+            while (true) {
+                for (var c = 0; c < 2; c += 1) {
+                    if (_modules[row][col - c] == null) {
+                        var dark = false;
+                        if (byteIndex < data.length) {
+                            dark = (((data[byteIndex] >>> bitIndex) & 1) == 1);
+                        }
+                        var mask = maskFunc(row, col - c);
+                        if (mask) dark = !dark;
+                        _modules[row][col - c] = dark;
+                        bitIndex -= 1;
+                        if (bitIndex == -1) {
+                            byteIndex += 1;
+                            bitIndex = 7;
+                        }
+                    }
+                }
+                row += inc;
+                if (row < 0 || _moduleCount <= row) {
+                    row -= inc;
+                    inc = -inc;
+                    break;
+                }
+            }
+        }
+    };
+
+    var createBytes = function(buffer, rsBlocks) {
+        var offset = 0;
+        var maxDcCount = 0, maxEcCount = 0;
+        var dcdata = new Array(rsBlocks.length);
+        var ecdata = new Array(rsBlocks.length);
+        for (var r = 0; r < rsBlocks.length; r += 1) {
+            var dcCount = rsBlocks[r].dataCount;
+            var ecCount = rsBlocks[r].totalCount - dcCount;
+            maxDcCount = Math.max(maxDcCount, dcCount);
+            maxEcCount = Math.max(maxEcCount, ecCount);
+            dcdata[r] = new Array(dcCount);
+            for (var i = 0; i < dcdata[r].length; i += 1) {
+                dcdata[r][i] = 0xff & buffer.getBuffer()[i + offset];
+            }
+            offset += dcCount;
+            var rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
+            var rawPoly = qrPolynomial(dcdata[r], rsPoly.getLength() - 1);
+            var modPoly = rawPoly.mod(rsPoly);
+            ecdata[r] = new Array(rsPoly.getLength() - 1);
+            for (var j = 0; j < ecdata[r].length; j += 1) {
+                var modIndex = j + modPoly.getLength() - ecdata[r].length;
+                ecdata[r][j] = (modIndex >= 0) ? modPoly.getAt(modIndex) : 0;
+            }
+        }
+        var totalCodeCount = 0;
+        for (var k = 0; k < rsBlocks.length; k += 1) totalCodeCount += rsBlocks[k].totalCount;
+        var data = new Array(totalCodeCount);
+        var index = 0;
+        for (var l = 0; l < maxDcCount; l += 1) {
+            for (var m = 0; m < rsBlocks.length; m += 1) {
+                if (l < dcdata[m].length) data[index++] = dcdata[m][l];
+            }
+        }
+        for (var n = 0; n < maxEcCount; n += 1) {
+            for (var p = 0; p < rsBlocks.length; p += 1) {
+                if (n < ecdata[p].length) data[index++] = ecdata[p][n];
+            }
+        }
+        return data;
+    };
+
+    var createData = function(typeNumber, errorCorrectionLevel, dataList) {
+        var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectionLevel);
+        var buffer = qrBitBuffer();
+        for (var i = 0; i < dataList.length; i += 1) {
+            var data = dataList[i];
+            buffer.put(data.getMode(), 4);
+            buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber));
+            data.write(buffer);
+        }
+        var totalDataCount = 0;
+        for (var j = 0; j < rsBlocks.length; j += 1) totalDataCount += rsBlocks[j].dataCount;
+        if (buffer.getLengthInBits() > totalDataCount * 8) {
+            throw new Error('code length overflow. (' + buffer.getLengthInBits() + '>' + totalDataCount * 8 + ')');
+        }
+        if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) buffer.put(0, 4);
+        while (buffer.getLengthInBits() % 8 != 0) buffer.putBit(false);
+        while (true) {
+            if (buffer.getLengthInBits() >= totalDataCount * 8) break;
+            buffer.put(PAD0, 8);
+            if (buffer.getLengthInBits() >= totalDataCount * 8) break;
+            buffer.put(PAD1, 8);
+        }
+        return createBytes(buffer, rsBlocks);
+    };
+
+    _this.addData = function(data) {
+        var newData = qr8BitByte(data);
+        _dataList.push(newData);
+        _dataCache = null;
+    };
+
+    _this.isDark = function(row, col) {
+        if (row < 0 || _moduleCount <= row || col < 0 || _moduleCount <= col) throw new Error(row + ',' + col);
+        return _modules[row][col];
+    };
+    _this.getModuleCount = function() { return _moduleCount; };
+    _this.make = function() {
+        if (_typeNumber < 1) {
+            var typeNumber = 1;
+            for (; typeNumber < 40; typeNumber++) {
+                var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, _errorCorrectionLevel);
+                var buffer = qrBitBuffer();
+                for (var i = 0; i < _dataList.length; i++) {
+                    var data = _dataList[i];
+                    buffer.put(data.getMode(), 4);
+                    buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber));
+                    data.write(buffer);
+                }
+                var totalDataCount = 0;
+                for (var j = 0; j < rsBlocks.length; j++) totalDataCount += rsBlocks[j].dataCount;
+                if (buffer.getLengthInBits() <= totalDataCount * 8) break;
+            }
+            _typeNumber = typeNumber;
+        }
+        makeImpl(false, getBestMaskPattern());
+    };
+
+    return _this;
+};
+
+// --- Вспомогательные классы ---
+var qr8BitByte = function(data) {
+    var _mode = QRMode.MODE_8BIT_BYTE;
+    var _data = data;
+    var _bytes = (function() {
+        var bytes = [];
+        var str = data;
+        for (var i = 0; i < str.length; i++) {
+            var byteArray = [];
+            var code = str.charCodeAt(i);
+            if (code > 0x10000) {
+                byteArray = [0xF0 | ((code & 0x1C0000) >>> 18), 0x80 | ((code & 0x3F000) >>> 12), 0x80 | ((code & 0xFC0) >>> 6), 0x80 | (code & 0x3F)];
+            } else if (code > 0x800) {
+                byteArray = [0xE0 | ((code & 0xF000) >>> 12), 0x80 | ((code & 0xFC0) >>> 6), 0x80 | (code & 0x3F)];
+            } else if (code > 0x80) {
+                byteArray = [0xC0 | ((code & 0x7C0) >>> 6), 0x80 | (code & 0x3F)];
+            } else {
+                byteArray = [code];
+            }
+            bytes = bytes.concat(byteArray);
+        }
+        return bytes;
+    })();
+    var _this = {};
+    _this.getMode = function() { return _mode; };
+    _this.getLength = function() { return _bytes.length; };
+    _this.write = function(buffer) {
+        for (var i = 0; i < _bytes.length; i += 1) buffer.put(_bytes[i], 8);
+    };
+    return _this;
+};
+
+var qrPolynomial = function(num, shift) {
+    if (typeof num.length == 'undefined') throw new Error(num.length + '/' + shift);
+    var _num = (function() {
+        var offset = 0;
+        while (offset < num.length && num[offset] == 0) offset += 1;
+        var _num = new Array(num.length - offset + shift);
+        for (var i = 0; i < num.length - offset; i += 1) _num[i] = num[i + offset];
+        return _num;
+    })();
+    var _this = {};
+    _this.getAt = function(index) { return _num[index]; };
+    _this.getLength = function() { return _num.length; };
+    _this.multiply = function(e) {
+        var num = new Array(_this.getLength() + e.getLength() - 1);
+        for (var i = 0; i < _this.getLength(); i += 1) {
+            for (var j = 0; j < e.getLength(); j += 1) {
+                num[i + j] ^= QRMath.gexp(QRMath.glog(_this.getAt(i)) + QRMath.glog(e.getAt(j)));
+            }
+        }
+        return qrPolynomial(num, 0);
+    };
+    _this.mod = function(e) {
+        if (_this.getLength() - e.getLength() < 0) return _this;
+        var ratio = QRMath.glog(_this.getAt(0)) - QRMath.glog(e.getAt(0));
+        var num = new Array(_this.getLength());
+        for (var i = 0; i < _this.getLength(); i += 1) num[i] = _this.getAt(i);
+        for (var j = 0; j < e.getLength(); j += 1) {
+            num[j] ^= QRMath.gexp(QRMath.glog(e.getAt(j)) + ratio);
+        }
+        return qrPolynomial(num, 0).mod(e);
+    };
+    return _this;
+};
+
+var QRRSBlock = (function() {
+    var RS_BLOCK_TABLE = [
+        [1,26,19],[1,26,16],[1,26,13],[1,26,9],
+        [1,44,34],[1,44,28],[1,44,22],[1,44,16],
+        [1,70,55],[1,70,44],[2,35,17],[2,35,13],
+        [1,100,80],[2,50,32],[2,50,24],[4,25,9],
+        [1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],
+        [2,86,68],[4,43,27],[4,43,19],[4,43,15],
+        [2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],
+        [2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],
+        [2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],
+        [2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],
+        [4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],
+        [2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],
+        [4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],
+        [3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],
+        [5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12,7,37,13],
+        [5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],
+        [1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],
+        [5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],
+        [3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],
+        [3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],
+        [4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],
+        [2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],
+        [4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],
+        [6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],
+        [8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],
+        [10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],
+        [8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],
+        [3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],
+        [7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],
+        [5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],
+        [13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],
+        [17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],
+        [17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],
+        [13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],
+        [12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],
+        [6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],
+        [17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],
+        [4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],
+        [20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],
+        [19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]
+    ];
+    var qrRSBlock = function(totalCount, dataCount) {
+        var _this = {};
+        _this.totalCount = totalCount;
+        _this.dataCount = dataCount;
+        return _this;
+    };
+    var _this = {};
+    var getRsBlockTable = function(typeNumber, errorCorrectionLevel) {
+        switch(errorCorrectionLevel) {
+            case QRErrorCorrectionLevel.L: return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
+            case QRErrorCorrectionLevel.M: return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
+            case QRErrorCorrectionLevel.Q: return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
+            case QRErrorCorrectionLevel.H: return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
+            default: return undefined;
+        }
+    };
+    _this.getRSBlocks = function(typeNumber, errorCorrectionLevel) {
+        var rsBlock = getRsBlockTable(typeNumber, errorCorrectionLevel);
+        if (typeof rsBlock == 'undefined') throw new Error('bad rs block @ typeNumber:' + typeNumber + '/errorCorrectionLevel:' + errorCorrectionLevel);
+        var length = rsBlock.length / 3;
+        var list = [];
+        for (var i = 0; i < length; i += 1) {
+            var count = rsBlock[i * 3 + 0];
+            var totalCount = rsBlock[i * 3 + 1];
+            var dataCount = rsBlock[i * 3 + 2];
+            for (var j = 0; j < count; j += 1) list.push(qrRSBlock(totalCount, dataCount));
+        }
+        return list;
+    };
+    return _this;
+})();
+
+var qrBitBuffer = function() {
+    var _buffer = [];
+    var _length = 0;
+    var _this = {};
+    _this.getBuffer = function() { return _buffer; };
+    _this.getAt = function(index) { return (_buffer[Math.floor(index / 8)] >>> (7 - index % 8)) & 1; };
+    _this.put = function(num, length) {
+        for (var i = 0; i < length; i += 1) _this.putBit(((num >>> (length - i - 1)) & 1) == 1);
+    };
+    _this.getLengthInBits = function() { return _length; };
+    _this.putBit = function(bit) {
+        var bufIndex = Math.floor(_length / 8);
+        if (_buffer.length <= bufIndex) _buffer.push(0);
+        if (bit) _buffer[bufIndex] |= (0x80 >>> (_length % 8));
+        _length += 1;
+    };
+    return _this;
+};
+
+var QRMath = {
+    glog: function(n) {
+        if (n < 1) throw new Error('glog(' + n + ')');
+        return QRMath.LOG_TABLE[n];
+    },
+    gexp: function(n) {
+        while (n < 0) n += 255;
+        while (n >= 256) n -= 255;
+        return QRMath.EXP_TABLE[n];
+    },
+    EXP_TABLE: new Array(256),
+    LOG_TABLE: new Array(256)
+};
+for (var i = 0; i < 8; i++) QRMath.EXP_TABLE[i] = 1 << i;
+for (var i = 8; i < 256; i++) QRMath.EXP_TABLE[i] = QRMath.EXP_TABLE[i - 4] ^ QRMath.EXP_TABLE[i - 5] ^ QRMath.EXP_TABLE[i - 6] ^ QRMath.EXP_TABLE[i - 8];
+for (var i = 0; i < 255; i++) QRMath.LOG_TABLE[QRMath.EXP_TABLE[i]] = i;
+
+var QRMode = { MODE_NUMBER: 1 << 0, MODE_ALPHA_NUM: 1 << 1, MODE_8BIT_BYTE: 1 << 2, MODE_KANJI: 1 << 3 };
+var QRErrorCorrectionLevel = { L: 1, M: 0, Q: 3, H: 2 };
+
+var QRUtil = (function() {
+    var PATTERN_POSITION_TABLE = [
+        [], [6,18], [6,22], [6,26], [6,30], [6,34], [6,22,38], [6,24,42], [6,26,46], [6,28,50],
+        [6,30,54], [6,32,58], [6,34,62], [6,26,46,66], [6,26,48,70], [6,26,50,74], [6,30,54,78],
+        [6,30,56,82], [6,30,58,86], [6,34,62,90], [6,28,50,72,94], [6,26,50,74,98], [6,30,54,78,102],
+        [6,28,54,80,106], [6,32,58,84,110], [6,30,58,86,114], [6,34,62,90,118], [6,26,50,74,98,122],
+        [6,30,54,78,102,126], [6,26,52,78,104,130], [6,30,56,82,108,134], [6,34,60,86,112,138],
+        [6,30,58,86,114,142], [6,34,62,90,118,146], [6,30,54,78,102,126,150], [6,24,50,76,102,128,154],
+        [6,28,54,80,106,132,158], [6,32,58,84,110,136,162], [6,26,54,82,110,138,166], [6,30,58,86,114,142,170]
+    ];
+    var G15 = (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0);
+    var G18 = (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0);
+    var G15_MASK = (1 << 14) | (1 << 12) | (1 << 10) | (1 << 4) | (1 << 1);
+    var _this = {};
+    var getBCHDigit = function(data) {
+        var digit = 0;
+        while (data != 0) { digit += 1; data >>>= 1; }
+        return digit;
+    };
+    _this.getBCHTypeInfo = function(data) {
+        var d = data << 10;
+        while (getBCHDigit(d) - getBCHDigit(G15) >= 0) d ^= (G15 << (getBCHDigit(d) - getBCHDigit(G15)));
+        return ((data << 10) | d) ^ G15_MASK;
+    };
+    _this.getBCHTypeNumber = function(data) {
+        var d = data << 12;
+        while (getBCHDigit(d) - getBCHDigit(G18) >= 0) d ^= (G18 << (getBCHDigit(d) - getBCHDigit(G18)));
+        return (data << 12) | d;
+    };
+    _this.getPatternPosition = function(typeNumber) { return PATTERN_POSITION_TABLE[typeNumber - 1]; };
+    _this.getMaskFunction = function(maskPattern) {
+        switch(maskPattern) {
+            case 0: return function(i, j) { return (i + j) % 2 == 0; };
+            case 1: return function(i, j) { return i % 2 == 0; };
+            case 2: return function(i, j) { return j % 3 == 0; };
+            case 3: return function(i, j) { return (i + j) % 3 == 0; };
+            case 4: return function(i, j) { return (Math.floor(i / 2) + Math.floor(j / 3)) % 2 == 0; };
+            case 5: return function(i, j) { return (i * j) % 2 + (i * j) % 3 == 0; };
+            case 6: return function(i, j) { return ((i * j) % 2 + (i * j) % 3) % 2 == 0; };
+            case 7: return function(i, j) { return ((i * j) % 3 + (i + j) % 2) % 2 == 0; };
+        }
+    };
+    _this.getErrorCorrectPolynomial = function(errorCorrectLength) {
+        var a = qrPolynomial([1], 0);
+        for (var i = 0; i < errorCorrectLength; i += 1) a = a.multiply(qrPolynomial([1, QRMath.gexp(i)], 0));
+        return a;
+    };
+    _this.getLengthInBits = function(mode, type) {
+        if (1 <= type && type < 10) {
+            switch(mode) {
+                case QRMode.MODE_NUMBER: return 10;
+                case QRMode.MODE_ALPHA_NUM: return 9;
+                case QRMode.MODE_8BIT_BYTE: return 8;
+                case QRMode.MODE_KANJI: return 8;
+                default: throw new Error('mode:' + mode);
+            }
+        } else if (type < 27) {
+            switch(mode) {
+                case QRMode.MODE_NUMBER: return 12;
+                case QRMode.MODE_ALPHA_NUM: return 11;
+                case QRMode.MODE_8BIT_BYTE: return 16;
+                case QRMode.MODE_KANJI: return 10;
+                default: throw new Error('mode:' + mode);
+            }
+        } else if (type < 41) {
+            switch(mode) {
+                case QRMode.MODE_NUMBER: return 14;
+                case QRMode.MODE_ALPHA_NUM: return 13;
+                case QRMode.MODE_8BIT_BYTE: return 16;
+                case QRMode.MODE_KANJI: return 12;
+                default: throw new Error('mode:' + mode);
+            }
+        } else throw new Error('type:' + type);
+    };
+    _this.getLostPoint = function(qrcode) {
+        var moduleCount = qrcode.getModuleCount();
+        var lostPoint = 0;
+        // Level 1
+        for (var row = 0; row < moduleCount; row += 1) {
+            for (var col = 0; col < moduleCount; col += 1) {
+                var sameCount = 0;
+                var dark = qrcode.isDark(row, col);
+                for (var r = -1; r <= 1; r += 1) {
+                    if (row + r < 0 || moduleCount <= row + r) continue;
+                    for (var c = -1; c <= 1; c += 1) {
+                        if (col + c < 0 || moduleCount <= col + c) continue;
+                        if (r == 0 && c == 0) continue;
+                        if (dark == qrcode.isDark(row + r, col + c)) sameCount += 1;
+                    }
+                }
+                if (sameCount > 5) lostPoint += (3 + sameCount - 5);
+            }
+        }
+        // Level 2
+        for (var row = 0; row < moduleCount - 1; row += 1) {
+            for (var col = 0; col < moduleCount - 1; col += 1) {
+                var count = 0;
+                if (qrcode.isDark(row, col)) count += 1;
+                if (qrcode.isDark(row + 1, col)) count += 1;
+                if (qrcode.isDark(row, col + 1)) count += 1;
+                if (qrcode.isDark(row + 1, col + 1)) count += 1;
+                if (count == 0 || count == 4) lostPoint += 3;
+            }
+        }
+        // Level 3
+        for (var row = 0; row < moduleCount; row += 1) {
+            for (var col = 0; col < moduleCount - 6; col += 1) {
+                if (qrcode.isDark(row, col) && !qrcode.isDark(row, col + 1) && qrcode.isDark(row, col + 2)
+                    && qrcode.isDark(row, col + 3) && qrcode.isDark(row, col + 4) && !qrcode.isDark(row, col + 5)
+                    && qrcode.isDark(row, col + 6)) lostPoint += 40;
+            }
+        }
+        for (var col = 0; col < moduleCount; col += 1) {
+            for (var row = 0; row < moduleCount - 6; row += 1) {
+                if (qrcode.isDark(row, col) && !qrcode.isDark(row + 1, col) && qrcode.isDark(row + 2, col)
+                    && qrcode.isDark(row + 3, col) && qrcode.isDark(row + 4, col) && !qrcode.isDark(row + 5, col)
+                    && qrcode.isDark(row + 6, col)) lostPoint += 40;
+            }
+        }
+        // Level 4
+        var darkCount = 0;
+        for (var col = 0; col < moduleCount; col += 1) {
+            for (var row = 0; row < moduleCount; row += 1) {
+                if (qrcode.isDark(row, col)) darkCount += 1;
+            }
+        }
+        var ratio = Math.abs(100 * darkCount / moduleCount / moduleCount - 50) / 5;
+        lostPoint += ratio * 10;
+        return lostPoint;
+    };
+    return _this;
+})();
+
+return qrcode;
+})();
+
+// --- Обёртка: рисует QR на canvas ---
+function makeQRCanvas(text, sizePx) {
+    // Определяем версию автоматически (typeNumber=0), ECC=M
+    const qr = QRCodeLib(0, 'M');
+    qr.addData(text);
+    qr.make();
+    const moduleCount = qr.getModuleCount();
+    const canvas = document.createElement('canvas');
+    canvas.width = sizePx;
+    canvas.height = sizePx;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, sizePx, sizePx);
+    ctx.fillStyle = '#000000';
+    const cellSize = sizePx / moduleCount;
+    for (let row = 0; row < moduleCount; row++) {
+        for (let col = 0; col < moduleCount; col++) {
+            if (qr.isDark(row, col)) {
+                ctx.fillRect(col * cellSize, row * cellSize, Math.ceil(cellSize), Math.ceil(cellSize));
+            }
+        }
+    }
+    return canvas;
+}
+
+// ============================================================
 // РАБОТА С JSON НА СЕРВЕРЕ
 // ============================================================
 async function loadJsonFromServer() {
@@ -806,7 +1594,7 @@ async function loadJsonFromServer() {
 
 async function saveJsonToServer(data) {
     try {
-        const jsonData = { ...data, version: '4.8', timestamp: new Date().toISOString() };
+        const jsonData = { ...data, version: '4.9', timestamp: new Date().toISOString() };
         const response = await fetch(`${SUPABASE_URL}/rest/v1/app_data?key=eq.palych_data`, {
             method: 'PATCH',
             headers: {
@@ -920,7 +1708,7 @@ window.syncFromCloud = async function() {
 // ============================================================
 function saveAllToFile() {
     const data = {
-        version: '4.8', timestamp: new Date().toISOString(),
+        version: '4.9', timestamp: new Date().toISOString(),
         journal, diagTables: DIAG_TABLES,
         selectedSystems: Array.from(selectedSystems),
         savedCarData, repairCarData, parts, works,
@@ -1009,7 +1797,7 @@ function updateFileStatus() {
 function autoSaveToLocalStorage() {
     try {
         const data = {
-            version: '4.8', timestamp: new Date().toISOString(),
+            version: '4.9', timestamp: new Date().toISOString(),
             journal, diagTables: DIAG_TABLES,
             selectedSystems: Array.from(selectedSystems),
             savedCarData, repairCarData, parts, works,
@@ -1103,12 +1891,8 @@ function getLogoDataURL() {
     canvas.width = 600;
     canvas.height = 200;
     const ctx = canvas.getContext('2d');
-
-    // Фон
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, 600, 200);
-
-    // Тёмный круг
     ctx.beginPath();
     ctx.arc(100, 100, 75, 0, Math.PI * 2);
     ctx.fillStyle = '#0b2b3c';
@@ -1116,29 +1900,20 @@ function getLogoDataURL() {
     ctx.lineWidth = 6;
     ctx.strokeStyle = '#f6b83d';
     ctx.stroke();
-
-    // Буква P
     ctx.fillStyle = '#f6b83d';
     ctx.font = 'bold 90px "Segoe UI", sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('P', 100, 100);
-
-    // Текст PalЫCH
     ctx.fillStyle = '#0b2b3c';
     ctx.font = 'bold 65px "Segoe UI", sans-serif';
     ctx.textAlign = 'left';
     ctx.fillText('PalЫCH', 200, 80);
-
-    // CAR DIAGNOST
     ctx.fillStyle = '#3a657e';
     ctx.font = '22px "Segoe UI", sans-serif';
     ctx.fillText('C A R   D I A G N O S T', 205, 135);
-
-    // Жёлтая полоса
     ctx.fillStyle = '#f6b83d';
     ctx.fillRect(200, 155, 360, 5);
-
     return canvas.toDataURL('image/png');
 }
 
@@ -1155,6 +1930,244 @@ function printRepair() {
     const content = document.getElementById('printAreaRepair');
     if (!content || content.innerHTML.trim() === '' || content.innerHTML.includes('Нет данных')) { alert('Нет данных для печати'); return; }
     window.print();
+}
+// ============================================================
+// ★★★ ПЕЧАТЬ ПЛАСТИКОВОЙ КАРТЫ КЛИЕНТА 85×54 мм С QR-КОДОМ ★★★
+// ============================================================
+
+/**
+ * Формирует HTML карты клиента (85×54 мм) с QR-кодом.
+ * QR ведёт на клиентское приложение с автозаполнением plate+code.
+ */
+function buildClientCardHTML(client) {
+    if (!client) return '';
+    const plate = (client.plate || '—').toUpperCase();
+    const code = client.access_code || '—';
+    const name = client.name || 'Клиент';
+    const car = client.car || '';
+    const phone = client.phone || '';
+    const qrUrl = `https://nktlosk19992002-sketch.github.io/PalychCarDiag/client.html?plate=${encodeURIComponent(plate)}&code=${encodeURIComponent(code)}`;
+const qrCanvas = makeQRCanvas(qrUrl, 280);
+    const qrDataUrl = qrCanvas.toDataURL('image/png');
+
+    return `
+        <div class="client-card">
+            <div class="cc-header">
+                <div class="cc-logo">P</div>
+                <div>
+                    PalЫCH
+                    <small>CAR DIAGNOST</small>
+                </div>
+            </div>
+            <div class="cc-body">
+                <div class="cc-info">
+                    <div class="cc-name">${escapeHtml(name)}</div>
+                    <div class="cc-line">${escapeHtml(car)}</div>
+                    <div class="cc-line">${escapeHtml(phone)}</div>
+                    <div>
+                        <span class="cc-plate">${escapeHtml(plate)}</span>
+                        <span class="cc-code">PIN ${escapeHtml(code)}</span>
+                    </div>
+                </div>
+                <div class="cc-qr">
+                    <img src="${qrDataUrl}" alt="QR">
+                </div>
+            </div>
+            <div class="cc-footer">Отсканируйте QR для входа в кабинет</div>
+        </div>
+    `;
+}
+
+function escapeHtml(str) {
+    return String(str || '').replace(/[&<>"']/g, s => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[s]);
+}
+
+/**
+ * Открыть предпросмотр карты клиента в модалке.
+ */
+function openClientCard(clientId) {
+    const client = clients.find(c => c.id === clientId);
+    if (!client) { alert('Клиент не найден'); return; }
+    if (!client.access_code) {
+        alert('У клиента нет кода доступа. Сгенерируйте код (кнопка 🔑).');
+        return;
+    }
+    currentCardClientId = clientId;
+    document.getElementById('cardPreviewContent').innerHTML = buildClientCardHTML(client);
+    document.getElementById('cardPreviewModal').classList.add('active');
+}
+
+function closeCardPreview() {
+    document.getElementById('cardPreviewModal').classList.remove('active');
+    currentCardClientId = null;
+}
+
+/**
+ * Печать карты. Кладём HTML в скрытую зону #printAreaCard и вызываем print().
+ * @media print показывает только #printAreaCard.
+ */
+function printCardFromPreview() {
+    if (currentCardClientId === null) return;
+    const client = clients.find(c => c.id === currentCardClientId);
+    if (!client) return;
+    const printArea = document.getElementById('printAreaCard');
+    printArea.innerHTML = buildClientCardHTML(client);
+    // Даём время на загрузку картинки QR
+    setTimeout(() => {
+        window.print();
+        // После печати прячем обратно (на случай, если window.print не блокирует)
+        setTimeout(() => { printArea.innerHTML = ''; }, 1000);
+    }, 200);
+}
+
+/**
+ * Скачать карту как PNG (для отправки клиенту в мессенджер).
+ * Рисуем карту на большом Canvas вручную (без html2canvas).
+ */
+function downloadCardPNG() {
+    if (currentCardClientId === null) return;
+    const client = clients.find(c => c.id === currentCardClientId);
+    if (!client) return;
+
+    // 85×54 мм при 300 DPI ≈ 1004×638 px. Возьмём 1000×635.
+    const W = 1000, H = 635;
+    const canvas = document.createElement('canvas');
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    // Фон — градиент
+    const grad = ctx.createLinearGradient(0, 0, W, H);
+    grad.addColorStop(0, '#0b2b3c');
+    grad.addColorStop(0.6, '#1f4a5e');
+    grad.addColorStop(1, '#0b2b3c');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+
+    // Жёлтая полоса снизу
+    ctx.fillStyle = '#f6b83d';
+    ctx.fillRect(0, H - 30, W, 30);
+
+    // Круг-логотип
+    const logoX = 55, logoY = 55, logoR = 32;
+    ctx.beginPath();
+    ctx.arc(logoX, logoY, logoR, 0, Math.PI * 2);
+    ctx.fillStyle = '#f6b83d';
+    ctx.fill();
+    ctx.fillStyle = '#0b2b3c';
+    ctx.font = 'bold 44px "Segoe UI", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('P', logoX, logoY + 2);
+
+    // Название
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 32px "Segoe UI", sans-serif';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('PalЫCH', 105, 42);
+    ctx.fillStyle = '#8ab4c9';
+    ctx.font = '13px "Segoe UI", sans-serif';
+    ctx.fillText('C A R   D I A G N O S T', 107, 70);
+
+    // Данные клиента
+    const plate = (client.plate || '—').toUpperCase();
+    const code = client.access_code || '—';
+    const name = client.name || 'Клиент';
+    const car = client.car || '';
+    const phone = client.phone || '';
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 34px "Segoe UI", sans-serif';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+    // Обрезаем длинное имя
+    let displayName = name;
+    while (ctx.measureText(displayName).width > 560 && displayName.length > 3) {
+        displayName = displayName.slice(0, -2) + '…';
+    }
+    ctx.fillText(displayName, 55, 175);
+
+    ctx.fillStyle = '#d4e9f5';
+    ctx.font = '22px "Segoe UI", sans-serif';
+    ctx.fillText(car || '', 55, 215);
+    ctx.fillText(phone || '', 55, 250);
+
+    // Плашка с номером
+    ctx.fillStyle = '#f6b83d';
+    ctx.fillRect(55, 285, 220, 60);
+    ctx.fillStyle = '#0b2b3c';
+    ctx.font = 'bold 36px "Segoe UI", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(plate, 165, 325);
+
+    // Плашка с PIN
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    ctx.fillRect(295, 285, 200, 60);
+    ctx.strokeStyle = '#f6b83d';
+    ctx.setLineDash([6, 6]);
+    ctx.lineWidth = 2;
+    ctx.strokeRect(295, 285, 200, 60);
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#f6b83d';
+    ctx.font = 'bold 24px "Segoe UI", sans-serif';
+    ctx.fillText('PIN', 395, 310);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 30px "Segoe UI", sans-serif';
+    ctx.fillText(code, 395, 338);
+
+    // QR-код
+    const qrSize = 260;
+const qrUrl = `https://nktlosk19992002-sketch.github.io/PalychCarDiag/index.html?plate=${encodeURIComponent(plate)}&code=${encodeURIComponent(code)}`;
+const qrCanvas = makeQRCanvas(qrUrl, qrSize);
+    // Белый фон под QR
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(W - qrSize - 60, 80, qrSize + 40, qrSize + 40);
+    ctx.drawImage(qrCanvas, W - qrSize - 40, 100, qrSize, qrSize);
+
+    // Подпись
+    ctx.fillStyle = '#8ab4c9';
+    ctx.font = '14px "Segoe UI", sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText('Отсканируйте QR для входа в кабинет', W - 60, H - 45);
+
+    // Скачиваем
+    const url = canvas.toDataURL('image/png');
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `palych_card_${plate.replace(/[^A-Z0-9]/gi, '')}_${code}.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    showNotification('✅ Карта сохранена как PNG', 'success');
+}
+// Тест QR-кода: открывает QR в новой вкладке для сканирования с экрана
+function testQRCode() {
+    if (currentCardClientId === null) return;
+    const client = clients.find(c => c.id === currentCardClientId);
+    if (!client) return;
+    const plate = (client.plate || '').toUpperCase();
+    const code = client.access_code || '';
+    const qrUrl = `${CLIENT_APP_URL}?plate=${encodeURIComponent(plate)}&code=${encodeURIComponent(code)}`;
+    // Генерируем крупный QR (600x600) для удобного сканирования с экрана
+    const bigCanvas = makeQRCanvas(qrUrl, 600);
+    const dataUrl = bigCanvas.toDataURL('image/png');
+    const w = window.open();
+    w.document.write(`
+        <html><head><title>Тест QR</title>
+        <style>body{margin:0;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:#f4f7fb;font-family:sans-serif;}
+        img{border:2px solid #0b2b3c;border-radius:8px;background:white;padding:10px;}
+        p{color:#0b2b3c;font-weight:600;margin:20px;text-align:center;max-width:600px;}
+        code{background:#eef3f8;padding:2px 8px;border-radius:4px;font-size:0.85rem;word-break:break-all;}</style>
+        </head><body>
+        <p>📱 Наведите камеру телефона на QR-код:</p>
+        <img src="${dataUrl}" alt="QR">
+        <p style="font-size:0.85rem;color:#3a657e;">URL внутри QR:<br><code>${qrUrl}</code></p>
+        </body></html>
+    `);
+    w.document.close();
 }
 
 // ============================================================
@@ -1335,7 +2348,7 @@ function clearDiag() {
 }
 
 // ============================================================
-// ЛИСТ ДИАГНОСТИКИ (с автоматическим логотипом)
+// ЛИСТ ДИАГНОСТИКИ
 // ============================================================
 function updateReport() {
     const container = document.getElementById('reportContent');
@@ -1344,8 +2357,6 @@ function updateReport() {
     const logo = getLogoDataURL();
     
     let html = `<div style="background:white; border-radius:12px; padding:20px; border:2px solid #0b2b3c;">`;
-    
-    // Логотип
     html += `<div style="display:flex; align-items:center; justify-content:space-between; border-bottom:3px double #0b2b3c; padding-bottom:12px; margin-bottom:14px;">
         <img src="${logo}" alt="PalЫCH" style="height:60px; max-width:200px; object-fit:contain;">
         <div style="text-align:right;">
@@ -1518,7 +2529,7 @@ function removeWork(id) { works = works.filter(w => w.id !== id); renderWorks();
 function addWork() { works.push({ id: workIdCounter++, name: 'Новая работа', cost: 0, note: '' }); renderWorks(); updateAct(); autoSaveToLocalStorage(); }
 
 // ============================================================
-// АКТ (с логотипом и зачёркнутыми ценами)
+// АКТ
 // ============================================================
 function updateAct() {
     const container = document.getElementById('actContent');
@@ -1610,10 +2621,7 @@ function updateAct() {
 }
 
 // ============================================================
-// ПРОДОЛЖЕНИЕ В ЧАСТИ 4 (сохранение в журнал, клиенты, записи, онлайн, push)
-// ============================================================
-// ============================================================
-// СОХРАНЕНИЕ В ЖУРНАЛ (ДИАГНОСТИКА И РЕМОНТ)
+// СОХРАНЕНИЕ В ЖУРНАЛ
 // ============================================================
 function saveDiagToJournal() {
     const selectedIds = Array.from(selectedSystems);
@@ -1623,13 +2631,11 @@ function saveDiagToJournal() {
     if (savedCarData.plate && savedCarData.plate !== 'не указан') {
         linkedBooking = bookings.find(b => b.plate && b.plate.toUpperCase() === savedCarData.plate.toUpperCase() && !CLOSED_STATUSES.includes(b.status));
     }
-
     let clientId = null;
     if (savedCarData.plate && savedCarData.plate !== 'не указан') {
         const found = clients.find(c => c.plate && c.plate.toUpperCase() === savedCarData.plate.toUpperCase());
         if (found) clientId = found.id;
     }
-
     const entry = {
         id: Date.now(), type: 'diagnostic',
         date: savedCarData.date || new Date().toISOString().slice(0,10),
@@ -1651,7 +2657,6 @@ function saveDiagToJournal() {
     } else {
         showNotification('✅ Диагностика сохранена в журнал', 'success');
     }
-
     document.getElementById('saveReportFeedback').innerHTML = `<i class="fas fa-check-circle" style="color:#2a8b5a;"></i> Сохранено в журнал`;
     setTimeout(() => { document.getElementById('saveReportFeedback').innerHTML = ''; }, 3000);
     renderJournal(); updateFileStatus(); autoSaveToLocalStorage();
@@ -1664,14 +2669,12 @@ function saveRepairToJournal() {
     if (repairCarData.plate && repairCarData.plate !== 'не указан') {
         linkedBooking = bookings.find(b => b.plate && b.plate.toUpperCase() === repairCarData.plate.toUpperCase() && !CLOSED_STATUSES.includes(b.status));
     }
-
     let clientId = null;
     if (repairCarData.plate && repairCarData.plate !== 'не указан') {
         const found = clients.find(c => c.plate && c.plate.toUpperCase() === repairCarData.plate.toUpperCase());
         if (found) clientId = found.id;
     }
 
-    // СОХРАНЯЕМ СКИДКУ В repairCarData (она уже там, но фиксируем для надёжности)
     const discountVal = document.getElementById('repairDiscount')?.value || 'none';
     repairCarData.discount = discountVal;
 
@@ -1682,7 +2685,7 @@ function saveRepairToJournal() {
         plate: repairCarData.plate || 'не указан',
         parts: JSON.parse(JSON.stringify(parts)),
         works: JSON.parse(JSON.stringify(works)),
-        carData: JSON.parse(JSON.stringify(repairCarData)), // Тут сохраняется скидка!
+        carData: JSON.parse(JSON.stringify(repairCarData)),
         clientId: clientId, timestamp: new Date().toISOString()
     };
     journal.push(entry);
@@ -1696,11 +2699,158 @@ function saveRepairToJournal() {
     } else {
         showNotification('✅ Ремонт сохранён в журнал', 'success');
     }
-
     document.getElementById('actFeedback').innerHTML = `<i class="fas fa-check-circle" style="color:#2a8b5a;"></i> Акт сохранён`;
     setTimeout(() => { document.getElementById('actFeedback').innerHTML = ''; }, 3000);
     renderJournal(); updateFileStatus(); autoSaveToLocalStorage();
 }
+
+// ============================================================
+// ★ ИЗМЕНЕНО: renderClients() — добавлена кнопка 🪪
+// ============================================================
+function renderClients() {
+    const tbody = document.getElementById('clientsBody');
+    if (!tbody) return; tbody.innerHTML = '';
+    const accepted = clients.filter(c => c.is_new !== true);
+    if (accepted.length === 0) { tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:20px;color:#4a6f82;">Нет клиентов</td></tr>`; return; }
+    accepted.forEach((c, idx) => {
+        const diagCount = journal.filter(e => e.type === 'diagnostic' && e.clientId === c.id).length;
+        const repairCount = journal.filter(e => e.type === 'repair' && e.clientId === c.id).length;
+        const carType = c.carType || 'import';
+        tbody.innerHTML += `<tr>
+            <td>${idx+1}</td><td><strong>${c.name}</strong></td><td>${c.phone || '—'}</td><td>${c.plate || '—'}</td><td>${c.car || '—'}</td>
+            <td><select onchange="updateClientCarType(${c.id},this.value)" style="padding:4px 8px;border:1px solid #d0dce8;border-radius:6px;font-size:0.8rem;background:white;">
+                <option value="import" ${carType==='import'?'selected':''}>🚗 Иномарка</option>
+                <option value="domestic" ${carType==='domestic'?'selected':''}>🚙 Отечественная</option>
+            </select></td>
+            <td><span class="client-badge">${c.access_code || '—'}</span></td>
+            <td>${diagCount}</td><td>${repairCount}</td>
+            <td>
+                <button class="btn-sm" style="background:#0b2b3c;color:white;padding:4px 10px;border-radius:30px;border:none;cursor:pointer;" onclick="viewClientHistory(${c.id})" title="История">📋</button>
+                <button class="btn-sm" style="background:#d4a017;color:white;padding:4px 10px;border-radius:30px;border:none;cursor:pointer;" onclick="regenerateClientCode(${c.id})" title="Новый код">🔑</button>
+                <button class="btn-sm" style="background:#1f7b4a;color:white;padding:4px 10px;border-radius:30px;border:none;cursor:pointer;" onclick="openClientCard(${c.id})" title="Карта клиента с QR">🪪</button>
+                <button class="btn-danger" onclick="deleteClient(${c.id})">✕</button>
+            </td>
+        </tr>`;
+    });
+}
+
+function updateClientCarType(clientId, carType) { const client = clients.find(c => c.id === clientId); if (client) { client.carType = carType; showNotification(`✅ Тип авто обновлён`, 'success'); autoSaveToLocalStorage(); } }
+function addClientForm() {
+    const name = prompt('Имя клиента:'); if (!name || !name.trim()) return;
+    const phone = prompt('Телефон:') || ''; const plate = (prompt('Гос. номер:') || '').trim().toUpperCase(); const car = prompt('Марка авто:') || '';
+    const carType = confirm('Клиент с иномаркой?\nOK = Иномарка, Отмена = Отечественная') ? 'import' : 'domestic';
+    const accessCode = String(Math.floor(1000 + Math.random() * 9000));
+    clients.push({ id: clientIdCounter++, name: name.trim(), phone, plate, car, access_code: accessCode, carType, is_new: false });
+    renderClients(); updateClientSelect(); alert(`✅ Клиент добавлен!\n\n🔑 Код доступа: ${accessCode}`); autoSaveToLocalStorage();
+}
+function deleteClient(id) { if (!confirm('Удалить клиента?')) return; clients = clients.filter(c => c.id !== id); renderClients(); updateClientSelect(); autoSaveToLocalStorage(); }
+function viewClientHistory(id) {
+    const client = clients.find(c => c.id === id); if (!client) return;
+    const entries = journal.filter(e => e.clientId === id);
+    if (entries.length === 0) { alert(`У клиента ${client.name} нет записей`); return; }
+    let msg = `📋 История: ${client.name}\n\n`; entries.forEach(e => { const type = e.type === 'diagnostic' ? '🔍 Диагностика' : '🔧 Ремонт'; msg += `${type} — ${e.car} (${e.plate || '—'}) — ${e.date}\n`; }); alert(msg);
+}
+function updateClientSelect() {
+    const select = document.getElementById('bk_client'); if (!select) return;
+    select.innerHTML = '<option value="">Выберите...</option>';
+    clients.forEach(c => { const opt = document.createElement('option'); opt.value = c.id; opt.textContent = `${c.name} (${c.phone || '—'})`; select.appendChild(opt); });
+}
+function selectClientForBooking() {
+    const id = parseInt(document.getElementById('bk_client').value); if (!id) return;
+    const c = clients.find(x => x.id === id); if (!c) return;
+    document.getElementById('bk_name').value = c.name || ''; document.getElementById('bk_phone').value = c.phone || ''; document.getElementById('bk_car').value = c.car || ''; document.getElementById('bk_plate').value = c.plate || '';
+}
+
+window.syncClientCodes = async function() {
+    const btn = document.querySelector('button[onclick="syncClientCodes()"]'); if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; }
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData || !jsonData.clients) { alert('Нет данных на сервере'); return; }
+        let synced = 0;
+        for (const cc of jsonData.clients) {
+            const local = clients.find(c => c.plate === cc.plate && c.name === cc.name);
+            if (local) { if (local.access_code !== cc.access_code) { local.access_code = cc.access_code; synced++; } if (cc.carType && local.carType !== cc.carType) { local.carType = cc.carType; synced++; } }
+            else { clients.push({ id: clientIdCounter++, name: cc.name, phone: cc.phone || '', plate: cc.plate || '', car: cc.car || '', access_code: cc.access_code || String(Math.floor(1000 + Math.random() * 9000)), carType: cc.carType || 'import', is_new: false }); synced++; }
+        }
+        renderClients(); updateClientSelect(); autoSaveToLocalStorage(); alert(`✅ Синхронизировано: ${synced}`);
+    } catch (e) { alert('❌ Ошибка: ' + e.message); }
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-sync"></i> Синхр. коды'; }
+};
+
+window.regenerateClientCode = async function(clientId) {
+    if (!confirm('Сгенерировать новый код?')) return;
+    const client = clients.find(c => c.id === clientId); if (!client) return;
+    const newCode = String(Math.floor(1000 + Math.random() * 9000)); const oldCode = client.access_code; client.access_code = newCode;
+    try { const jsonData = await loadJsonFromServer(); if (jsonData && jsonData.clients) { const cc = jsonData.clients.find(c => c.plate === client.plate && c.name === client.name); if (cc) { cc.access_code = newCode; await saveJsonToServer(jsonData); } } } catch(e) {}
+    renderClients(); autoSaveToLocalStorage(); alert(`✅ Код обновлён!\n\nКлиент: ${client.name}\nСтарый: ${oldCode || '—'}\nНовый: ${newCode}`);
+};
+
+window.restoreClientStats = function() {
+    let restored = 0;
+    journal.forEach(entry => {
+        if (!entry.clientId) {
+            let client = null;
+            if (entry.plate && entry.plate !== 'не указан') { client = clients.find(c => c.plate === entry.plate); }
+            if (!client && entry.car && entry.car !== 'не указано') { client = clients.find(c => c.car === entry.car || c.name === entry.car); }
+            if (client) { entry.clientId = client.id; restored++; }
+        }
+    });
+    if (restored > 0) { autoSaveToLocalStorage(); renderClients(); renderJournal(); alert(`✅ Восстановлено: ${restored}`); } else { alert('⚠️ Нет записей'); }
+};
+
+// ============================================================
+// ПРАЙС
+// ============================================================
+function renderPrices() {
+    const container = document.getElementById('pricesContainer'); if (!container) return;
+    const search = (document.getElementById('priceSearch')?.value || '').toLowerCase().trim();
+    let filtered = priceData;
+    if (search) filtered = filtered.filter(p => p.service.toLowerCase().includes(search) || p.category.toLowerCase().includes(search));
+    if (filtered.length === 0) { container.innerHTML = `<div style="color:#4f6f82;background:#edf3fa;padding:30px;border-radius:16px;text-align:center;"><i class="fas fa-search" style="font-size:2rem;display:block;margin-bottom:8px;"></i><p>${search ? 'Ничего не найдено' : 'Нет услуг'}</p></div>`; return; }
+    const categories = {}; filtered.forEach(item => { if (!categories[item.category]) categories[item.category] = []; categories[item.category].push(item); });
+    let html = `<div style="font-size:0.85rem;color:#3a657e;margin-bottom:8px;">Найдено: <strong>${filtered.length}</strong></div>`;
+    Object.keys(categories).forEach(cat => {
+        html += `<div class="price-section"><div class="section-title" onclick="togglePriceSection(this)"><span>${cat}</span><span><i class="fas fa-chevron-down"></i></span></div><div class="price-body"><div class="price-row header"><span>Услуга</span><span>Отеч.</span><span>Иномарки</span>${priceEditMode ? '<span>Действия</span>' : ''}</div>`;
+        categories[cat].forEach(item => {
+            const gi = priceData.indexOf(item);
+            html += `<div class="price-row"><span class="service-name">${item.service}</span>
+                ${priceEditMode ? `<input type="text" value="${item.domestic}" onchange="updatePriceItem(${gi},'domestic',this.value)" style="width:100%;padding:4px;border-radius:6px;border:1px solid #d0dce8;">` : `<span class="price-dom">${item.domestic} ₽</span>`}
+                ${priceEditMode ? `<input type="text" value="${item.import}" onchange="updatePriceItem(${gi},'import',this.value)" style="width:100%;padding:4px;border-radius:6px;border:1px solid #d0dce8;">` : `<span class="price-import">${item.import} ₽</span>`}
+                ${priceEditMode ? `<span><button class="btn-danger" style="padding:2px 8px;" onclick="removePriceItem(${gi})">✕</button></span>` : ''}</div>`;
+        });
+        html += `</div></div>`;
+    });
+    container.innerHTML = html;
+}
+function togglePriceSection(el) { const body = el.nextElementSibling; if (body.style.display === 'none') { body.style.display = 'block'; el.querySelector('i').className = 'fas fa-chevron-down'; } else { body.style.display = 'none'; el.querySelector('i').className = 'fas fa-chevron-right'; } }
+function editPriceMode() { priceEditMode = !priceEditMode; renderPrices(); document.getElementById('priceFeedback').innerHTML = priceEditMode ? `<i class="fas fa-info-circle" style="color:#f6b83d;"></i> Режим редактирования включён` : `<i class="fas fa-check-circle" style="color:#2a8b5a;"></i> Режим выключен`; setTimeout(() => document.getElementById('priceFeedback').innerHTML = '', 3000); }
+function updatePriceItem(idx, field, value) { if (priceData[idx]) { priceData[idx][field] = value; autoSaveToLocalStorage(); } }
+function removePriceItem(idx) { if (!confirm('Удалить?')) return; priceData.splice(idx, 1); renderPrices(); autoSaveToLocalStorage(); }
+function addPriceItem() { const category = prompt('Категория:') || 'Другое'; const service = prompt('Название услуги:'); if (!service) return; const domestic = prompt('Цена для отечественных:') || '0'; const importPrice = prompt('Цена для иномарок:') || '0'; priceData.push({ category, service, domestic, import: importPrice }); renderPrices(); autoSaveToLocalStorage(); }
+
+function addWorkFromPrice() { document.getElementById('priceSelectModal').classList.add('active'); renderPriceSelect(); }
+function renderPriceSelect() {
+    const container = document.getElementById('priceSelectContainer'); if (!container) return;
+    const search = (document.getElementById('priceSelectSearch')?.value || '').toLowerCase().trim();
+    const plate = repairCarData.plate || document.getElementById('repairPlate')?.value || '';
+    const name = repairCarData.make || document.getElementById('repairMake')?.value || '';
+    const client = clients.find(c => (c.plate && c.plate.toUpperCase() === plate.toUpperCase()) || (c.name && c.name === name));
+    const carType = client ? (client.carType || 'import') : 'import';
+    const typeLabel = carType === 'domestic' ? '🚙 Отечественная' : '🚗 Иномарка';
+
+    let filtered = priceData; if (search) filtered = filtered.filter(p => p.service.toLowerCase().includes(search));
+    if (filtered.length === 0) { container.innerHTML = `<div style="padding:20px; text-align:center; color:#4a6f82;">Нет услуг</div>`; return; }
+
+    let html = `<div style="background:#eef3f8; padding:8px 14px; border-radius:8px; margin-bottom:10px; font-size:0.85rem;"><strong>Тип авто клиента:</strong> <span style="color:${carType === 'domestic' ? '#1f7b4a' : '#d4a017'};">${typeLabel}</span></div>`;
+    filtered.forEach(item => {
+        const price = carType === 'domestic' ? item.domestic : item.import;
+        html += `<div style="display:grid; grid-template-columns:2fr 1fr 0.5fr; padding:8px 12px; border-bottom:1px solid #eef2f7; align-items:center; cursor:pointer;" onclick="selectWorkFromPrice('${item.service.replace(/'/g,"\\'")}', ${price})" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
+            <span style="font-weight:600;color:#0b2b3c;">${item.service}</span><span style="color:${carType === 'domestic' ? '#1f7b4a' : '#d4a017'}; font-weight:700;">${price} ₽</span><span style="color:#3a657e;font-size:0.7rem;">${item.category}</span></div>`;
+    });
+    container.innerHTML = html;
+}
+function selectWorkFromPrice(name, price) { const cost = parseFloat(price) || 0; works.push({ id: workIdCounter++, name: name, cost: cost, note: '' }); renderWorks(); updateAct(); closePriceSelectModal(); showNotification(`✅ Работа "${name}" добавлена (${cost} ₽)`, 'success'); autoSaveToLocalStorage(); }
+function closePriceSelectModal() { document.getElementById('priceSelectModal').classList.remove('active'); }
 
 // ============================================================
 // ЗАПИСИ
@@ -1803,7 +2953,6 @@ function updateBooking(id, field, value) {
 function deleteBooking(id) { if (!confirm('Удалить запись?')) return; bookings = bookings.filter(b => b.id !== id); updateBookingsStorage(); renderBookings(); autoSaveToLocalStorage(); }
 function copyBooking(id) { const b = bookings.find(x => x.id === id); if (!b) return; document.getElementById('bk_name').value = b.name || ''; document.getElementById('bk_phone').value = b.phone || ''; document.getElementById('bk_car').value = b.car || ''; document.getElementById('bk_plate').value = b.plate || ''; document.getElementById('bk_type').value = b.type || 'diagnostic'; document.getElementById('bk_reason').value = b.reason || ''; showNotification('📋 Скопировано', 'success'); }
 
-// Ручная привязка
 function manualLinkBookingToDiag(bookingId) {
     const diagEntries = journal.filter(e => e.type === 'diagnostic');
     if (diagEntries.length === 0) { alert('Нет сохранённых диагностик'); return; }
@@ -1827,7 +2976,6 @@ function manualLinkBookingToRepair(bookingId) {
 function openLinkedDiag(id) { viewJournalEntry(id); }
 function openLinkedRepair(id) { viewJournalEntry(id); }
 
-// Детали записи + вставка
 function showBookingDetail(id) {
     const b = bookings.find(x => x.id === id); if (!b) return; currentBookingId = id;
     const modal = document.getElementById('bookingDetailModal'); const content = document.getElementById('bookingDetailContent');
@@ -1871,153 +3019,6 @@ function insertBookingToRepair() {
 }
 
 // ============================================================
-// КЛИЕНТЫ
-// ============================================================
-function renderClients() {
-    const tbody = document.getElementById('clientsBody');
-    if (!tbody) return; tbody.innerHTML = '';
-    const accepted = clients.filter(c => c.is_new !== true);
-    if (accepted.length === 0) { tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:20px;color:#4a6f82;">Нет клиентов</td></tr>`; return; }
-    accepted.forEach((c, idx) => {
-        const diagCount = journal.filter(e => e.type === 'diagnostic' && e.clientId === c.id).length;
-        const repairCount = journal.filter(e => e.type === 'repair' && e.clientId === c.id).length;
-        const carType = c.carType || 'import';
-        tbody.innerHTML += `<tr>
-            <td>${idx+1}</td><td><strong>${c.name}</strong></td><td>${c.phone || '—'}</td><td>${c.plate || '—'}</td><td>${c.car || '—'}</td>
-            <td><select onchange="updateClientCarType(${c.id},this.value)" style="padding:4px 8px;border:1px solid #d0dce8;border-radius:6px;font-size:0.8rem;background:white;">
-                <option value="import" ${carType==='import'?'selected':''}>🚗 Иномарка</option>
-                <option value="domestic" ${carType==='domestic'?'selected':''}>🚙 Отечественная</option>
-            </select></td>
-            <td><span class="client-badge">${c.access_code || '—'}</span></td>
-            <td>${diagCount}</td><td>${repairCount}</td>
-            <td><button class="btn-sm" style="background:#0b2b3c;color:white;padding:4px 10px;border-radius:30px;border:none;cursor:pointer;" onclick="viewClientHistory(${c.id})" title="История">📋</button>
-                <button class="btn-sm" style="background:#d4a017;color:white;padding:4px 10px;border-radius:30px;border:none;cursor:pointer;" onclick="regenerateClientCode(${c.id})" title="Новый код">🔑</button>
-                <button class="btn-danger" onclick="deleteClient(${c.id})">✕</button></td>
-        </tr>`;
-    });
-}
-
-function updateClientCarType(clientId, carType) { const client = clients.find(c => c.id === clientId); if (client) { client.carType = carType; showNotification(`✅ Тип авто обновлён`, 'success'); autoSaveToLocalStorage(); } }
-function addClientForm() {
-    const name = prompt('Имя клиента:'); if (!name || !name.trim()) return;
-    const phone = prompt('Телефон:') || ''; const plate = (prompt('Гос. номер:') || '').trim().toUpperCase(); const car = prompt('Марка авто:') || '';
-    const carType = confirm('Клиент с иномаркой?\nOK = Иномарка, Отмена = Отечественная') ? 'import' : 'domestic';
-    const accessCode = String(Math.floor(1000 + Math.random() * 9000));
-    clients.push({ id: clientIdCounter++, name: name.trim(), phone, plate, car, access_code: accessCode, carType, is_new: false });
-    renderClients(); updateClientSelect(); alert(`✅ Клиент добавлен!\n\n🔑 Код доступа: ${accessCode}`); autoSaveToLocalStorage();
-}
-function deleteClient(id) { if (!confirm('Удалить клиента?')) return; clients = clients.filter(c => c.id !== id); renderClients(); updateClientSelect(); autoSaveToLocalStorage(); }
-function viewClientHistory(id) {
-    const client = clients.find(c => c.id === id); if (!client) return;
-    const entries = journal.filter(e => e.clientId === id);
-    if (entries.length === 0) { alert(`У клиента ${client.name} нет записей`); return; }
-    let msg = `📋 История: ${client.name}\n\n`; entries.forEach(e => { const type = e.type === 'diagnostic' ? '🔍 Диагностика' : '🔧 Ремонт'; msg += `${type} — ${e.car} (${e.plate || '—'}) — ${e.date}\n`; }); alert(msg);
-}
-function updateClientSelect() {
-    const select = document.getElementById('bk_client'); if (!select) return;
-    select.innerHTML = '<option value="">Выберите...</option>';
-    clients.forEach(c => { const opt = document.createElement('option'); opt.value = c.id; opt.textContent = `${c.name} (${c.phone || '—'})`; select.appendChild(opt); });
-}
-function selectClientForBooking() {
-    const id = parseInt(document.getElementById('bk_client').value); if (!id) return;
-    const c = clients.find(x => x.id === id); if (!c) return;
-    document.getElementById('bk_name').value = c.name || ''; document.getElementById('bk_phone').value = c.phone || ''; document.getElementById('bk_car').value = c.car || ''; document.getElementById('bk_plate').value = c.plate || '';
-}
-
-// Синхронизация кодов
-window.syncClientCodes = async function() {
-    const btn = document.querySelector('button[onclick="syncClientCodes()"]'); if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; }
-    try {
-        const jsonData = await loadJsonFromServer();
-        if (!jsonData || !jsonData.clients) { alert('Нет данных на сервере'); return; }
-        let synced = 0;
-        for (const cc of jsonData.clients) {
-            const local = clients.find(c => c.plate === cc.plate && c.name === cc.name);
-            if (local) { if (local.access_code !== cc.access_code) { local.access_code = cc.access_code; synced++; } if (cc.carType && local.carType !== cc.carType) { local.carType = cc.carType; synced++; } }
-            else { clients.push({ id: clientIdCounter++, name: cc.name, phone: cc.phone || '', plate: cc.plate || '', car: cc.car || '', access_code: cc.access_code || String(Math.floor(1000 + Math.random() * 9000)), carType: cc.carType || 'import', is_new: false }); synced++; }
-        }
-        renderClients(); updateClientSelect(); autoSaveToLocalStorage(); alert(`✅ Синхронизировано: ${synced}`);
-    } catch (e) { alert('❌ Ошибка: ' + e.message); }
-    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-sync"></i> Синхр. коды'; }
-};
-
-window.regenerateClientCode = async function(clientId) {
-    if (!confirm('Сгенерировать новый код?')) return;
-    const client = clients.find(c => c.id === clientId); if (!client) return;
-    const newCode = String(Math.floor(1000 + Math.random() * 9000)); const oldCode = client.access_code; client.access_code = newCode;
-    try { const jsonData = await loadJsonFromServer(); if (jsonData && jsonData.clients) { const cc = jsonData.clients.find(c => c.plate === client.plate && c.name === client.name); if (cc) { cc.access_code = newCode; await saveJsonToServer(jsonData); } } } catch(e) {}
-    renderClients(); autoSaveToLocalStorage(); alert(`✅ Код обновлён!\n\nКлиент: ${client.name}\nСтарый: ${oldCode || '—'}\nНовый: ${newCode}`);
-};
-
-window.restoreClientStats = function() {
-    let restored = 0;
-    journal.forEach(entry => {
-        if (!entry.clientId) {
-            let client = null;
-            if (entry.plate && entry.plate !== 'не указан') { client = clients.find(c => c.plate === entry.plate); }
-            if (!client && entry.car && entry.car !== 'не указано') { client = clients.find(c => c.car === entry.car || c.name === entry.car); }
-            if (client) { entry.clientId = client.id; restored++; }
-        }
-    });
-    if (restored > 0) { autoSaveToLocalStorage(); renderClients(); renderJournal(); alert(`✅ Восстановлено: ${restored}`); } else { alert('⚠️ Нет записей'); }
-};
-
-// ============================================================
-// ПРАЙС
-// ============================================================
-function renderPrices() {
-    const container = document.getElementById('pricesContainer'); if (!container) return;
-    const search = (document.getElementById('priceSearch')?.value || '').toLowerCase().trim();
-    let filtered = priceData;
-    if (search) filtered = filtered.filter(p => p.service.toLowerCase().includes(search) || p.category.toLowerCase().includes(search));
-    if (filtered.length === 0) { container.innerHTML = `<div style="color:#4f6f82;background:#edf3fa;padding:30px;border-radius:16px;text-align:center;"><i class="fas fa-search" style="font-size:2rem;display:block;margin-bottom:8px;"></i><p>${search ? 'Ничего не найдено' : 'Нет услуг'}</p></div>`; return; }
-    const categories = {}; filtered.forEach(item => { if (!categories[item.category]) categories[item.category] = []; categories[item.category].push(item); });
-    let html = `<div style="font-size:0.85rem;color:#3a657e;margin-bottom:8px;">Найдено: <strong>${filtered.length}</strong></div>`;
-    Object.keys(categories).forEach(cat => {
-        html += `<div class="price-section"><div class="section-title" onclick="togglePriceSection(this)"><span>${cat}</span><span><i class="fas fa-chevron-down"></i></span></div><div class="price-body"><div class="price-row header"><span>Услуга</span><span>Отеч.</span><span>Иномарки</span>${priceEditMode ? '<span>Действия</span>' : ''}</div>`;
-        categories[cat].forEach(item => {
-            const gi = priceData.indexOf(item);
-            html += `<div class="price-row"><span class="service-name">${item.service}</span>
-                ${priceEditMode ? `<input type="text" value="${item.domestic}" onchange="updatePriceItem(${gi},'domestic',this.value)" style="width:100%;padding:4px;border-radius:6px;border:1px solid #d0dce8;">` : `<span class="price-dom">${item.domestic} ₽</span>`}
-                ${priceEditMode ? `<input type="text" value="${item.import}" onchange="updatePriceItem(${gi},'import',this.value)" style="width:100%;padding:4px;border-radius:6px;border:1px solid #d0dce8;">` : `<span class="price-import">${item.import} ₽</span>`}
-                ${priceEditMode ? `<span><button class="btn-danger" style="padding:2px 8px;" onclick="removePriceItem(${gi})">✕</button></span>` : ''}</div>`;
-        });
-        html += `</div></div>`;
-    });
-    container.innerHTML = html;
-}
-function togglePriceSection(el) { const body = el.nextElementSibling; if (body.style.display === 'none') { body.style.display = 'block'; el.querySelector('i').className = 'fas fa-chevron-down'; } else { body.style.display = 'none'; el.querySelector('i').className = 'fas fa-chevron-right'; } }
-function editPriceMode() { priceEditMode = !priceEditMode; renderPrices(); document.getElementById('priceFeedback').innerHTML = priceEditMode ? `<i class="fas fa-info-circle" style="color:#f6b83d;"></i> Режим редактирования включён` : `<i class="fas fa-check-circle" style="color:#2a8b5a;"></i> Режим выключен`; setTimeout(() => document.getElementById('priceFeedback').innerHTML = '', 3000); }
-function updatePriceItem(idx, field, value) { if (priceData[idx]) { priceData[idx][field] = value; autoSaveToLocalStorage(); } }
-function removePriceItem(idx) { if (!confirm('Удалить?')) return; priceData.splice(idx, 1); renderPrices(); autoSaveToLocalStorage(); }
-function addPriceItem() { const category = prompt('Категория:') || 'Другое'; const service = prompt('Название услуги:'); if (!service) return; const domestic = prompt('Цена для отечественных:') || '0'; const importPrice = prompt('Цена для иномарок:') || '0'; priceData.push({ category, service, domestic, import: importPrice }); renderPrices(); autoSaveToLocalStorage(); }
-
-// Прайс-выбор с учётом типа авто
-function addWorkFromPrice() { document.getElementById('priceSelectModal').classList.add('active'); renderPriceSelect(); }
-function renderPriceSelect() {
-    const container = document.getElementById('priceSelectContainer'); if (!container) return;
-    const search = (document.getElementById('priceSelectSearch')?.value || '').toLowerCase().trim();
-    const plate = repairCarData.plate || document.getElementById('repairPlate')?.value || '';
-    const name = repairCarData.make || document.getElementById('repairMake')?.value || '';
-    const client = clients.find(c => (c.plate && c.plate.toUpperCase() === plate.toUpperCase()) || (c.name && c.name === name));
-    const carType = client ? (client.carType || 'import') : 'import';
-    const typeLabel = carType === 'domestic' ? '🚙 Отечественная' : '🚗 Иномарка';
-
-    let filtered = priceData; if (search) filtered = filtered.filter(p => p.service.toLowerCase().includes(search));
-    if (filtered.length === 0) { container.innerHTML = `<div style="padding:20px; text-align:center; color:#4a6f82;">Нет услуг</div>`; return; }
-
-    let html = `<div style="background:#eef3f8; padding:8px 14px; border-radius:8px; margin-bottom:10px; font-size:0.85rem;"><strong>Тип авто клиента:</strong> <span style="color:${carType === 'domestic' ? '#1f7b4a' : '#d4a017'};">${typeLabel}</span></div>`;
-    filtered.forEach(item => {
-        const price = carType === 'domestic' ? item.domestic : item.import;
-        html += `<div style="display:grid; grid-template-columns:2fr 1fr 0.5fr; padding:8px 12px; border-bottom:1px solid #eef2f7; align-items:center; cursor:pointer;" onclick="selectWorkFromPrice('${item.service.replace(/'/g,"\\'")}', ${price})" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
-            <span style="font-weight:600;color:#0b2b3c;">${item.service}</span><span style="color:${carType === 'domestic' ? '#1f7b4a' : '#d4a017'}; font-weight:700;">${price} ₽</span><span style="color:#3a657e;font-size:0.7rem;">${item.category}</span></div>`;
-    });
-    container.innerHTML = html;
-}
-function selectWorkFromPrice(name, price) { const cost = parseFloat(price) || 0; works.push({ id: workIdCounter++, name: name, cost: cost, note: '' }); renderWorks(); updateAct(); closePriceSelectModal(); showNotification(`✅ Работа "${name}" добавлена (${cost} ₽)`, 'success'); autoSaveToLocalStorage(); }
-function closePriceSelectModal() { document.getElementById('priceSelectModal').classList.remove('active'); }
-
-// ============================================================
 // ЖУРНАЛ
 // ============================================================
 function renderJournal() {
@@ -2054,7 +3055,6 @@ function viewJournalEntry(id) {
         if (entry.parts) parts = JSON.parse(JSON.stringify(entry.parts));
         if (entry.works) works = JSON.parse(JSON.stringify(entry.works));
         renderParts(); renderWorks(); updateAct();
-        // Восстанавливаем скидку, если она была сохранена
         if (entry.carData && entry.carData.discount) {
             const discSelect = document.getElementById('repairDiscount');
             if (discSelect) discSelect.value = entry.carData.discount;
@@ -2070,18 +3070,91 @@ function viewJournalEntry(id) {
 // ============================================================
 // ЭТАЛОНЫ / НАСТРОЙКИ / СКИДКИ
 // ============================================================
-function renderEtalons() { /* ... (код остаётся прежним) ... */ }
-function initEtalonsFromDiag() { /* ... */ }
-function updateEtalon(sysId, param, field, value) { /* ... */ }
-function addEtalonParam(sysId) { /* ... */ }
-function removeEtalonParam(sysId, param) { /* ... */ }
-function renderSettings() { /* ... */ }
-function editSystem(sysId) { /* ... */ }
-function removeSystem(sysId) { /* ... */ }
-function addParam(sysId) { /* ... */ }
-function removeParam(sysId, idx) { /* ... */ }
-function addNewSystem() { /* ... */ }
-function saveSettings() { /* ... */ }
+function renderEtalons() {
+    const container = document.getElementById('etalonsContainer'); if (!container) return;
+    const search = (document.getElementById('etalonSearch')?.value || '').toLowerCase().trim();
+    let html = '';
+    SYSTEMS.forEach(sys => {
+        const params = PARAMS[sys.id] || [];
+        const etalons = etalonData[sys.id] || {};
+        let paramsHtml = '';
+        let hasVisible = false;
+        params.forEach(p => {
+            const e = etalons[p] || { norm: '', note: '' };
+            if (search && !sys.name.toLowerCase().includes(search) && !p.toLowerCase().includes(search) && !(e.norm||'').toLowerCase().includes(search)) return;
+            hasVisible = true;
+            paramsHtml += `<div class="settings-item" style="border-bottom:1px solid #eef2f7; padding:4px 0;">
+                <span class="param-name" style="min-width:200px;">${p}</span>
+                <input type="text" value="${e.norm||''}" placeholder="Норма" onchange="updateEtalon('${sys.id}','${p.replace(/'/g,"\\'")}','norm',this.value)" style="flex:1;">
+                <input type="text" value="${e.note||''}" placeholder="Примечание" onchange="updateEtalon('${sys.id}','${p.replace(/'/g,"\\'")}','note',this.value)" style="flex:1;">
+            </div>`;
+        });
+        if (hasVisible) {
+            html += `<div class="settings-group"><h4>🔧 ${sys.name}</h4>${paramsHtml}</div>`;
+        }
+    });
+    container.innerHTML = html || '<div style="text-align:center;padding:20px;color:#4a6f82;">Нет эталонов</div>';
+}
+
+function updateEtalon(sysId, param, field, value) {
+    if (!etalonData[sysId]) etalonData[sysId] = {};
+    if (!etalonData[sysId][param]) etalonData[sysId][param] = { norm: '', note: '' };
+    etalonData[sysId][param][field] = value;
+    autoSaveToLocalStorage();
+}
+
+function renderSettings() {
+    const container = document.getElementById('settingsContainer'); if (!container) return;
+    let html = '';
+    SYSTEMS.forEach(sys => {
+        const params = PARAMS[sys.id] || [];
+        let tagsHtml = params.map((p, idx) => `<span class="param-tag">${p} <span class="remove" onclick="removeParam('${sys.id}',${idx})">✕</span></span>`).join('');
+        html += `<div class="settings-group">
+            <div class="flex-between">
+                <h4>🔧 ${sys.name}</h4>
+                <div style="display:flex; gap:6px;">
+                    <button class="btn-sm" style="background:#2d6b84;color:white;border:none;cursor:pointer;padding:4px 10px;" onclick="addParam('${sys.id}')">+ Параметр</button>
+                    <button class="btn-danger" onclick="removeSystem('${sys.id}')">Удалить</button>
+                </div>
+            </div>
+            <div class="settings-param-list">${tagsHtml || '<span style="color:#4a6f82;font-size:0.8rem;">Нет параметров</span>'}</div>
+        </div>`;
+    });
+    container.innerHTML = html;
+}
+
+function addParam(sysId) {
+    const name = prompt('Название параметра:'); if (!name) return;
+    if (!PARAMS[sysId]) PARAMS[sysId] = [];
+    PARAMS[sysId].push(name);
+    if (!DIAG_TABLES[sysId]) DIAG_TABLES[sysId] = [];
+    DIAG_TABLES[sysId].push({ param: name, value: '', status: 'unknown', checked: false, note: '' });
+    renderSettings(); renderSystemsGrid(); autoSaveToLocalStorage();
+}
+function removeParam(sysId, idx) {
+    if (!confirm('Удалить параметр?')) return;
+    const name = PARAMS[sysId][idx];
+    PARAMS[sysId].splice(idx, 1);
+    if (DIAG_TABLES[sysId]) DIAG_TABLES[sysId] = DIAG_TABLES[sysId].filter(t => t.param !== name);
+    renderSettings(); renderSystemsGrid(); autoSaveToLocalStorage();
+}
+function removeSystem(sysId) {
+    if (!confirm('Удалить систему?')) return;
+    SYSTEMS = SYSTEMS.filter(s => s.id !== sysId);
+    delete PARAMS[sysId]; delete DIAG_TABLES[sysId]; delete etalonData[sysId];
+    selectedSystems.delete(sysId);
+    renderSettings(); renderSystemsGrid(); autoSaveToLocalStorage();
+}
+function addNewSystem() {
+    const name = prompt('Название системы:'); if (!name) return;
+    const desc = prompt('Описание:') || '';
+    const id = 'sys_' + (systemIdCounter++);
+    SYSTEMS.push({ id, name, desc });
+    PARAMS[id] = ['Параметр 1'];
+    DIAG_TABLES[id] = [{ param: 'Параметр 1', value: '', status: 'unknown', checked: false, note: '' }];
+    renderSettings(); renderSystemsGrid(); autoSaveToLocalStorage();
+}
+function saveSettings() { showNotification('✅ Настройки сохранены', 'success'); autoSaveToLocalStorage(); renderSystemsGrid(); }
 
 function renderDiscounts() {
     const container = document.getElementById('discountsList'); if (!container) return;
@@ -2102,10 +3175,7 @@ function addDiscount() { const name = document.getElementById('newDiscountName')
 function removeDiscount(id) { if (!confirm('Удалить?')) return; discounts = discounts.filter(d => d.id !== id); renderDiscounts(); autoSaveToLocalStorage(); }
 
 // ============================================================
-// ОНЛАЙН ЗАЯВКИ И ЗАПРОСЫ (сокращено для экономии места)
-// ============================================================
-// ============================================================
-// ОНЛАЙН ЗАЯВКИ (ПОЛНАЯ ВЕРСИЯ)
+// ОНЛАЙН ЗАЯВКИ
 // ============================================================
 async function loadNewRequests() {
     try {
@@ -2125,10 +3195,8 @@ function renderNewRequests(reqs, clis) {
     const container = document.getElementById('newRequestsContainer');
     const countEl = document.getElementById('newRequestsCount');
     if (!container) return;
-    
     const total = reqs.length + clis.length;
     if (countEl) countEl.textContent = total;
-    
     if (total === 0) {
         container.innerHTML = `<div style="color:#3a657e;font-size:0.85rem;text-align:center;padding:20px;">
             <i class="fas fa-inbox" style="font-size:1.5rem;display:block;margin-bottom:6px;"></i>
@@ -2136,11 +3204,8 @@ function renderNewRequests(reqs, clis) {
         </div>`;
         return;
     }
-    
     const typeLabels = { diagnostic: '🔍 Диагностика', repair: '🔧 Ремонт', maintenance: '🛠️ ТО' };
     let html = '';
-    
-    // Новые клиенты
     clis.forEach(c => {
         html += `<div class="request-item client-item">
             <div><span class="name">👤 ${c.name}</span>
@@ -2149,8 +3214,6 @@ function renderNewRequests(reqs, clis) {
             <button class="btn-sm btn-success" onclick="acceptNewClient(${c.id})"><i class="fas fa-check"></i> Принять</button>
         </div>`;
     });
-    
-    // Новые заявки
     reqs.forEach(b => {
         html += `<div class="request-item">
             <div><span class="name">📋 ${b.name}</span>
@@ -2168,14 +3231,9 @@ async function acceptNewClient(clientId) {
         const jsonData = await loadJsonFromServer();
         if (!jsonData) return;
         const c = jsonData.clients.find(x => x.id === clientId);
-        if (c) {
-            c.is_new = false;
-            if (!clients.some(x => x.id === clientId)) clients.push(c);
-        }
+        if (c) { c.is_new = false; if (!clients.some(x => x.id === clientId)) clients.push(c); }
         await saveJsonToServer(jsonData);
-        renderClients();
-        updateClientSelect();
-        await loadNewRequests();
+        renderClients(); updateClientSelect(); await loadNewRequests();
         showNotification('✅ Клиент принят', 'success');
     } catch (e) { alert('❌ ' + e.message); }
 }
@@ -2186,19 +3244,15 @@ async function acceptNewBooking(id) {
         const jsonData = await loadJsonFromServer();
         if (!jsonData) return;
         const b = jsonData.bookings.find(x => x.id === id);
-        if (b) {
-            b.is_new = false;
-            if (!bookings.some(x => x.id === id)) bookings.push(b);
-        }
+        if (b) { b.is_new = false; if (!bookings.some(x => x.id === id)) bookings.push(b); }
         await saveJsonToServer(jsonData);
-        renderBookings();
-        await loadNewRequests();
+        renderBookings(); await loadNewRequests();
         showNotification('✅ Заявка принята', 'success');
     } catch (e) { alert('❌ ' + e.message); }
 }
 
 // ============================================================
-// ЗАПРОСЫ СТОИМОСТИ (ПОЛНАЯ ВЕРСИЯ)
+// ЗАПРОСЫ СТОИМОСТИ
 // ============================================================
 async function loadPriceRequests() {
     try {
@@ -2220,10 +3274,8 @@ function renderPriceRequests() {
     const container = document.getElementById('priceRequestsContainer');
     const countEl = document.getElementById('priceRequestsCount');
     if (!container) return;
-
     const activeRequests = priceRequests.filter(r => r.status === 'active');
     if (countEl) countEl.textContent = activeRequests.length;
-
     if (activeRequests.length === 0) {
         container.innerHTML = `<div style="color:#3a657e;font-size:0.85rem;text-align:center;padding:20px;">
             <i class="fas fa-inbox" style="font-size:1.5rem;display:block;margin-bottom:6px;"></i>
@@ -2231,7 +3283,6 @@ function renderPriceRequests() {
         </div>`;
         return;
     }
-
     let html = '';
     activeRequests.forEach(req => {
         const client = clients.find(c => c.id === req.client_id);
@@ -2239,7 +3290,6 @@ function renderPriceRequests() {
         const plate = client ? (client.plate || '') : '';
         const date = new Date(req.timestamp).toLocaleString();
         const daysLeft = Math.max(0, 10 - Math.floor((Date.now() - new Date(req.timestamp).getTime()) / (1000 * 60 * 60 * 24)));
-
         html += `<div class="price-request-item">
             <div class="req-header">
                 <div>
@@ -2249,18 +3299,11 @@ function renderPriceRequests() {
                     <span style="font-size:0.7rem;color:#b33c3c;margin-left:8px;">⏳ Осталось: ${daysLeft} дн.</span>
                 </div>
             </div>
-            <div class="req-text">
-                <strong>Что нужно сделать:</strong><br>
-                ${req.request_text}
-            </div>
+            <div class="req-text"><strong>Что нужно сделать:</strong><br>${req.request_text}</div>
             <div class="req-reply">
                 <textarea id="reply_${req.id}" rows="2" placeholder="Введите стоимость и комментарий..."></textarea>
-                <button class="btn-sm btn-success" onclick="replyToPriceRequest(${req.id})" style="margin-top:6px;">
-                    <i class="fas fa-paper-plane"></i> Ответить
-                </button>
-                <button class="btn-sm btn-danger" onclick="deletePriceRequest(${req.id})" style="margin-top:6px;">
-                    <i class="fas fa-archive"></i> В архив
-                </button>
+                <button class="btn-sm btn-success" onclick="replyToPriceRequest(${req.id})" style="margin-top:6px;"><i class="fas fa-paper-plane"></i> Ответить</button>
+                <button class="btn-sm btn-danger" onclick="deletePriceRequest(${req.id})" style="margin-top:6px;"><i class="fas fa-archive"></i> В архив</button>
             </div>
         </div>`;
     });
@@ -2271,23 +3314,16 @@ async function replyToPriceRequest(requestId) {
     const replyEl = document.getElementById(`reply_${requestId}`);
     const reply = replyEl ? replyEl.value.trim() : '';
     if (!reply) { alert('Введите ответ'); return; }
-
     try {
         const jsonData = await loadJsonFromServer();
         if (!jsonData || !jsonData.priceRequests) { alert('Ошибка'); return; }
         const req = jsonData.priceRequests.find(r => r.id === requestId);
-        if (req) {
-            req.reply_text = reply;
-            req.reply_date = new Date().toISOString();
-            req.status = 'replied';
-        }
+        if (req) { req.reply_text = reply; req.reply_date = new Date().toISOString(); req.status = 'replied'; }
         await saveJsonToServer(jsonData);
         priceRequests = jsonData.priceRequests;
         renderPriceRequests();
         showNotification('✅ Ответ отправлен клиенту!', 'success');
-    } catch (e) {
-        alert('❌ Ошибка: ' + e.message);
-    }
+    } catch (e) { alert('❌ Ошибка: ' + e.message); }
 }
 
 async function deletePriceRequest(requestId) {
@@ -2300,9 +3336,7 @@ async function deletePriceRequest(requestId) {
         priceRequests = jsonData.priceRequests;
         renderPriceRequests();
         showNotification('🗄️ Запрос в архиве', 'success');
-    } catch (e) {
-        alert('❌ Ошибка: ' + e.message);
-    }
+    } catch (e) { alert('❌ Ошибка: ' + e.message); }
 }
 
 // ============================================================
@@ -2326,13 +3360,11 @@ document.addEventListener('DOMContentLoaded', function() {
     loadNewRequests(); loadPriceRequests();
     setInterval(autoSaveToLocalStorage, 30000); setInterval(loadNewRequests, 30000); setInterval(loadPriceRequests, 30000);
 
-    // Регистрация Service Worker
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./service-worker.js').then(reg => console.log('✅ Service SW:', reg.scope)).catch(err => console.warn('⚠️ Service SW:', err));
         });
     }
-    // Кнопка установки PWA
     let deferredPrompt = null;
     window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; const btn = document.getElementById('installServiceBtn'); if (btn) btn.style.display = 'inline-flex'; });
     window.installServiceApp = async function() { if (!deferredPrompt) { alert('Установка недоступна'); return; } deferredPrompt.prompt(); const { outcome } = await deferredPrompt.userChoice; if (outcome === 'accepted') { const btn = document.getElementById('installServiceBtn'); if (btn) btn.style.display = 'none'; } deferredPrompt = null; };
@@ -2342,7 +3374,11 @@ document.addEventListener('DOMContentLoaded', function() {
 document.querySelectorAll('#page-diag .tabs .tab-btn').forEach(btn => { btn.addEventListener('click', function() { const parent = this.closest('.tabs'); parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); this.classList.add('active'); const content = document.getElementById('page-diag'); content.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active')); content.querySelector('#' + this.dataset.tab).classList.add('active'); }); });
 document.querySelectorAll('#page-repair .tabs .tab-btn').forEach(btn => { btn.addEventListener('click', function() { const parent = this.closest('.tabs'); parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); this.classList.add('active'); const content = document.getElementById('page-repair'); content.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active')); content.querySelector('#' + this.dataset.tab).classList.add('active'); if (this.dataset.tab === 'repair4') updateAct(); }); });
 
-console.log('🚀 PalЫCH Car Diagnost v4.8 загружен!');
+// Закрытие модалки карты по клику на фон
+document.getElementById('cardPreviewModal')?.addEventListener('click', function(e) { if (e.target === this) closeCardPreview(); });
+
+console.log('🚀 PalЫCH Car Diagnost v4.9 загружен!');
+console.log('✅ Добавлена печать карты клиента 85×54 мм с QR-кодом');
 </script>
 </body>
 </html>

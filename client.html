@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PalЫCH - Клиентский кабинет</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0b2b3c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PalЫCH">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
+        body { background: #f4f7fb; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .app { max-width: 520px; width: 100%; background: white; border-radius: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); overflow: hidden; }
+        .header { background: #0b2b3c; padding: 24px 28px; color: white; text-align: center; border-bottom: 4px solid #f6b83d; }
+        .header h1 { font-size: 1.6rem; font-weight: 600; }
+        .header h1 i { color: #f6b83d; }
+        .header p { font-size: 0.85rem; color: #8ab4c9; margin-top: 4px; }
+        .content { padding: 24px 28px; }
+
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 4px; color: #1f4055; font-size: 0.85rem; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 16px; border: 2px solid #d4dee9; border-radius: 12px; font-size: 1rem; background: white; }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: #f6b83d; outline: none; box-shadow: 0 0 0 3px rgba(246,184,61,0.15); }
+
+        .btn { width: 100%; padding: 14px; background: #0b2b3c; color: white; border: none; border-radius: 50px; font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 8px; }
+        .btn i { color: #f6b83d; margin-right: 8px; }
+        .btn-success { background: #1f7b4a; }
+        .btn-success i { color: #f6b83d; }
+        .btn-warning { background: #f6b83d; color: #0b2b3c; }
+        .btn-warning i { color: #0b2b3c; }
+        .btn-cancel { background: #b33c3c; }
+        .btn-cancel i { color: white; }
+        .btn-refresh { background: #2d6b84; }
+        .btn-refresh i { color: white; }
+
+        .hidden { display: none !important; }
+        .auth-error { color: #b33c3c; font-size: 0.85rem; margin-top: 8px; display: none; background: #fadad8; padding: 10px; border-radius: 10px; }
+        .btn-link { background: transparent; border: none; color: #2d6b84; cursor: pointer; text-decoration: underline; margin-top: 12px; display: block; text-align: center; width: 100%; }
+
+        .card { background: #f8fafc; border-radius: 16px; padding: 16px 20px; margin-bottom: 16px; border-left: 4px solid #f6b83d; }
+        .card .plate { font-size: 1.3rem; font-weight: 700; color: #0b2b3c; }
+        .card .info { color: #3a657e; font-size: 0.9rem; margin-top: 4px; }
+        .card .info i { width: 20px; color: #f6b83d; }
+
+        .status-card { background: #eef3f8; border-radius: 16px; padding: 16px 20px; margin-bottom: 16px; }
+        .status-title { font-size: 0.8rem; color: #3a657e; font-weight: 600; text-transform: uppercase; }
+        .badge-status { display: inline-block; padding: 4px 16px; border-radius: 40px; font-size: 0.9rem; margin-top: 4px; font-weight: 600; }
+
+        .status-new { background: #f6b83d; color: #0b2b3c; }
+        .status-work { background: #2d6b84; color: white; }
+        .status-wait { background: #d4a017; color: white; }
+        .status-ready { background: #2d6b84; color: white; animation: pulse 2s infinite; }
+        .status-done { background: #1f7b4a; color: white; }
+        .status-fail { background: #b33c3c; color: white; }
+        .status-cancel { background: #888; color: white; }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(45,107,132,0.7); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(45,107,132,0); }
+        }
+
+        .history-card { background: white; border: 1px solid #e4ecf4; border-radius: 12px; padding: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .history-card .h-status { font-size: 0.7rem; padding: 2px 10px; border-radius: 20px; background: #d3f0d8; color: #0a6030; }
+
+        .active-booking { background: white; border: 1px solid #e4ecf4; border-radius: 12px; padding: 12px 16px; margin-bottom: 8px; border-left: 4px solid #2d6b84; }
+        .active-booking .b-status { font-size: 0.7rem; padding: 2px 10px; border-radius: 20px; font-weight: 600; }
+        .active-booking .b-reason { font-size: 0.8rem; color: #3a657e; margin-top: 4px; }
+
+        .price-request-card { background: #fff8e6; border: 2px solid #f6b83d; border-radius: 16px; padding: 16px; margin-bottom: 16px; }
+        .price-request-card .req-status { font-size: 0.7rem; padding: 2px 10px; border-radius: 20px; font-weight: 600; }
+        .price-request-card .req-status.active { background: #f6b83d; color: #0b2b3c; }
+        .price-request-card .req-status.replied { background: #1f7b4a; color: white; }
+        .price-request-card .req-text { margin-top: 8px; font-size: 0.9rem; color: #0b2b3c; }
+        .price-request-card .req-reply { margin-top: 8px; padding: 10px; background: #e8f5e9; border-radius: 8px; font-size: 0.9rem; color: #0a6030; }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); justify-content: center; align-items: center; z-index: 999; }
+        .modal-overlay.active { display: flex; }
+        .modal-box { background: white; max-width: 450px; width: 90%; max-height: 85vh; border-radius: 24px; padding: 24px; overflow-y: auto; position: relative; }
+        
+        .modal-close { position: sticky; top: 0; float: right; background: #eef2f7; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 1rem; cursor: pointer; z-index: 10; }
+
+        .notification {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: #0b2b3c; color: white; padding: 16px 24px; border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 1000; max-width: 90%; text-align: center;
+            font-weight: 600; border-left: 4px solid #f6b83d;
+        }
+        .notification.success { border-left-color: #1f7b4a; }
+        .notification.error { border-left-color: #b33c3c; }
+        .notification.info { border-left-color: #2d6b84; }
+
+        .section-title { color: #0b2b3c; font-size: 1rem; margin: 16px 0 10px; }
+        .section-title i { color: #f6b83d; }
+
+        .empty-state { color: #3a657e; font-size: 0.85rem; text-align: center; padding: 20px; }
+        .plate-badge { background: #f6b83d; color: #0b2b3c; padding: 2px 8px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; display: inline-block; }
+    </style>
+</head>
+<body>
+
+<div class="app">
+    <div class="header">
+        <h1><i class="fas fa-car"></i> PalЫCH</h1>
+        <p>Личный кабинет клиента</p>
+    </div>
+
+    <div class="content">
+
+        <!-- ===== АВТОРИЗАЦИЯ ===== -->
+        <div id="authForm">
+            <h2 style="color:#0b2b3c; font-size:1.2rem; margin-bottom:16px;"><i class="fas fa-lock" style="color:#f6b83d;"></i> Вход</h2>
+            <div class="form-group">
+                <label>Гос. номер</label>
+                <input type="text" id="authPlate" placeholder="А123ВС777" style="text-transform:uppercase;">
+            </div>
+            <div class="form-group">
+                <label>Код доступа</label>
+                <input type="password" id="authCode" placeholder="0000" maxlength="4" inputmode="numeric" style="letter-spacing:8px; font-weight:700; text-align:center;">
+            </div>
+            <button class="btn" onclick="login()"><i class="fas fa-sign-in-alt"></i> Войти</button>
+            <div class="auth-error" id="authError"></div>
+            <button class="btn-link" onclick="showRegister()">Нет кабинета? Зарегистрироваться</button>
+        </div>
+
+        <!-- ===== РЕГИСТРАЦИЯ ===== -->
+        <div id="registerForm" class="hidden">
+            <h2 style="color:#0b2b3c; font-size:1.2rem; margin-bottom:16px;"><i class="fas fa-user-plus" style="color:#f6b83d;"></i> Регистрация</h2>
+            <div class="form-group"><label>Имя</label><input type="text" id="regName" placeholder="Иван Петров"></div>
+            <div class="form-group"><label>Телефон</label><input type="text" id="regPhone" placeholder="+7 999 123-45-67"></div>
+            <div class="form-group"><label>Марка авто</label><input type="text" id="regCar" placeholder="BMW X5"></div>
+            <div class="form-group"><label>Гос. номер</label><input type="text" id="regPlate" placeholder="А123ВС777" style="text-transform:uppercase;"></div>
+            <div class="form-group">
+                <label>Тип автомобиля</label>
+                <select id="regCarType">
+                    <option value="import">🚗 Иномарка</option>
+                    <option value="domestic">🚙 Отечественная</option>
+                </select>
+            </div>
+            <button class="btn btn-success" onclick="register()"><i class="fas fa-check-circle"></i> Зарегистрироваться</button>
+            <div class="auth-error" id="regError"></div>
+            <div class="auth-error" id="registerSuccess" style="background:#d3f0d8;color:#0a6030;"></div>
+            <button class="btn-link" onclick="showLogin()">Назад ко входу</button>
+        </div>
+
+        <!-- ===== ЛИЧНЫЙ КАБИНЕТ ===== -->
+        <div id="dashboard" class="hidden">
+            <div class="card">
+                <div class="plate" id="clientPlate">—</div>
+                <div class="info"><i class="fas fa-car"></i> <span id="clientCar">—</span></div>
+                <div class="info"><i class="fas fa-user"></i> <span id="clientName">—</span></div>
+                <div class="info"><i class="fas fa-phone"></i> <span id="clientPhone">—</span></div>
+            </div>
+
+            <!-- ТЕКУЩИЙ СТАТУС -->
+            <div class="status-card">
+                <div class="status-title"><i class="fas fa-clock"></i> Текущий статус</div>
+                <div><span class="badge-status status-new" id="statusBadge">Нет активных записей</span></div>
+                <div style="margin-top:8px;font-size:0.85rem;color:#3a657e;" id="statusDetail">Вы можете записаться</div>
+                <button class="btn btn-cancel hidden" id="cancelBtn" onclick="cancelBooking()" style="margin-top:8px;"><i class="fas fa-times-circle"></i> Отменить запись</button>
+                <button class="btn btn-refresh" onclick="refreshStatus()" style="margin-top:8px;"><i class="fas fa-sync"></i> Проверить статус</button>
+            </div>
+
+            <!-- АКТИВНЫЕ ЗАПИСИ -->
+            <h3 class="section-title"><i class="fas fa-list"></i> Мои активные записи <span id="activeCount" style="background:#2d6b84;color:white;padding:2px 10px;border-radius:20px;font-size:0.7rem;">0</span></h3>
+            <div id="activeBookings"></div>
+
+            <!-- ЗАПРОС СТОИМОСТИ -->
+            <h3 class="section-title"><i class="fas fa-calculator"></i> Запрос стоимости</h3>
+            <button class="btn btn-warning" onclick="openPriceRequestModal()"><i class="fas fa-calculator"></i> Запросить стоимость</button>
+            <div id="myPriceRequest" style="margin-top:12px;"></div>
+
+            <!-- ЗАПИСЬ НА ОБСЛУЖИВАНИЕ -->
+            <button class="btn" onclick="toggleBookingForm()" style="margin-top:16px;"><i class="fas fa-calendar-plus"></i> Записаться на обслуживание</button>
+
+            <div id="bookingForm" class="hidden" style="margin-top:12px;background:#f8fafc;padding:16px;border-radius:16px;">
+                <h4 style="color:#0b2b3c;margin-bottom:12px;"><i class="fas fa-calendar-check" style="color:#f6b83d;"></i> Новая запись</h4>
+                <div class="form-group">
+                    <label>Тип обслуживания</label>
+                    <select id="bkType">
+                        <option value="diagnostic">🔍 Диагностика</option>
+                        <option value="repair">🔧 Ремонт</option>
+                        <option value="maintenance">🛠️ Тех. обслуживание (ТО)</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Дата</label><input type="date" id="bkDate"></div>
+                <div class="form-group"><label>Время (необязательно)</label><input type="time" id="bkTime"></div>
+                <div class="form-group"><label>Причина / Описание</label><textarea id="bkReason" rows="2" placeholder="Опишите проблему..."></textarea></div>
+                <button class="btn btn-success" onclick="createBooking()"><i class="fas fa-paper-plane"></i> Отправить заявку</button>
+                <button class="btn" onclick="toggleBookingForm()" style="background:#888;"><i class="fas fa-times"></i> Закрыть</button>
+            </div>
+
+            <h3 class="section-title"><i class="fas fa-history"></i> История обслуживания</h3>
+            <div id="historyContainer"></div>
+
+            <button class="btn" onclick="logout()" style="background:#888;margin-top:16px;"><i class="fas fa-sign-out-alt"></i> Выйти</button>
+        </div>
+    </div>
+</div>
+
+<!-- МОДАЛКА ЗАПРОСА СТОИМОСТИ -->
+<div class="modal-overlay" id="priceRequestModal">
+    <div class="modal-box">
+        <h3 style="color:#0b2b3c;margin-bottom:12px;"><i class="fas fa-calculator" style="color:#f6b83d;"></i> Запрос стоимости</h3>
+        <div class="form-group">
+            <label>Что нужно сделать?</label>
+            <textarea id="priceRequestText" rows="4" placeholder="Опишите, какие работы и услуги вас интересуют..."></textarea>
+        </div>
+        <button class="btn btn-success" onclick="submitPriceRequest()"><i class="fas fa-paper-plane"></i> Отправить запрос</button>
+        <button class="btn" onclick="closePriceRequestModal()" style="background:#888;"><i class="fas fa-times"></i> Отмена</button>
+    </div>
+</div>
+
+<!-- МОДАЛКА ДЛЯ ПРОСМОТРА ДЕТАЛЕЙ ИЗ ИСТОРИИ -->
+<div class="modal-overlay" id="historyDetailModal">
+    <div class="modal-box" style="max-width: 600px;">
+        <button class="modal-close" onclick="closeHistoryDetailModal()"><i class="fas fa-times"></i></button>
+        <div id="historyDetailContent" style="margin-top:10px;"></div>
+        <button class="btn btn-refresh" onclick="closeHistoryDetailModal()" style="margin-top:16px;">Закрыть</button>
+    </div>
+</div>
+
+<script>
+// ============================================================
+// КОНФИГ
+// ============================================================
+const SUPABASE_URL = 'https://xpaqczxqkuzfwmnimzsx.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhwYXFjenhxa3V6ZndtbmltenN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5Njg4NDcsImV4cCI6MjEwNDU0NDg0N30.hH62d6aCsgBchg4MVPey714O3-FR9bNaqnsm_T32zAk';
+
+let currentClient = null;
+let currentBooking = null;
+let myPriceRequest = null;
+let statusCheckInterval = null;
+
+// ============================================================
+// РАБОТА С JSON НА СЕРВЕРЕ
+// ============================================================
+async function loadJsonFromServer() {
+    try {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/app_data?key=eq.palych_data&select=data`, {
+            headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+        });
+        if (!response.ok) return null;
+        const result = await response.json();
+        return (result && result[0] && result[0].data) ? result[0].data : null;
+    } catch (e) {
+        console.error(e);
+        return null;
+    }
+}
+
+async function updateJsonOnServer(updatedData) {
+    const jsonData = { ...updatedData, version: '4.8', timestamp: new Date().toISOString() };
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/app_data?key=eq.palych_data`, {
+        method: 'PATCH',
+        headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+        },
+        body: JSON.stringify({ data: jsonData, updated_at: new Date().toISOString() })
+    });
+    if (!response.ok) {
+        const insertResponse = await fetch(`${SUPABASE_URL}/rest/v1/app_data`, {
+            method: 'POST',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=representation'
+            },
+            body: JSON.stringify({ key: 'palych_data', data: jsonData, updated_at: new Date().toISOString() })
+        });
+        return await insertResponse.json();
+    }
+    return await response.json();
+}
+
+// ============================================================
+// ПЕРЕКЛЮЧЕНИЕ ФОРМ
+// ============================================================
+function showRegister() {
+    document.getElementById('authForm').classList.add('hidden');
+    document.getElementById('registerForm').classList.remove('hidden');
+}
+
+function showLogin() {
+    document.getElementById('registerForm').classList.add('hidden');
+    document.getElementById('authForm').classList.remove('hidden');
+}
+
+// ============================================================
+// РЕГИСТРАЦИЯ
+// ============================================================
+async function register() {
+    const name = document.getElementById('regName').value.trim();
+    const phone = document.getElementById('regPhone').value.trim();
+    const car = document.getElementById('regCar').value.trim();
+    const plate = document.getElementById('regPlate').value.trim().toUpperCase();
+    const carType = document.getElementById('regCarType').value;
+    const errorEl = document.getElementById('regError');
+    const successEl = document.getElementById('registerSuccess');
+
+    errorEl.style.display = 'none';
+    successEl.style.display = 'none';
+
+    if (!name || !phone || !car || !plate) {
+        errorEl.textContent = '❌ Заполните все поля';
+        errorEl.style.display = 'block';
+        return;
+    }
+
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData) { errorEl.textContent = '❌ Ошибка'; errorEl.style.display = 'block'; return; }
+
+        if (jsonData.clients && jsonData.clients.find(c => c.plate === plate)) {
+            errorEl.textContent = '❌ Такой номер уже зарегистрирован';
+            errorEl.style.display = 'block';
+            return;
+        }
+
+        const accessCode = String(Math.floor(1000 + Math.random() * 9000));
+        const newId = jsonData.clients ? Math.max(...jsonData.clients.map(c => c.id || 0), 0) + 1 : 1;
+
+        const newClient = {
+            id: newId, name, phone, car, plate,
+            access_code: accessCode, carType, is_new: true
+        };
+
+        if (!jsonData.clients) jsonData.clients = [];
+        jsonData.clients.push(newClient);
+        await updateJsonOnServer(jsonData);
+
+        successEl.textContent = `✅ Регистрация успешна! Ваш код: ${accessCode}`;
+        successEl.style.display = 'block';
+        localStorage.setItem('palych_new_client', JSON.stringify({ plate, access_code: accessCode }));
+    } catch (e) {
+        errorEl.textContent = '❌ Ошибка: ' + e.message;
+        errorEl.style.display = 'block';
+    }
+}
+
+// ============================================================
+// АВТОРИЗАЦИЯ
+// ============================================================
+async function login() {
+    const plate = document.getElementById('authPlate').value.trim().toUpperCase();
+    const code = document.getElementById('authCode').value.trim();
+    const errorEl = document.getElementById('authError');
+    errorEl.style.display = 'none';
+
+    if (!plate || !code) {
+        errorEl.textContent = 'Введите номер и код';
+        errorEl.style.display = 'block';
+        return;
+    }
+
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData || !jsonData.clients) {
+            errorEl.textContent = '❌ Ошибка загрузки';
+            errorEl.style.display = 'block';
+            return;
+        }
+
+        const client = jsonData.clients.find(c =>
+            c.plate && c.plate.toUpperCase() === plate && c.access_code === code);
+
+        if (!client) {
+            errorEl.textContent = '❌ Неверный номер или код';
+            errorEl.style.display = 'block';
+            return;
+        }
+
+        currentClient = client;
+        document.getElementById('authForm').classList.add('hidden');
+        document.getElementById('dashboard').classList.remove('hidden');
+
+        await loadClientData();
+        startAutoRefresh();
+        showNotification(`✅ Добро пожаловать, ${client.name}!`, 'success');
+    } catch (e) {
+        errorEl.textContent = '❌ Ошибка: ' + e.message;
+        errorEl.style.display = 'block';
+    }
+}
+
+// ============================================================
+// ЗАГРУЗКА ДАННЫХ
+// ============================================================
+async function loadClientData() {
+    if (!currentClient) return;
+    document.getElementById('clientPlate').textContent = currentClient.plate || '—';
+    document.getElementById('clientCar').textContent = currentClient.car || '—';
+    document.getElementById('clientName').textContent = currentClient.name || '—';
+    document.getElementById('clientPhone').textContent = currentClient.phone || '—';
+
+    await loadBooking();
+    await loadActiveBookings();
+    await loadHistory();
+    await loadMyPriceRequest();
+}
+
+async function loadBooking() {
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData || !jsonData.bookings) return;
+
+        const active = jsonData.bookings.find(b =>
+            b.client_id === currentClient.id &&
+            !['отремонтирована', 'не отремонтирована', 'продиагностирована', 'отменена'].includes(b.status));
+
+        if (active) {
+            currentBooking = active;
+            updateStatusDisplay(active);
+        } else {
+            currentBooking = null;
+            document.getElementById('statusBadge').textContent = 'Нет активных записей';
+            document.getElementById('statusBadge').className = 'badge-status status-new';
+            document.getElementById('statusDetail').textContent = 'Вы можете записаться';
+            document.getElementById('cancelBtn').classList.add('hidden');
+        }
+    } catch (e) { console.error(e); }
+}
+
+function updateStatusDisplay(b) {
+    const map = {
+        'новая': { t: 'Новая', c: 'status-new', d: 'Ожидайте подтверждения' },
+        'в работе': { t: 'В работе', c: 'status-work', d: 'Мастер занимается авто' },
+        'ожидается': { t: 'Ожидается', c: 'status-wait', d: 'Ожидаем запчасти' },
+        'готово': { t: '✅ Автомобиль готов', c: 'status-ready', d: 'Можете забрать автомобиль' },
+        'отремонтирована': { t: '✅ Отремонтирована', c: 'status-done', d: 'Работы выполнены' },
+        'не отремонтирована': { t: '❌ Не отремонтирована', c: 'status-fail', d: 'Обратитесь к мастеру' },
+        'продиагностирована': { t: '🔍 Продиагностирована', c: 'status-done', d: 'Диагностика завершена' },
+        'отменена': { t: 'Отменена', c: 'status-cancel', d: 'Запись отменена' }
+    };
+    const info = map[b.status] || { t: b.status, c: 'status-new', d: '' };
+    document.getElementById('statusBadge').textContent = info.t;
+    document.getElementById('statusBadge').className = 'badge-status ' + info.c;
+    document.getElementById('statusDetail').textContent = info.d;
+
+    if (['новая', 'в работе', 'ожидается'].includes(b.status)) {
+        document.getElementById('cancelBtn').classList.remove('hidden');
+    } else {
+        document.getElementById('cancelBtn').classList.add('hidden');
+    }
+}
+
+async function loadActiveBookings() {
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData || !jsonData.bookings) { renderActiveBookings([]); return; }
+
+        const activeBookings = jsonData.bookings.filter(b =>
+            b.client_id === currentClient.id &&
+            !['отремонтирована', 'не отремонтирована', 'продиагностирована', 'отменена'].includes(b.status));
+
+        activeBookings.sort((a, b) => new Date(b.date) - new Date(a.date));
+        renderActiveBookings(activeBookings);
+    } catch (e) { console.error(e); }
+}
+
+function renderActiveBookings(bookings) {
+    const container = document.getElementById('activeBookings');
+    const countEl = document.getElementById('activeCount');
+    if (countEl) countEl.textContent = bookings.length;
+
+    if (!bookings || bookings.length === 0) {
+        container.innerHTML = '<div class="empty-state">Нет активных записей</div>';
+        return;
+    }
+
+    const typeLabels = { diagnostic: '🔍 Диагностика', repair: '🔧 Ремонт', maintenance: '🛠️ ТО' };
+    const statusLabels = {
+        'новая': { t: 'Новая', c: 'status-new' },
+        'в работе': { t: 'В работе', c: 'status-work' },
+        'ожидается': { t: 'Ожидается', c: 'status-wait' },
+        'готово': { t: '✅ Готово', c: 'status-ready' }
+    };
+
+    container.innerHTML = bookings.map(b => {
+        const typeLabel = typeLabels[b.type] || b.type;
+        const si = statusLabels[b.status] || { t: b.status, c: 'status-new' };
+        const timeDisplay = b.time ? `, ${b.time}` : '';
+        return `<div class="active-booking">
+            <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;">
+                <div><strong>${typeLabel}</strong> <span style="font-size:0.8rem;color:#3a657e;">📅 ${b.date}${timeDisplay}</span></div>
+                <span class="b-status ${si.c}">${si.t}</span>
+            </div>
+            ${b.reason ? `<div class="b-reason"><i class="fas fa-comment"></i> ${b.reason}</div>` : ''}
+        </div>`;
+    }).join('');
+}
+
+// ============================================================
+// ИСТОРИЯ ОБСЛУЖИВАНИЯ (С КНОПКОЙ "ОТКРЫТЬ")
+// ============================================================
+async function loadHistory() {
+    const container = document.getElementById('historyContainer');
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData || !jsonData.journal) {
+            container.innerHTML = '<div class="empty-state">История пуста</div>';
+            return;
+        }
+        
+        const history = jsonData.journal.filter(j => j.clientId === currentClient.id).slice(0, 10);
+        
+        if (history.length === 0) {
+            container.innerHTML = '<div class="empty-state">История пуста</div>';
+            return;
+        }
+        
+        // Сортируем: сначала новые
+        history.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+        container.innerHTML = history.map(e => {
+            const icon = e.type === 'diagnostic' ? '🔍' : '🔧';
+            const name = e.type === 'diagnostic' ? 'Диагностика' : 'Ремонт';
+            return `<div class="history-card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+                <div style="flex:1;">
+                    <div><strong>${icon} ${name}</strong> <span style="font-size:0.8rem;color:#3a657e;">${e.car||''}</span></div>
+                    <div style="font-size:0.8rem; color:#3a657e; margin-top:2px;">📅 ${e.date||''} | Гос. номер: ${e.plate||'—'}</div>
+                </div>
+                <button class="btn" style="width:auto; padding:8px 16px; font-size:0.8rem; background:#2d6b84;" onclick="openHistoryDetail(${e.id})">
+                    <i class="fas fa-eye"></i> Открыть
+                </button>
+            </div>`;
+        }).join('');
+    } catch (e) {
+        console.error(e);
+        container.innerHTML = '<div style="color:#b33c3c;text-align:center;padding:20px;">Ошибка загрузки</div>';
+    }
+}
+
+// ============================================================
+// ПРОСМОТР ДЕТАЛЕЙ ИЗ ИСТОРИИ (АКТ И ДИАГНОСТИКА)
+// ============================================================
+async function openHistoryDetail(entryId) {
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData || !jsonData.journal) return;
+        
+        const entry = jsonData.journal.find(e => e.id === entryId);
+        if (!entry) { showNotification('Запись не найдена', 'error'); return; }
+
+        const content = document.getElementById('historyDetailContent');
+        const modal = document.getElementById('historyDetailModal');
+        
+        let html = '';
+
+        if (entry.type === 'repair') {
+            // === ОТРИСОВКА АКТА ВЫПОЛНЕННЫХ РАБОТ ===
+            const parts = entry.parts || [];
+            const works = entry.works || [];
+            const carData = entry.carData || {};
+            
+            const partsTotal = parts.reduce((sum, p) => sum + (p.qty * p.price), 0);
+            const worksTotal = works.reduce((sum, w) => sum + w.cost, 0);
+            
+            // Восстанавливаем скидку из carData
+            let discountPercent = 0;
+            let discountName = 'Нет';
+            
+            const allDiscounts = jsonData.discounts || [];
+            if (carData.discount && carData.discount !== 'none') {
+                const foundDiscount = allDiscounts.find(d => d.id === parseInt(carData.discount));
+                if (foundDiscount) {
+                    discountPercent = foundDiscount.percent;
+                    discountName = foundDiscount.name;
+                }
+            }
+            
+            const discountAmount = worksTotal * (discountPercent / 100);
+            const worksTotalWithDiscount = worksTotal - discountAmount;
+            const grandTotal = partsTotal + worksTotalWithDiscount;
+
+            html += `<div style="background:white; border-radius:12px; padding:16px; border:2px solid #0b2b3c;">
+                <div style="text-align:center; border-bottom:3px double #0b2b3c; padding-bottom:10px; margin-bottom:14px;">
+                    <h2 style="font-size:1.2rem; color:#0b2b3c;">АКТ ВЫПОЛНЕННЫХ РАБОТ</h2>
+                    <div style="color:#3a657e; font-size:0.85rem;">PalЫCH Car Diagnost</div>
+                </div>
+                
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; background:#f8fafc; padding:10px; border-radius:8px; margin-bottom:14px; font-size:0.85rem;">
+                    <div><strong>Марка:</strong> ${carData.make || '—'}</div>
+                    <div><strong>Гос. номер:</strong> <span class="plate-badge">${carData.plate || '—'}</span></div>
+                    <div><strong>Дата:</strong> ${entry.date || '—'}</div>
+                    <div><strong>Скидка:</strong> ${discountName} (${discountPercent}%)</div>
+                </div>`;
+
+            if (parts.length > 0) {
+                html += `<h4 style="color:#0b2b3c; margin-bottom:4px; font-size:0.9rem;">📦 Запчасти</h4>`;
+                html += `<div style="display:grid; grid-template-columns:3fr 1fr 1fr; padding:4px 8px; background:#e4ecf4; font-weight:700; font-size:0.75rem; border-radius:4px;"><span>Наименование</span><span>Кол-во</span><span>Сумма</span></div>`;
+                parts.forEach(p => {
+                    html += `<div style="display:grid; grid-template-columns:3fr 1fr 1fr; padding:4px 8px; border-bottom:1px solid #eef2f7; font-size:0.8rem;">
+                        <span>${p.name}</span><span>${p.qty} шт.</span><span>${p.qty * p.price} ₽</span>
+                    </div>`;
+                });
+                html += `<div style="text-align:right; font-weight:700; font-size:0.85rem; margin-top:6px;">Итого запчасти: ${partsTotal} ₽</div>`;
+            }
+
+            if (works.length > 0) {
+                html += `<h4 style="color:#0b2b3c; margin:12px 0 4px; font-size:0.9rem;">🔧 Работы</h4>`;
+                html += `<div style="display:grid; grid-template-columns:2fr 1.5fr; padding:4px 8px; background:#e4ecf4; font-weight:700; font-size:0.75rem; border-radius:4px;"><span>Наименование</span><span style="text-align:right;">Стоимость</span></div>`;
+                works.forEach(w => {
+                    let priceHtml = '';
+                    if (discountPercent > 0) {
+                        const discounted = w.cost * (1 - discountPercent / 100);
+                        priceHtml = `<span style="text-decoration:line-through; color:#b33c3c; font-size:0.75rem; margin-right:4px;">${w.cost} ₽</span><span style="color:#0a6030; font-weight:700;">${discounted.toFixed(0)} ₽</span>`;
+                    } else {
+                        priceHtml = `${w.cost} ₽`;
+                    }
+                    html += `<div style="display:grid; grid-template-columns:2fr 1.5fr; padding:4px 8px; border-bottom:1px solid #eef2f7; font-size:0.8rem;">
+                        <span>${w.name}</span><span style="text-align:right;">${priceHtml}</span>
+                    </div>`;
+                });
+                
+                if (discountPercent > 0) {
+                    html += `<div style="text-align:right; margin-top:6px;">
+                        <div style="font-size:0.75rem; color:#b33c3c; text-decoration:line-through;">Итого без скидки: ${worksTotal} ₽</div>
+                        <div style="font-weight:700; font-size:0.85rem; color:#0a6030;">Итого со скидкой: ${worksTotalWithDiscount.toFixed(2)} ₽</div>
+                    </div>`;
+                } else {
+                    html += `<div style="text-align:right; font-weight:700; font-size:0.85rem; margin-top:6px;">Итого работы: ${worksTotal} ₽</div>`;
+                }
+            }
+
+            html += `<div style="margin-top:12px; padding:10px; background:#f8fafc; border-radius:8px; border:2px solid #0b2b3c; text-align:center;">
+                <div style="font-size:1.1rem; font-weight:700; color:#0b2b3c;">ОБЩАЯ СТОИМОСТЬ: ${grandTotal.toFixed(2)} ₽</div>
+                ${discountPercent > 0 ? `<div style="font-size:0.75rem; color:#0a6030; margin-top:2px;">Вы сэкономили: ${discountAmount.toFixed(2)} ₽</div>` : ''}
+            </div></div>`;
+
+        } else if (entry.type === 'diagnostic') {
+            // === ОТРИСОВКА ЛИСТА ДИАГНОСТИКИ ===
+            const carData = entry.carData || {};
+            const systems = entry.systems || [];
+            const tables = entry.tables || {};
+
+            html += `<div style="background:white; border-radius:12px; padding:16px; border:2px solid #0b2b3c;">
+                <div style="text-align:center; border-bottom:3px double #0b2b3c; padding-bottom:10px; margin-bottom:14px;">
+                    <h2 style="font-size:1.2rem; color:#0b2b3c;">ЛИСТ ДИАГНОСТИКИ</h2>
+                    <div style="color:#3a657e; font-size:0.85rem;">PalЫCH Car Diagnost</div>
+                </div>
+                
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; background:#f8fafc; padding:10px; border-radius:8px; margin-bottom:14px; font-size:0.85rem;">
+                    <div><strong>Марка:</strong> ${carData.make || '—'}</div>
+                    <div><strong>Гос. номер:</strong> <span class="plate-badge">${carData.plate || '—'}</span></div>
+                    <div><strong>Год:</strong> ${carData.year || '—'}</div>
+                    <div><strong>Дата:</strong> ${entry.date || '—'}</div>
+                    <div style="grid-column:1/-1;"><strong>Жалобы:</strong> ${carData.complaints || '—'}</div>
+                </div>`;
+
+            systems.forEach(sysId => {
+                const sysParams = tables[sysId] || [];
+                const items = sysParams.filter(r => r.checked && r.value.trim() !== '');
+                if (items.length === 0) return;
+                
+                const sysName = sysId === 'engine' ? 'Двигатель' : sysId === 'brakes' ? 'Тормоза' : sysId === 'suspension' ? 'Подвеска' : sysId; 
+                
+                html += `<div style="margin-top:10px; border:1px solid #e4ecf4; border-radius:8px; overflow:hidden;">
+                    <div style="background:#0b2b3c; color:white; padding:6px 10px; font-weight:700; font-size:0.85rem;">🔧 ${sysName}</div>
+                    <div style="padding:4px 0;">`;
+                items.forEach(row => {
+                    const statusText = row.status === 'ok' ? '✅' : row.status === 'fail' ? '⚠️' : '❓';
+                    html += `<div style="display:flex; justify-content:space-between; padding:4px 10px; border-bottom:1px solid #eef2f7; font-size:0.8rem;">
+                        <span><strong>${row.param}:</strong> ${row.value}</span>
+                        <span>${statusText}</span>
+                    </div>`;
+                });
+                html += `</div></div>`;
+            });
+            html += `</div>`;
+        }
+
+        content.innerHTML = html;
+        modal.classList.add('active');
+        
+    } catch (err) {
+        console.error(err);
+        showNotification('Ошибка загрузки деталей', 'error');
+    }
+}
+
+function closeHistoryDetailModal() {
+    document.getElementById('historyDetailModal').classList.remove('active');
+}
+
+// ============================================================
+// ЗАПРОС СТОИМОСТИ
+// ============================================================
+function openPriceRequestModal() {
+    document.getElementById('priceRequestModal').classList.add('active');
+    document.getElementById('priceRequestText').value = '';
+}
+
+function closePriceRequestModal() {
+    document.getElementById('priceRequestModal').classList.remove('active');
+}
+
+async function submitPriceRequest() {
+    const text = document.getElementById('priceRequestText').value.trim();
+    if (!text) { showNotification('⚠️ Введите описание', 'error'); return; }
+
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData) { showNotification('❌ Ошибка', 'error'); return; }
+
+        if (!jsonData.priceRequests) jsonData.priceRequests = [];
+        if (!jsonData.priceRequestIdCounter) jsonData.priceRequestIdCounter = 1;
+
+        jsonData.priceRequests.forEach(r => {
+            if (r.client_id === currentClient.id && r.status === 'active') {
+                r.status = 'archived';
+            }
+        });
+
+        const newId = jsonData.priceRequestIdCounter++;
+        jsonData.priceRequests.push({
+            id: newId,
+            client_id: currentClient.id,
+            request_text: text,
+            reply_text: '',
+            status: 'active',
+            timestamp: new Date().toISOString()
+        });
+
+        await updateJsonOnServer(jsonData);
+        closePriceRequestModal();
+        await loadMyPriceRequest();
+        showNotification('✅ Запрос отправлен!', 'success');
+    } catch (e) {
+        showNotification('❌ Ошибка: ' + e.message, 'error');
+    }
+}
+
+async function loadMyPriceRequest() {
+    const container = document.getElementById('myPriceRequest');
+    if (!container) return;
+
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData || !jsonData.priceRequests) {
+            container.innerHTML = '<div class="empty-state" style="padding:12px;">Нет запросов</div>';
+            return;
+        }
+
+        const now = Date.now();
+        const tenDays = 10 * 24 * 60 * 60 * 1000;
+
+        const myRequests = jsonData.priceRequests
+            .filter(r => r.client_id === currentClient.id)
+            .filter(r => {
+                const age = now - new Date(r.timestamp).getTime();
+                return r.status === 'active' || r.status === 'replied' || age < tenDays;
+            })
+            .sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+        if (myRequests.length === 0) {
+            container.innerHTML = '<div class="empty-state" style="padding:12px;">Нет активных запросов</div>';
+            return;
+        }
+
+        const req = myRequests[0];
+        const statusClass = req.status === 'replied' ? 'replied' : 'active';
+        const statusText = req.status === 'replied' ? '✅ Ответ получен' : '⏳ Ожидает ответа';
+        const date = new Date(req.timestamp).toLocaleString();
+
+        container.innerHTML = `
+            <div class="price-request-card">
+                <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;">
+                    <strong>Ваш запрос</strong>
+                    <span class="req-status ${statusClass}">${statusText}</span>
+                </div>
+                <div class="req-text">
+                    <strong>Что нужно:</strong><br>${req.request_text}
+                    <div style="font-size:0.7rem;color:#3a657e;margin-top:4px;">📅 ${date}</div>
+                </div>
+                ${req.reply_text ? `
+                    <div class="req-reply">
+                        <strong>💬 Ответ сервиса:</strong><br>${req.reply_text}
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    } catch (e) {
+        container.innerHTML = '<div style="color:#b33c3c;text-align:center;padding:12px;">Ошибка загрузки</div>';
+    }
+}
+
+// ============================================================
+// ЗАПИСЬ НА ОБСЛУЖИВАНИЕ
+// ============================================================
+function toggleBookingForm() {
+    const form = document.getElementById('bookingForm');
+    form.classList.toggle('hidden');
+    if (!form.classList.contains('hidden')) {
+        document.getElementById('bkDate').value = new Date().toISOString().slice(0,10);
+        document.getElementById('bkTime').value = '';
+        document.getElementById('bkReason').value = '';
+    }
+}
+
+async function createBooking() {
+    if (!currentClient) return;
+
+    const type = document.getElementById('bkType').value;
+    const date = document.getElementById('bkDate').value;
+    const time = document.getElementById('bkTime').value;
+    const reason = document.getElementById('bkReason').value.trim();
+
+    if (!date) { showNotification('⚠️ Выберите дату', 'error'); return; }
+
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData) { showNotification('❌ Ошибка', 'error'); return; }
+
+        if (!jsonData.bookings) jsonData.bookings = [];
+
+        const newId = jsonData.bookings.length > 0
+            ? Math.max(...jsonData.bookings.map(b => b.id || 0)) + 1 : 1;
+
+        jsonData.bookings.push({
+            id: newId,
+            client_id: currentClient.id,
+            name: currentClient.name,
+            phone: currentClient.phone,
+            plate: currentClient.plate,
+            car: currentClient.car,
+            type, date, time: time || null, reason: reason || null,
+            status: 'новая', is_new: true,
+            created_at: new Date().toISOString()
+        });
+
+        await updateJsonOnServer(jsonData);
+        showNotification('✅ Заявка отправлена!', 'success');
+        document.getElementById('bookingForm').classList.add('hidden');
+        await loadBooking();
+        await loadActiveBookings();
+        await loadHistory();
+    } catch (e) {
+        showNotification('❌ Ошибка: ' + e.message, 'error');
+    }
+}
+
+// ============================================================
+// ОТМЕНА
+// ============================================================
+async function cancelBooking() {
+    if (!currentBooking) return;
+    if (!confirm('Отменить запись?')) return;
+
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData || !jsonData.bookings) return;
+        const booking = jsonData.bookings.find(b => b.id === currentBooking.id);
+        if (booking) booking.status = 'отменена';
+        await updateJsonOnServer(jsonData);
+        showNotification('✅ Запись отменена', 'success');
+        currentBooking = null;
+        await loadClientData();
+    } catch (e) {
+        showNotification('❌ Ошибка', 'error');
+    }
+}
+
+// ============================================================
+// ОБНОВЛЕНИЕ
+// ============================================================
+async function refreshStatus() {
+    if (!currentClient) return;
+    await loadBooking();
+    await loadActiveBookings();
+    await loadHistory();
+    await loadMyPriceRequest();
+    showNotification('✅ Данные обновлены', 'success');
+}
+
+function startAutoRefresh() {
+    if (statusCheckInterval) clearInterval(statusCheckInterval);
+    statusCheckInterval = setInterval(async () => {
+        if (!currentClient) return;
+        await loadBooking();
+        await loadActiveBookings();
+        await loadMyPriceRequest();
+    }, 15000);
+}
+
+// ============================================================
+// ВЫХОД
+// ============================================================
+function logout() {
+    if (!confirm('Выйти?')) return;
+    if (statusCheckInterval) clearInterval(statusCheckInterval);
+    currentClient = null;
+    currentBooking = null;
+    myPriceRequest = null;
+    document.getElementById('authForm').classList.remove('hidden');
+    document.getElementById('registerForm').classList.add('hidden');
+    document.getElementById('dashboard').classList.add('hidden');
+    document.getElementById('authPlate').value = '';
+    document.getElementById('authCode').value = '';
+}
+
+// ============================================================
+// УВЕДОМЛЕНИЯ
+// ============================================================
+function showNotification(message, type = 'info') {
+    const existing = document.querySelector('.notification');
+    if (existing) existing.remove();
+    const div = document.createElement('div');
+    div.className = `notification ${type}`;
+    div.textContent = message;
+    document.body.appendChild(div);
+    setTimeout(() => {
+        div.style.opacity = '0';
+        div.style.transition = 'opacity 0.5s';
+        setTimeout(() => div.remove(), 500);
+    }, 3500);
+}
+
+// ============================================================
+// ИНИЦИАЛИЗАЦИЯ
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('bkDate').value = new Date().toISOString().slice(0,10);
+    const saved = localStorage.getItem('palych_new_client');
+    if (saved) {
+        try {
+            const data = JSON.parse(saved);
+            document.getElementById('authPlate').value = data.plate || '';
+            document.getElementById('authCode').value = data.access_code || '';
+            localStorage.removeItem('palych_new_client');
+        } catch(e) {}
+    }
+
+    // Регистрация Service Worker (PWA)
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./service-worker.js')
+                .then(reg => console.log('✅ SW зарегистрирован:', reg.scope))
+                .catch(err => console.warn('⚠️ SW:', err));
+        });
+    }
+});
+
+console.log('🚀 PalЫCH Client v4.8 загружен!');
+console.log('✅ Просмотр деталей из истории, статус "готово", тип ТО');
+</script>
+</body>
+</html>

@@ -4,14 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PalЫCH - Клиентский кабинет</title>
-<!-- PWA -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0b2b3c">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="PalЫCH">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0b2b3c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PalЫCH">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
         body { background: #f4f7fb; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
@@ -51,7 +53,6 @@
         .status-title { font-size: 0.8rem; color: #3a657e; font-weight: 600; text-transform: uppercase; }
         .badge-status { display: inline-block; padding: 4px 16px; border-radius: 40px; font-size: 0.9rem; margin-top: 4px; font-weight: 600; }
 
-        /* Статусы */
         .status-new { background: #f6b83d; color: #0b2b3c; }
         .status-work { background: #2d6b84; color: white; }
         .status-wait { background: #d4a017; color: white; }
@@ -81,7 +82,9 @@
 
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); justify-content: center; align-items: center; z-index: 999; }
         .modal-overlay.active { display: flex; }
-        .modal-box { background: white; max-width: 450px; width: 90%; border-radius: 24px; padding: 24px; }
+        .modal-box { background: white; max-width: 450px; width: 90%; max-height: 85vh; border-radius: 24px; padding: 24px; overflow-y: auto; position: relative; }
+        
+        .modal-close { position: sticky; top: 0; float: right; background: #eef2f7; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 1rem; cursor: pointer; z-index: 10; }
 
         .notification {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
@@ -97,6 +100,7 @@
         .section-title i { color: #f6b83d; }
 
         .empty-state { color: #3a657e; font-size: 0.85rem; text-align: center; padding: 20px; }
+        .plate-badge { background: #f6b83d; color: #0b2b3c; padding: 2px 8px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; display: inline-block; }
     </style>
 </head>
 <body>
@@ -213,6 +217,15 @@
     </div>
 </div>
 
+<!-- МОДАЛКА ДЛЯ ПРОСМОТРА ДЕТАЛЕЙ ИЗ ИСТОРИИ -->
+<div class="modal-overlay" id="historyDetailModal">
+    <div class="modal-box" style="max-width: 600px;">
+        <button class="modal-close" onclick="closeHistoryDetailModal()"><i class="fas fa-times"></i></button>
+        <div id="historyDetailContent" style="margin-top:10px;"></div>
+        <button class="btn btn-refresh" onclick="closeHistoryDetailModal()" style="margin-top:16px;">Закрыть</button>
+    </div>
+</div>
+
 <script>
 // ============================================================
 // КОНФИГ
@@ -226,7 +239,7 @@ let myPriceRequest = null;
 let statusCheckInterval = null;
 
 // ============================================================
-// РАБОТА С JSON
+// РАБОТА С JSON НА СЕРВЕРЕ
 // ============================================================
 async function loadJsonFromServer() {
     try {
@@ -243,7 +256,7 @@ async function loadJsonFromServer() {
 }
 
 async function updateJsonOnServer(updatedData) {
-    const jsonData = { ...updatedData, version: '4.7', timestamp: new Date().toISOString() };
+    const jsonData = { ...updatedData, version: '4.8', timestamp: new Date().toISOString() };
     const response = await fetch(`${SUPABASE_URL}/rest/v1/app_data?key=eq.palych_data`, {
         method: 'PATCH',
         headers: {
@@ -396,9 +409,6 @@ async function loadClientData() {
     await loadMyPriceRequest();
 }
 
-// ============================================================
-// АКТИВНАЯ ЗАПИСЬ (для главного статуса)
-// ============================================================
 async function loadBooking() {
     try {
         const jsonData = await loadJsonFromServer();
@@ -421,9 +431,6 @@ async function loadBooking() {
     } catch (e) { console.error(e); }
 }
 
-// ============================================================
-// ОБНОВЛЕНИЕ ГЛАВНОГО СТАТУСА
-// ============================================================
 function updateStatusDisplay(b) {
     const map = {
         'новая': { t: 'Новая', c: 'status-new', d: 'Ожидайте подтверждения' },
@@ -440,7 +447,6 @@ function updateStatusDisplay(b) {
     document.getElementById('statusBadge').className = 'badge-status ' + info.c;
     document.getElementById('statusDetail').textContent = info.d;
 
-    // Кнопка отмены — для активных статусов, КРОМЕ "готово" (нельзя отменить готовый заказ)
     if (['новая', 'в работе', 'ожидается'].includes(b.status)) {
         document.getElementById('cancelBtn').classList.remove('hidden');
     } else {
@@ -448,9 +454,6 @@ function updateStatusDisplay(b) {
     }
 }
 
-// ============================================================
-// АКТИВНЫЕ ЗАПИСИ
-// ============================================================
 async function loadActiveBookings() {
     try {
         const jsonData = await loadJsonFromServer();
@@ -498,7 +501,7 @@ function renderActiveBookings(bookings) {
 }
 
 // ============================================================
-// ИСТОРИЯ
+// ИСТОРИЯ ОБСЛУЖИВАНИЯ (С КНОПКОЙ "ОТКРЫТЬ")
 // ============================================================
 async function loadHistory() {
     const container = document.getElementById('historyContainer');
@@ -508,22 +511,186 @@ async function loadHistory() {
             container.innerHTML = '<div class="empty-state">История пуста</div>';
             return;
         }
+        
         const history = jsonData.journal.filter(j => j.clientId === currentClient.id).slice(0, 10);
+        
         if (history.length === 0) {
             container.innerHTML = '<div class="empty-state">История пуста</div>';
             return;
         }
+        
+        // Сортируем: сначала новые
+        history.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
         container.innerHTML = history.map(e => {
             const icon = e.type === 'diagnostic' ? '🔍' : '🔧';
             const name = e.type === 'diagnostic' ? 'Диагностика' : 'Ремонт';
-            return `<div class="history-card">
-                <div><strong>${icon} ${name}</strong> <span style="font-size:0.8rem;color:#3a657e;">${e.car||''}</span></div>
-                <div><span style="font-size:0.8rem;color:#3a657e;">${e.date||''}</span> <span class="h-status">Завершено</span></div>
+            return `<div class="history-card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+                <div style="flex:1;">
+                    <div><strong>${icon} ${name}</strong> <span style="font-size:0.8rem;color:#3a657e;">${e.car||''}</span></div>
+                    <div style="font-size:0.8rem; color:#3a657e; margin-top:2px;">📅 ${e.date||''} | Гос. номер: ${e.plate||'—'}</div>
+                </div>
+                <button class="btn" style="width:auto; padding:8px 16px; font-size:0.8rem; background:#2d6b84;" onclick="openHistoryDetail(${e.id})">
+                    <i class="fas fa-eye"></i> Открыть
+                </button>
             </div>`;
         }).join('');
     } catch (e) {
-        container.innerHTML = '<div style="color:#b33c3c;text-align:center;padding:20px;">Ошибка</div>';
+        console.error(e);
+        container.innerHTML = '<div style="color:#b33c3c;text-align:center;padding:20px;">Ошибка загрузки</div>';
     }
+}
+
+// ============================================================
+// ПРОСМОТР ДЕТАЛЕЙ ИЗ ИСТОРИИ (АКТ И ДИАГНОСТИКА)
+// ============================================================
+async function openHistoryDetail(entryId) {
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData || !jsonData.journal) return;
+        
+        const entry = jsonData.journal.find(e => e.id === entryId);
+        if (!entry) { showNotification('Запись не найдена', 'error'); return; }
+
+        const content = document.getElementById('historyDetailContent');
+        const modal = document.getElementById('historyDetailModal');
+        
+        let html = '';
+
+        if (entry.type === 'repair') {
+            // === ОТРИСОВКА АКТА ВЫПОЛНЕННЫХ РАБОТ ===
+            const parts = entry.parts || [];
+            const works = entry.works || [];
+            const carData = entry.carData || {};
+            
+            const partsTotal = parts.reduce((sum, p) => sum + (p.qty * p.price), 0);
+            const worksTotal = works.reduce((sum, w) => sum + w.cost, 0);
+            
+            // Восстанавливаем скидку из carData
+            let discountPercent = 0;
+            let discountName = 'Нет';
+            
+            const allDiscounts = jsonData.discounts || [];
+            if (carData.discount && carData.discount !== 'none') {
+                const foundDiscount = allDiscounts.find(d => d.id === parseInt(carData.discount));
+                if (foundDiscount) {
+                    discountPercent = foundDiscount.percent;
+                    discountName = foundDiscount.name;
+                }
+            }
+            
+            const discountAmount = worksTotal * (discountPercent / 100);
+            const worksTotalWithDiscount = worksTotal - discountAmount;
+            const grandTotal = partsTotal + worksTotalWithDiscount;
+
+            html += `<div style="background:white; border-radius:12px; padding:16px; border:2px solid #0b2b3c;">
+                <div style="text-align:center; border-bottom:3px double #0b2b3c; padding-bottom:10px; margin-bottom:14px;">
+                    <h2 style="font-size:1.2rem; color:#0b2b3c;">АКТ ВЫПОЛНЕННЫХ РАБОТ</h2>
+                    <div style="color:#3a657e; font-size:0.85rem;">PalЫCH Car Diagnost</div>
+                </div>
+                
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; background:#f8fafc; padding:10px; border-radius:8px; margin-bottom:14px; font-size:0.85rem;">
+                    <div><strong>Марка:</strong> ${carData.make || '—'}</div>
+                    <div><strong>Гос. номер:</strong> <span class="plate-badge">${carData.plate || '—'}</span></div>
+                    <div><strong>Дата:</strong> ${entry.date || '—'}</div>
+                    <div><strong>Скидка:</strong> ${discountName} (${discountPercent}%)</div>
+                </div>`;
+
+            if (parts.length > 0) {
+                html += `<h4 style="color:#0b2b3c; margin-bottom:4px; font-size:0.9rem;">📦 Запчасти</h4>`;
+                html += `<div style="display:grid; grid-template-columns:3fr 1fr 1fr; padding:4px 8px; background:#e4ecf4; font-weight:700; font-size:0.75rem; border-radius:4px;"><span>Наименование</span><span>Кол-во</span><span>Сумма</span></div>`;
+                parts.forEach(p => {
+                    html += `<div style="display:grid; grid-template-columns:3fr 1fr 1fr; padding:4px 8px; border-bottom:1px solid #eef2f7; font-size:0.8rem;">
+                        <span>${p.name}</span><span>${p.qty} шт.</span><span>${p.qty * p.price} ₽</span>
+                    </div>`;
+                });
+                html += `<div style="text-align:right; font-weight:700; font-size:0.85rem; margin-top:6px;">Итого запчасти: ${partsTotal} ₽</div>`;
+            }
+
+            if (works.length > 0) {
+                html += `<h4 style="color:#0b2b3c; margin:12px 0 4px; font-size:0.9rem;">🔧 Работы</h4>`;
+                html += `<div style="display:grid; grid-template-columns:2fr 1.5fr; padding:4px 8px; background:#e4ecf4; font-weight:700; font-size:0.75rem; border-radius:4px;"><span>Наименование</span><span style="text-align:right;">Стоимость</span></div>`;
+                works.forEach(w => {
+                    let priceHtml = '';
+                    if (discountPercent > 0) {
+                        const discounted = w.cost * (1 - discountPercent / 100);
+                        priceHtml = `<span style="text-decoration:line-through; color:#b33c3c; font-size:0.75rem; margin-right:4px;">${w.cost} ₽</span><span style="color:#0a6030; font-weight:700;">${discounted.toFixed(0)} ₽</span>`;
+                    } else {
+                        priceHtml = `${w.cost} ₽`;
+                    }
+                    html += `<div style="display:grid; grid-template-columns:2fr 1.5fr; padding:4px 8px; border-bottom:1px solid #eef2f7; font-size:0.8rem;">
+                        <span>${w.name}</span><span style="text-align:right;">${priceHtml}</span>
+                    </div>`;
+                });
+                
+                if (discountPercent > 0) {
+                    html += `<div style="text-align:right; margin-top:6px;">
+                        <div style="font-size:0.75rem; color:#b33c3c; text-decoration:line-through;">Итого без скидки: ${worksTotal} ₽</div>
+                        <div style="font-weight:700; font-size:0.85rem; color:#0a6030;">Итого со скидкой: ${worksTotalWithDiscount.toFixed(2)} ₽</div>
+                    </div>`;
+                } else {
+                    html += `<div style="text-align:right; font-weight:700; font-size:0.85rem; margin-top:6px;">Итого работы: ${worksTotal} ₽</div>`;
+                }
+            }
+
+            html += `<div style="margin-top:12px; padding:10px; background:#f8fafc; border-radius:8px; border:2px solid #0b2b3c; text-align:center;">
+                <div style="font-size:1.1rem; font-weight:700; color:#0b2b3c;">ОБЩАЯ СТОИМОСТЬ: ${grandTotal.toFixed(2)} ₽</div>
+                ${discountPercent > 0 ? `<div style="font-size:0.75rem; color:#0a6030; margin-top:2px;">Вы сэкономили: ${discountAmount.toFixed(2)} ₽</div>` : ''}
+            </div></div>`;
+
+        } else if (entry.type === 'diagnostic') {
+            // === ОТРИСОВКА ЛИСТА ДИАГНОСТИКИ ===
+            const carData = entry.carData || {};
+            const systems = entry.systems || [];
+            const tables = entry.tables || {};
+
+            html += `<div style="background:white; border-radius:12px; padding:16px; border:2px solid #0b2b3c;">
+                <div style="text-align:center; border-bottom:3px double #0b2b3c; padding-bottom:10px; margin-bottom:14px;">
+                    <h2 style="font-size:1.2rem; color:#0b2b3c;">ЛИСТ ДИАГНОСТИКИ</h2>
+                    <div style="color:#3a657e; font-size:0.85rem;">PalЫCH Car Diagnost</div>
+                </div>
+                
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; background:#f8fafc; padding:10px; border-radius:8px; margin-bottom:14px; font-size:0.85rem;">
+                    <div><strong>Марка:</strong> ${carData.make || '—'}</div>
+                    <div><strong>Гос. номер:</strong> <span class="plate-badge">${carData.plate || '—'}</span></div>
+                    <div><strong>Год:</strong> ${carData.year || '—'}</div>
+                    <div><strong>Дата:</strong> ${entry.date || '—'}</div>
+                    <div style="grid-column:1/-1;"><strong>Жалобы:</strong> ${carData.complaints || '—'}</div>
+                </div>`;
+
+            systems.forEach(sysId => {
+                const sysParams = tables[sysId] || [];
+                const items = sysParams.filter(r => r.checked && r.value.trim() !== '');
+                if (items.length === 0) return;
+                
+                const sysName = sysId === 'engine' ? 'Двигатель' : sysId === 'brakes' ? 'Тормоза' : sysId === 'suspension' ? 'Подвеска' : sysId; 
+                
+                html += `<div style="margin-top:10px; border:1px solid #e4ecf4; border-radius:8px; overflow:hidden;">
+                    <div style="background:#0b2b3c; color:white; padding:6px 10px; font-weight:700; font-size:0.85rem;">🔧 ${sysName}</div>
+                    <div style="padding:4px 0;">`;
+                items.forEach(row => {
+                    const statusText = row.status === 'ok' ? '✅' : row.status === 'fail' ? '⚠️' : '❓';
+                    html += `<div style="display:flex; justify-content:space-between; padding:4px 10px; border-bottom:1px solid #eef2f7; font-size:0.8rem;">
+                        <span><strong>${row.param}:</strong> ${row.value}</span>
+                        <span>${statusText}</span>
+                    </div>`;
+                });
+                html += `</div></div>`;
+            });
+            html += `</div>`;
+        }
+
+        content.innerHTML = html;
+        modal.classList.add('active');
+        
+    } catch (err) {
+        console.error(err);
+        showNotification('Ошибка загрузки деталей', 'error');
+    }
+}
+
+function closeHistoryDetailModal() {
+    document.getElementById('historyDetailModal').classList.remove('active');
 }
 
 // ============================================================
@@ -549,7 +716,6 @@ async function submitPriceRequest() {
         if (!jsonData.priceRequests) jsonData.priceRequests = [];
         if (!jsonData.priceRequestIdCounter) jsonData.priceRequestIdCounter = 1;
 
-        // Деактивируем все старые запросы этого клиента
         jsonData.priceRequests.forEach(r => {
             if (r.client_id === currentClient.id && r.status === 'active') {
                 r.status = 'archived';
@@ -774,39 +940,19 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem('palych_new_client');
         } catch(e) {}
     }
-});
 
-console.log('🚀 PalЫCH Client v4.7 загружен!');
-console.log('✅ Статус "готово", тип ТО, запрос стоимости, тип авто');
-</script>
-<script>
-    // Регистрация Service Worker
+    // Регистрация Service Worker (PWA)
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./service-worker.js')
                 .then(reg => console.log('✅ SW зарегистрирован:', reg.scope))
-                .catch(err => console.warn('⚠️ Ошибка SW:', err));
+                .catch(err => console.warn('⚠️ SW:', err));
         });
     }
+});
 
-    // Установка приложения
-    let deferredPrompt = null;
-    window.addEventListener('beforeinstallprompt', (e) => {
-        console.log('💡 PWA можно установить');
-        e.preventDefault();
-        deferredPrompt = e;
-    });
-
-    window.installApp = async function() {
-        if (!deferredPrompt) {
-            alert('Установка недоступна. Используйте меню браузера: "Добавить на главный экран"');
-            return;
-        }
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log('Установка:', outcome);
-        deferredPrompt = null;
-    };
+console.log('🚀 PalЫCH Client v4.8 загружен!');
+console.log('✅ Просмотр деталей из истории, статус "готово", тип ТО');
 </script>
 </body>
 </html>

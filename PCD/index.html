@@ -2104,15 +2104,206 @@ function removeDiscount(id) { if (!confirm('Удалить?')) return; discounts
 // ============================================================
 // ОНЛАЙН ЗАЯВКИ И ЗАПРОСЫ (сокращено для экономии места)
 // ============================================================
-async function loadNewRequests() { try { const jsonData = await loadJsonFromServer(); if (!jsonData) { renderNewRequests([], []); return; } newRequests = (jsonData.bookings || []).filter(b => b.is_new === true); newClients = (jsonData.clients || []).filter(c => c.is_new === true); renderNewRequests(newRequests, newClients); } catch (e) { console.error(e); } }
-function renderNewRequests(reqs, clis) { /* ... (код вставки онлайн-заявок) ... */ }
-async function acceptNewClient(clientId) { /* ... */ }
-async function acceptNewBooking(id) { /* ... */ }
+// ============================================================
+// ОНЛАЙН ЗАЯВКИ (ПОЛНАЯ ВЕРСИЯ)
+// ============================================================
+async function loadNewRequests() {
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData) { renderNewRequests([], []); return; }
+        newRequests = (jsonData.bookings || []).filter(b => b.is_new === true);
+        newClients = (jsonData.clients || []).filter(c => c.is_new === true);
+        renderNewRequests(newRequests, newClients);
+    } catch (e) { 
+        console.error('Ошибка загрузки заявок:', e); 
+        document.getElementById('newRequestsContainer').innerHTML = 
+            `<div style="color:#b33c3c;text-align:center;padding:20px;">Ошибка загрузки</div>`;
+    }
+}
 
-async function loadPriceRequests() { try { const jsonData = await loadJsonFromServer(); if (jsonData && jsonData.priceRequests) priceRequests = jsonData.priceRequests; else priceRequests = []; renderPriceRequests(); } catch (e) { console.error(e); } }
-function renderPriceRequests() { /* ... (код рендера запросов) ... */ }
-async function replyToPriceRequest(requestId) { /* ... */ }
-async function deletePriceRequest(requestId) { /* ... */ }
+function renderNewRequests(reqs, clis) {
+    const container = document.getElementById('newRequestsContainer');
+    const countEl = document.getElementById('newRequestsCount');
+    if (!container) return;
+    
+    const total = reqs.length + clis.length;
+    if (countEl) countEl.textContent = total;
+    
+    if (total === 0) {
+        container.innerHTML = `<div style="color:#3a657e;font-size:0.85rem;text-align:center;padding:20px;">
+            <i class="fas fa-inbox" style="font-size:1.5rem;display:block;margin-bottom:6px;"></i>
+            Нет новых заявок
+        </div>`;
+        return;
+    }
+    
+    const typeLabels = { diagnostic: '🔍 Диагностика', repair: '🔧 Ремонт', maintenance: '🛠️ ТО' };
+    let html = '';
+    
+    // Новые клиенты
+    clis.forEach(c => {
+        html += `<div class="request-item client-item">
+            <div><span class="name">👤 ${c.name}</span>
+                <span style="font-size:0.8rem;color:#3a657e;margin-left:8px;">${c.plate || ''}</span>
+                <span class="badge-new" style="background:#f6b83d;color:#0b2b3c;">Новый клиент</span></div>
+            <button class="btn-sm btn-success" onclick="acceptNewClient(${c.id})"><i class="fas fa-check"></i> Принять</button>
+        </div>`;
+    });
+    
+    // Новые заявки
+    reqs.forEach(b => {
+        html += `<div class="request-item">
+            <div><span class="name">📋 ${b.name}</span>
+                <span style="font-size:0.8rem;color:#3a657e;margin-left:8px;">${b.plate || ''}</span>
+                <span class="badge-new" style="background:#2d6b84;color:white;">${typeLabels[b.type] || b.type}</span></div>
+            <button class="btn-sm btn-success" onclick="acceptNewBooking(${b.id})"><i class="fas fa-check"></i> Принять</button>
+        </div>`;
+    });
+    container.innerHTML = html;
+}
+
+async function acceptNewClient(clientId) {
+    if (!confirm('Принять клиента?')) return;
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData) return;
+        const c = jsonData.clients.find(x => x.id === clientId);
+        if (c) {
+            c.is_new = false;
+            if (!clients.some(x => x.id === clientId)) clients.push(c);
+        }
+        await saveJsonToServer(jsonData);
+        renderClients();
+        updateClientSelect();
+        await loadNewRequests();
+        showNotification('✅ Клиент принят', 'success');
+    } catch (e) { alert('❌ ' + e.message); }
+}
+
+async function acceptNewBooking(id) {
+    if (!confirm('Принять заявку?')) return;
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData) return;
+        const b = jsonData.bookings.find(x => x.id === id);
+        if (b) {
+            b.is_new = false;
+            if (!bookings.some(x => x.id === id)) bookings.push(b);
+        }
+        await saveJsonToServer(jsonData);
+        renderBookings();
+        await loadNewRequests();
+        showNotification('✅ Заявка принята', 'success');
+    } catch (e) { alert('❌ ' + e.message); }
+}
+
+// ============================================================
+// ЗАПРОСЫ СТОИМОСТИ (ПОЛНАЯ ВЕРСИЯ)
+// ============================================================
+async function loadPriceRequests() {
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (jsonData && jsonData.priceRequests) {
+            priceRequests = jsonData.priceRequests;
+        } else {
+            priceRequests = [];
+        }
+        renderPriceRequests();
+    } catch (e) { 
+        console.error('Ошибка загрузки запросов:', e); 
+        document.getElementById('priceRequestsContainer').innerHTML = 
+            `<div style="color:#b33c3c;text-align:center;padding:20px;">Ошибка загрузки</div>`;
+    }
+}
+
+function renderPriceRequests() {
+    const container = document.getElementById('priceRequestsContainer');
+    const countEl = document.getElementById('priceRequestsCount');
+    if (!container) return;
+
+    const activeRequests = priceRequests.filter(r => r.status === 'active');
+    if (countEl) countEl.textContent = activeRequests.length;
+
+    if (activeRequests.length === 0) {
+        container.innerHTML = `<div style="color:#3a657e;font-size:0.85rem;text-align:center;padding:20px;">
+            <i class="fas fa-inbox" style="font-size:1.5rem;display:block;margin-bottom:6px;"></i>
+            Нет активных запросов стоимости
+        </div>`;
+        return;
+    }
+
+    let html = '';
+    activeRequests.forEach(req => {
+        const client = clients.find(c => c.id === req.client_id);
+        const clientName = client ? client.name : 'Клиент';
+        const plate = client ? (client.plate || '') : '';
+        const date = new Date(req.timestamp).toLocaleString();
+        const daysLeft = Math.max(0, 10 - Math.floor((Date.now() - new Date(req.timestamp).getTime()) / (1000 * 60 * 60 * 24)));
+
+        html += `<div class="price-request-item">
+            <div class="req-header">
+                <div>
+                    <strong>👤 ${clientName}</strong>
+                    ${plate ? `<span style="font-size:0.8rem;color:#3a657e;"> (${plate})</span>` : ''}
+                    <span style="font-size:0.7rem;color:#6c5b7b;margin-left:8px;">📅 ${date}</span>
+                    <span style="font-size:0.7rem;color:#b33c3c;margin-left:8px;">⏳ Осталось: ${daysLeft} дн.</span>
+                </div>
+            </div>
+            <div class="req-text">
+                <strong>Что нужно сделать:</strong><br>
+                ${req.request_text}
+            </div>
+            <div class="req-reply">
+                <textarea id="reply_${req.id}" rows="2" placeholder="Введите стоимость и комментарий..."></textarea>
+                <button class="btn-sm btn-success" onclick="replyToPriceRequest(${req.id})" style="margin-top:6px;">
+                    <i class="fas fa-paper-plane"></i> Ответить
+                </button>
+                <button class="btn-sm btn-danger" onclick="deletePriceRequest(${req.id})" style="margin-top:6px;">
+                    <i class="fas fa-archive"></i> В архив
+                </button>
+            </div>
+        </div>`;
+    });
+    container.innerHTML = html;
+}
+
+async function replyToPriceRequest(requestId) {
+    const replyEl = document.getElementById(`reply_${requestId}`);
+    const reply = replyEl ? replyEl.value.trim() : '';
+    if (!reply) { alert('Введите ответ'); return; }
+
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData || !jsonData.priceRequests) { alert('Ошибка'); return; }
+        const req = jsonData.priceRequests.find(r => r.id === requestId);
+        if (req) {
+            req.reply_text = reply;
+            req.reply_date = new Date().toISOString();
+            req.status = 'replied';
+        }
+        await saveJsonToServer(jsonData);
+        priceRequests = jsonData.priceRequests;
+        renderPriceRequests();
+        showNotification('✅ Ответ отправлен клиенту!', 'success');
+    } catch (e) {
+        alert('❌ Ошибка: ' + e.message);
+    }
+}
+
+async function deletePriceRequest(requestId) {
+    if (!confirm('Удалить запрос?')) return;
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData || !jsonData.priceRequests) return;
+        jsonData.priceRequests = jsonData.priceRequests.filter(r => r.id !== requestId);
+        await saveJsonToServer(jsonData);
+        priceRequests = jsonData.priceRequests;
+        renderPriceRequests();
+        showNotification('🗄️ Запрос в архиве', 'success');
+    } catch (e) {
+        alert('❌ Ошибка: ' + e.message);
+    }
+}
 
 // ============================================================
 // ИНИЦИАЛИЗАЦИЯ И PWA

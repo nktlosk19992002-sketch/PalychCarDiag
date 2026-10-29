@@ -95,6 +95,89 @@
         .section-title i { color: #f6b83d; }
 
         .empty-state { color: #3a657e; font-size: 0.85rem; text-align: center; padding: 20px; }
+
+        /* Баннер автовхода из QR */
+        .qr-auto-banner {
+            background: linear-gradient(135deg, #1f7b4a 0%, #2a8b5a 100%);
+            color: white;
+            padding: 12px 18px;
+            border-radius: 12px;
+            margin-bottom: 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: fadeIn 0.3s;
+        }
+        .qr-auto-banner i { font-size: 1.2rem; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ==== Модалка просмотра акта/диагностики ==== */
+        .journal-view-modal .modal-box {
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 24px 28px;
+        }
+        .journal-view-modal .modal-close {
+            position: sticky; top: 0; float: right;
+            background: #eef2f7; border: none;
+            width: 36px; height: 36px; border-radius: 40px;
+            font-size: 1.2rem; cursor: pointer; z-index: 10;
+        }
+        .journal-view-modal .modal-title {
+            font-size: 1.2rem; font-weight: 700; color: #0b2b3c;
+            margin-bottom: 12px; border-bottom: 3px solid #f6b83d;
+            padding-bottom: 6px;
+        }
+        .jv-section { margin-top: 14px; border: 1px solid #e4ecf4; border-radius: 8px; overflow: hidden; }
+        .jv-section-title {
+            background: #0b2b3c; color: white; padding: 8px 14px;
+            font-weight: 700; font-size: 0.9rem;
+        }
+        .jv-row {
+            display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+            padding: 6px 12px; border-bottom: 1px solid #eef2f7;
+            font-size: 0.82rem; align-items: center;
+        }
+        .jv-row.header { background: #eef3f8; font-weight: 700; color: #1f4055; font-size: 0.75rem; }
+        .jv-row.grid-3 { grid-template-columns: 3fr 1fr 1fr; }
+        .jv-row.grid-4 { grid-template-columns: 2.5fr 1fr 1fr 1fr; }
+        .jv-total {
+            text-align: right; font-weight: 700; font-size: 1rem;
+            padding: 10px 14px; background: #f8fafc;
+            border-top: 2px solid #0b2b3c;
+            color: #0b2b3c;
+        }
+        .jv-total .old-price { text-decoration: line-through; color: #b33c3c; font-size: 0.85rem; margin-right: 8px; }
+        .jv-total .new-price { color: #0a6030; }
+        .jv-car-info {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 4px 20px;
+            background: #f8fafc; padding: 10px 14px; border-radius: 8px;
+            margin-bottom: 12px; border-left: 4px solid #f6b83d;
+            font-size: 0.85rem;
+        }
+        .jv-car-info b { color: #1f4055; }
+        .jv-plate-badge {
+            background: #f6b83d; color: #0b2b3c;
+            padding: 2px 10px; border-radius: 10px;
+            font-weight: 700; font-size: 0.8rem;
+            display: inline-block;
+        }
+        .jv-status-badge {
+            display: inline-block; padding: 2px 10px; border-radius: 20px;
+            font-size: 0.7rem; font-weight: 600;
+        }
+        .jv-status-ok { background: #d3f0d8; color: #0a6030; }
+        .jv-status-fail { background: #fadad8; color: #a12b2b; }
+        .jv-status-unknown { background: #e8ecf0; color: #4a5e6b; }
+        .jv-history-card { cursor: pointer; transition: 0.2s; }
+        .jv-history-card:hover { background: #f8fafc; border-color: #f6b83d; transform: translateX(2px); }
+        .jv-empty-msg {
+            text-align: center; color: #4a6f82; padding: 30px;
+            background: #f8fafc; border-radius: 8px;
+        }
     </style>
 </head>
 <body>
@@ -107,21 +190,27 @@
 
     <div class="content">
 
+        <!-- ===== АВТОРИЗАЦИЯ ===== -->
         <div id="authForm">
             <h2 style="color:#0b2b3c; font-size:1.2rem; margin-bottom:16px;"><i class="fas fa-lock" style="color:#f6b83d;"></i> Вход</h2>
+            <div id="qrBanner" class="qr-auto-banner hidden">
+                <i class="fas fa-qrcode"></i>
+                <span>Вход по QR-коду с карты клиента...</span>
+            </div>
             <div class="form-group">
                 <label>Гос. номер</label>
-                <input type="text" id="authPlate" placeholder="А123ВС777" style="text-transform:uppercase;">
+                <input type="text" id="authPlate" placeholder="А123ВС777" style="text-transform:uppercase;" autocomplete="off">
             </div>
             <div class="form-group">
                 <label>Код доступа</label>
-                <input type="password" id="authCode" placeholder="0000" maxlength="4" inputmode="numeric" style="letter-spacing:8px; font-weight:700; text-align:center;">
+                <input type="password" id="authCode" placeholder="0000" maxlength="4" inputmode="numeric" style="letter-spacing:8px; font-weight:700; text-align:center;" autocomplete="off">
             </div>
             <button class="btn" onclick="login()"><i class="fas fa-sign-in-alt"></i> Войти</button>
             <div class="auth-error" id="authError"></div>
             <button class="btn-link" onclick="showRegister()">Нет кабинета? Зарегистрироваться</button>
         </div>
 
+        <!-- ===== РЕГИСТРАЦИЯ ===== -->
         <div id="registerForm" class="hidden">
             <h2 style="color:#0b2b3c; font-size:1.2rem; margin-bottom:16px;"><i class="fas fa-user-plus" style="color:#f6b83d;"></i> Регистрация</h2>
             <div class="form-group"><label>Имя</label><input type="text" id="regName" placeholder="Иван Петров"></div>
@@ -141,6 +230,7 @@
             <button class="btn-link" onclick="showLogin()">Назад ко входу</button>
         </div>
 
+        <!-- ===== ЛИЧНЫЙ КАБИНЕТ ===== -->
         <div id="dashboard" class="hidden">
             <div class="card">
                 <div class="plate" id="clientPlate">—</div>
@@ -149,6 +239,7 @@
                 <div class="info"><i class="fas fa-phone"></i> <span id="clientPhone">—</span></div>
             </div>
 
+            <!-- ТЕКУЩИЙ СТАТУС -->
             <div class="status-card">
                 <div class="status-title"><i class="fas fa-clock"></i> Текущий статус</div>
                 <div><span class="badge-status status-new" id="statusBadge">Нет активных записей</span></div>
@@ -157,13 +248,16 @@
                 <button class="btn btn-refresh" onclick="refreshStatus()" style="margin-top:8px;"><i class="fas fa-sync"></i> Проверить статус</button>
             </div>
 
+            <!-- АКТИВНЫЕ ЗАПИСИ -->
             <h3 class="section-title"><i class="fas fa-list"></i> Мои активные записи <span id="activeCount" style="background:#2d6b84;color:white;padding:2px 10px;border-radius:20px;font-size:0.7rem;">0</span></h3>
             <div id="activeBookings"></div>
 
+            <!-- ЗАПРОС СТОИМОСТИ -->
             <h3 class="section-title"><i class="fas fa-calculator"></i> Запрос стоимости</h3>
             <button class="btn btn-warning" onclick="openPriceRequestModal()"><i class="fas fa-calculator"></i> Запросить стоимость</button>
             <div id="myPriceRequest" style="margin-top:12px;"></div>
 
+            <!-- ЗАПИСЬ НА ОБСЛУЖИВАНИЕ -->
             <button class="btn" onclick="toggleBookingForm()" style="margin-top:16px;"><i class="fas fa-calendar-plus"></i> Записаться на обслуживание</button>
 
             <div id="bookingForm" class="hidden" style="margin-top:12px;background:#f8fafc;padding:16px;border-radius:16px;">
@@ -191,6 +285,7 @@
     </div>
 </div>
 
+<!-- МОДАЛКА ЗАПРОСА СТОИМОСТИ -->
 <div class="modal-overlay" id="priceRequestModal">
     <div class="modal-box">
         <h3 style="color:#0b2b3c;margin-bottom:12px;"><i class="fas fa-calculator" style="color:#f6b83d;"></i> Запрос стоимости</h3>
@@ -203,6 +298,18 @@
     </div>
 </div>
 
+<!-- МОДАЛКА ПРОСМОТРА АКТА/ДИАГНОСТИКИ -->
+<div class="modal-overlay journal-view-modal" id="journalViewModal">
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeJournalView()"><i class="fas fa-times"></i></button>
+        <div class="modal-title" id="journalViewTitle">Просмотр</div>
+        <div id="journalViewContent"></div>
+        <div style="margin-top:16px; text-align:center;">
+            <button class="btn" onclick="closeJournalView()" style="background:#888;"><i class="fas fa-times"></i> Закрыть</button>
+        </div>
+    </div>
+</div>
+
 <script>
 // ============================================================
 // КОНФИГ
@@ -210,11 +317,35 @@
 const SUPABASE_URL = 'https://xpaqczxqkuzfwmnimzsx.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhwYXFjenhxa3V6ZndtbmltenN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5Njg4NDcsImV4cCI6MjEwNDU0NDg0N30.hH62d6aCsgBchg4MVPey714O3-FR9bNaqnsm_T32zAk';
 
+const APP_VERSION = '5.0';
+
 let currentClient = null;
 let currentBooking = null;
 let myPriceRequest = null;
 let statusCheckInterval = null;
+let cachedDiscounts = [];
 
+// ============================================================
+// НОРМАЛИЗАЦИЯ ГОС.НОМЕРА (кириллица → латиница)
+// ============================================================
+function normalizePlate(plate) {
+    if (!plate) return '';
+    const map = {
+        'А':'A', 'В':'B', 'Е':'E', 'К':'K', 'М':'M',
+        'Н':'H', 'О':'O', 'Р':'P', 'С':'C', 'Т':'T',
+        'У':'Y', 'Х':'X',
+        'а':'a', 'в':'b', 'е':'e', 'к':'k', 'м':'m',
+        'н':'h', 'о':'o', 'р':'p', 'с':'c', 'т':'t',
+        'у':'y', 'х':'x'
+    };
+    return plate.replace(/[АВЕКМНОРСТУХавекмнорстух]/g, ch => map[ch] || ch)
+                .toUpperCase()
+                .replace(/\s/g, '');
+}
+
+// ============================================================
+// РАБОТА С JSON
+// ============================================================
 async function loadJsonFromServer() {
     try {
         const response = await fetch(`${SUPABASE_URL}/rest/v1/app_data?key=eq.palych_data&select=data`, {
@@ -222,12 +353,18 @@ async function loadJsonFromServer() {
         });
         if (!response.ok) return null;
         const result = await response.json();
-        return (result && result[0] && result[0].data) ? result[0].data : null;
-    } catch (e) { console.error(e); return null; }
+        const data = (result && result[0] && result[0].data) ? result[0].data : null;
+        // Кэшируем скидки
+        if (data && data.discounts) cachedDiscounts = data.discounts;
+        return data;
+    } catch (e) {
+        console.error('loadJsonFromServer:', e);
+        return null;
+    }
 }
 
 async function updateJsonOnServer(updatedData) {
-    const jsonData = { ...updatedData, version: '4.9', timestamp: new Date().toISOString() };
+    const jsonData = { ...updatedData, version: APP_VERSION, timestamp: new Date().toISOString() };
     const response = await fetch(`${SUPABASE_URL}/rest/v1/app_data?key=eq.palych_data`, {
         method: 'PATCH',
         headers: {
@@ -254,23 +391,32 @@ async function updateJsonOnServer(updatedData) {
     return await response.json();
 }
 
+// ============================================================
+// ПЕРЕКЛЮЧЕНИЕ ФОРМ
+// ============================================================
 function showRegister() {
     document.getElementById('authForm').classList.add('hidden');
     document.getElementById('registerForm').classList.remove('hidden');
 }
+
 function showLogin() {
     document.getElementById('registerForm').classList.add('hidden');
     document.getElementById('authForm').classList.remove('hidden');
 }
 
+// ============================================================
+// РЕГИСТРАЦИЯ
+// ============================================================
 async function register() {
     const name = document.getElementById('regName').value.trim();
     const phone = document.getElementById('regPhone').value.trim();
     const car = document.getElementById('regCar').value.trim();
-    const plate = document.getElementById('regPlate').value.trim().toUpperCase();
+    const rawPlate = document.getElementById('regPlate').value.trim();
+    const plate = normalizePlate(rawPlate);
     const carType = document.getElementById('regCarType').value;
     const errorEl = document.getElementById('regError');
     const successEl = document.getElementById('registerSuccess');
+
     errorEl.style.display = 'none';
     successEl.style.display = 'none';
 
@@ -279,84 +425,131 @@ async function register() {
         errorEl.style.display = 'block';
         return;
     }
+
     try {
         const jsonData = await loadJsonFromServer();
-        if (!jsonData) { errorEl.textContent = '❌ Ошибка'; errorEl.style.display = 'block'; return; }
-        if (jsonData.clients && jsonData.clients.find(c => c.plate === plate)) {
+        if (!jsonData) { errorEl.textContent = '❌ Ошибка загрузки данных'; errorEl.style.display = 'block'; return; }
+
+        if (jsonData.clients && jsonData.clients.find(c => normalizePlate(c.plate) === plate)) {
             errorEl.textContent = '❌ Такой номер уже зарегистрирован';
             errorEl.style.display = 'block';
             return;
         }
+
         const accessCode = String(Math.floor(1000 + Math.random() * 9000));
         const newId = jsonData.clients ? Math.max(...jsonData.clients.map(c => c.id || 0), 0) + 1 : 1;
-        const newClient = { id: newId, name, phone, car, plate, access_code: accessCode, carType, is_new: true };
+
+        const newClient = {
+            id: newId,
+            name,
+            phone,
+            car,
+            plate: plate,
+            access_code: accessCode,
+            carType,
+            is_new: true
+        };
+
         if (!jsonData.clients) jsonData.clients = [];
         jsonData.clients.push(newClient);
         await updateJsonOnServer(jsonData);
+
         successEl.textContent = `✅ Регистрация успешна! Ваш код: ${accessCode}`;
         successEl.style.display = 'block';
         localStorage.setItem('palych_new_client', JSON.stringify({ plate, access_code: accessCode }));
     } catch (e) {
+        console.error('register:', e);
         errorEl.textContent = '❌ Ошибка: ' + e.message;
         errorEl.style.display = 'block';
     }
 }
 
+// ============================================================
+// АВТОРИЗАЦИЯ
+// ============================================================
 async function login() {
-    const plate = document.getElementById('authPlate').value.trim().toUpperCase();
-    const code = document.getElementById('authCode').value.trim();
+    const rawPlate = document.getElementById('authPlate').value.trim();
+    const rawCode  = document.getElementById('authCode').value.trim();
+    const plate = normalizePlate(rawPlate);
+    const code  = String(rawCode).trim();
     const errorEl = document.getElementById('authError');
     errorEl.style.display = 'none';
+
+    console.log('🔐 login():', { rawPlate, normalizedPlate: plate, rawCode, code });
 
     if (!plate || !code) {
         errorEl.textContent = 'Введите номер и код';
         errorEl.style.display = 'block';
         return;
     }
+
     try {
         const jsonData = await loadJsonFromServer();
         if (!jsonData || !jsonData.clients) {
-            errorEl.textContent = '❌ Ошибка загрузки';
+            errorEl.textContent = '❌ Ошибка загрузки данных';
             errorEl.style.display = 'block';
             return;
         }
-        const client = jsonData.clients.find(c => c.plate && c.plate.toUpperCase() === plate && c.access_code === code);
+
+        const client = jsonData.clients.find(c => {
+            if (!c.plate) return false;
+            const dbPlate = normalizePlate(c.plate);
+            const dbCode = String(c.access_code || '').trim();
+            return dbPlate === plate && dbCode === code;
+        });
+
         if (!client) {
+            console.error('❌ Клиент не найден:', { plate, code });
+            console.error('❌ Доступные:', jsonData.clients.map(c => ({
+                name: c.name, plate: c.plate, norm: normalizePlate(c.plate), code: c.access_code
+            })));
             errorEl.textContent = '❌ Неверный номер или код';
             errorEl.style.display = 'block';
             return;
         }
+
         currentClient = client;
         document.getElementById('authForm').classList.add('hidden');
         document.getElementById('dashboard').classList.remove('hidden');
+
         await loadClientData();
         startAutoRefresh();
         showNotification(`✅ Добро пожаловать, ${client.name}!`, 'success');
     } catch (e) {
+        console.error('❌ login error:', e);
         errorEl.textContent = '❌ Ошибка: ' + e.message;
         errorEl.style.display = 'block';
     }
 }
 
+// ============================================================
+// ЗАГРУЗКА ДАННЫХ КЛИЕНТА
+// ============================================================
 async function loadClientData() {
     if (!currentClient) return;
     document.getElementById('clientPlate').textContent = currentClient.plate || '—';
     document.getElementById('clientCar').textContent = currentClient.car || '—';
     document.getElementById('clientName').textContent = currentClient.name || '—';
     document.getElementById('clientPhone').textContent = currentClient.phone || '—';
+
     await loadBooking();
     await loadActiveBookings();
     await loadHistory();
     await loadMyPriceRequest();
 }
 
+// ============================================================
+// АКТИВНАЯ ЗАПИСЬ (главный статус)
+// ============================================================
 async function loadBooking() {
     try {
         const jsonData = await loadJsonFromServer();
         if (!jsonData || !jsonData.bookings) return;
+
         const active = jsonData.bookings.find(b =>
             b.client_id === currentClient.id &&
             !['отремонтирована', 'не отремонтирована', 'продиагностирована', 'отменена'].includes(b.status));
+
         if (active) {
             currentBooking = active;
             updateStatusDisplay(active);
@@ -385,6 +578,7 @@ function updateStatusDisplay(b) {
     document.getElementById('statusBadge').textContent = info.t;
     document.getElementById('statusBadge').className = 'badge-status ' + info.c;
     document.getElementById('statusDetail').textContent = info.d;
+
     if (['новая', 'в работе', 'ожидается'].includes(b.status)) {
         document.getElementById('cancelBtn').classList.remove('hidden');
     } else {
@@ -392,13 +586,18 @@ function updateStatusDisplay(b) {
     }
 }
 
+// ============================================================
+// АКТИВНЫЕ ЗАПИСИ
+// ============================================================
 async function loadActiveBookings() {
     try {
         const jsonData = await loadJsonFromServer();
         if (!jsonData || !jsonData.bookings) { renderActiveBookings([]); return; }
+
         const activeBookings = jsonData.bookings.filter(b =>
             b.client_id === currentClient.id &&
             !['отремонтирована', 'не отремонтирована', 'продиагностирована', 'отменена'].includes(b.status));
+
         activeBookings.sort((a, b) => new Date(b.date) - new Date(a.date));
         renderActiveBookings(activeBookings);
     } catch (e) { console.error(e); }
@@ -408,10 +607,12 @@ function renderActiveBookings(bookings) {
     const container = document.getElementById('activeBookings');
     const countEl = document.getElementById('activeCount');
     if (countEl) countEl.textContent = bookings.length;
+
     if (!bookings || bookings.length === 0) {
         container.innerHTML = '<div class="empty-state">Нет активных записей</div>';
         return;
     }
+
     const typeLabels = { diagnostic: '🔍 Диагностика', repair: '🔧 Ремонт', maintenance: '🛠️ ТО' };
     const statusLabels = {
         'новая': { t: 'Новая', c: 'status-new' },
@@ -419,6 +620,7 @@ function renderActiveBookings(bookings) {
         'ожидается': { t: 'Ожидается', c: 'status-wait' },
         'готово': { t: '✅ Готово', c: 'status-ready' }
     };
+
     container.innerHTML = bookings.map(b => {
         const typeLabel = typeLabels[b.type] || b.type;
         const si = statusLabels[b.status] || { t: b.status, c: 'status-new' };
@@ -433,6 +635,9 @@ function renderActiveBookings(bookings) {
     }).join('');
 }
 
+// ============================================================
+// ИСТОРИЯ (кликабельная)
+// ============================================================
 async function loadHistory() {
     const container = document.getElementById('historyContainer');
     try {
@@ -449,20 +654,238 @@ async function loadHistory() {
         container.innerHTML = history.map(e => {
             const icon = e.type === 'diagnostic' ? '🔍' : '🔧';
             const name = e.type === 'diagnostic' ? 'Диагностика' : 'Ремонт';
-            return `<div class="history-card">
-                <div><strong>${icon} ${name}</strong> <span style="font-size:0.8rem;color:#3a657e;">${e.car||''}</span></div>
-                <div><span style="font-size:0.8rem;color:#3a657e;">${e.date||''}</span> <span class="h-status">Завершено</span></div>
+
+            let totalInfo = '';
+            if (e.type === 'repair' && e.parts && e.works) {
+                const partsTotal = e.parts.reduce((s, p) => s + ((p.qty || 0) * (p.price || 0)), 0);
+                const worksTotal = e.works.reduce((s, w) => s + (w.cost || 0), 0);
+                let discountPercent = 0;
+                const discVal = e.carData && e.carData.discount;
+                if (discVal && discVal !== 'none' && discVal !== '') {
+                    const discId = parseInt(discVal);
+                    const found = cachedDiscounts.find(d => d.id === discId);
+                    if (found) discountPercent = found.percent;
+                }
+                const grand = partsTotal + worksTotal * (1 - discountPercent / 100);
+                totalInfo = `<span style="font-size:0.75rem;color:#1f7b4a;font-weight:700;margin-left:8px;">${Math.round(grand)} ₽</span>`;
+            }
+
+            return `<div class="history-card jv-history-card" onclick="viewJournalEntry(${e.id})">
+                <div><strong>${icon} ${name}</strong> <span style="font-size:0.8rem;color:#3a657e;">${e.car||''}</span>${totalInfo}</div>
+                <div>
+                    <span style="font-size:0.8rem;color:#3a657e;">${e.date||''}</span>
+                    <span class="h-status" style="margin-left:8px;">👁 Открыть</span>
+                </div>
             </div>`;
         }).join('');
     } catch (e) {
+        console.error(e);
         container.innerHTML = '<div style="color:#b33c3c;text-align:center;padding:20px;">Ошибка</div>';
     }
 }
 
+// ============================================================
+// ПРОСМОТР ДЕТАЛЕЙ АКТА / ДИАГНОСТИКИ
+// ============================================================
+async function viewJournalEntry(entryId) {
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData || !jsonData.journal) return;
+        const entry = jsonData.journal.find(e => e.id === entryId);
+        if (!entry) { showNotification('❌ Запись не найдена', 'error'); return; }
+
+        // Проверка прав: clientId может отсутствовать в старых записях
+        if (entry.clientId && entry.clientId !== currentClient.id) {
+            showNotification('⛔ Нет доступа к этой записи', 'error');
+            return;
+        }
+
+        if (entry.type === 'diagnostic') {
+            renderDiagView(entry);
+        } else if (entry.type === 'repair') {
+            renderRepairView(entry);
+        }
+        document.getElementById('journalViewModal').classList.add('active');
+    } catch (e) {
+        console.error(e);
+        showNotification('❌ Ошибка загрузки', 'error');
+    }
+}
+
+function closeJournalView() {
+    document.getElementById('journalViewModal').classList.remove('active');
+}
+
+// --- Просмотр диагностики ---
+function renderDiagView(entry) {
+    document.getElementById('journalViewTitle').textContent = '🔍 Лист диагностики';
+    const c = entry.carData || {};
+    let html = `
+        <div class="jv-car-info">
+            <div><b>Марка:</b> ${escapeHtml(c.make || '—')}</div>
+            <div><b>Гос. номер:</b> <span class="jv-plate-badge">${escapeHtml(c.plate || '—')}</span></div>
+            <div><b>Год:</b> ${escapeHtml(c.year || '—')}</div>
+            <div><b>Пробег:</b> ${escapeHtml(c.mileage || '—')} км</div>
+            <div><b>Дата:</b> ${escapeHtml(c.date || entry.date || '—')}</div>
+            <div style="grid-column:1/-1;"><b>Жалобы:</b> ${escapeHtml(c.complaints || '—')}</div>
+        </div>
+    `;
+    const sysIds = entry.systems || [];
+    const tables = entry.tables || {};
+    let hasContent = false;
+    sysIds.forEach(sysId => {
+        const sysName = getSystemName(sysId);
+        const rows = (tables[sysId] || []).filter(r => r.checked && r.value && r.value.trim() !== '');
+        if (rows.length === 0) return;
+        hasContent = true;
+        html += `<div class="jv-section">
+            <div class="jv-section-title">🔧 ${escapeHtml(sysName)}</div>
+            <div class="jv-row header" style="grid-template-columns: 2fr 1fr 1fr 1.5fr;">
+                <span>Параметр</span><span>Значение</span><span>Статус</span><span>Примечание</span>
+            </div>`;
+        rows.forEach(r => {
+            let statusHtml = '';
+            if (r.status === 'ok') statusHtml = `<span class="jv-status-badge jv-status-ok">✅ норма</span>`;
+            else if (r.status === 'fail') statusHtml = `<span class="jv-status-badge jv-status-fail">⚠️ поломка</span>`;
+            else statusHtml = `<span class="jv-status-badge jv-status-unknown">❓ не опр.</span>`;
+            html += `<div class="jv-row" style="grid-template-columns: 2fr 1fr 1fr 1.5fr;">
+                <span style="font-weight:600;color:#0b2b3c;">${escapeHtml(r.param)}</span>
+                <span>${escapeHtml(r.value || '')}</span>
+                <span>${statusHtml}</span>
+                <span style="color:#3a657e;font-style:italic;font-size:0.75rem;">${escapeHtml(r.note || '')}</span>
+            </div>`;
+        });
+        html += `</div>`;
+    });
+    if (!hasContent) {
+        html += `<div class="jv-empty-msg">📭 Нет отмеченных параметров в этой диагностике</div>`;
+    }
+    document.getElementById('journalViewContent').innerHTML = html;
+}
+
+// --- Просмотр ремонта (акт) ---
+function renderRepairView(entry) {
+    document.getElementById('journalViewTitle').textContent = '🔧 Акт выполненных работ';
+    const c = entry.carData || {};
+    const parts = entry.parts || [];
+    const works = entry.works || [];
+
+    // Считаем скидку
+    let discountPercent = 0;
+    let discountName = '';
+    const discVal = c.discount;
+    if (discVal && discVal !== 'none' && discVal !== '') {
+        const discId = parseInt(discVal);
+        const found = cachedDiscounts.find(d => d.id === discId);
+        if (found) { discountPercent = found.percent; discountName = found.name; }
+    }
+
+    let html = `
+        <div class="jv-car-info">
+            <div><b>Марка:</b> ${escapeHtml(c.make || '—')}</div>
+            <div><b>Гос. номер:</b> <span class="jv-plate-badge">${escapeHtml(c.plate || '—')}</span></div>
+            <div><b>Год:</b> ${escapeHtml(c.year || '—')}</div>
+            <div><b>Пробег:</b> ${escapeHtml(c.mileage || '—')} км</div>
+            <div><b>Дата ремонта:</b> ${escapeHtml(c.date || entry.date || '—')}</div>
+            <div style="grid-column:1/-1;"><b>Жалобы:</b> ${escapeHtml(c.complaints || '—')}</div>
+            ${discountPercent > 0 ? `<div style="grid-column:1/-1;"><b>Скидка:</b> <span style="background:#f6b83d;color:#0b2b3c;padding:2px 10px;border-radius:10px;font-weight:600;font-size:0.8rem;">${escapeHtml(discountName)} (${discountPercent}%)</span></div>` : ''}
+        </div>
+    `;
+
+    const partsTotal = parts.reduce((s, p) => s + ((p.qty || 0) * (p.price || 0)), 0);
+    const worksTotal = works.reduce((s, w) => s + (w.cost || 0), 0);
+    const discountAmount = worksTotal * (discountPercent / 100);
+    const worksTotalWithDiscount = worksTotal - discountAmount;
+    const grandTotal = partsTotal + worksTotalWithDiscount;
+
+    // Запчасти
+    html += `<div class="jv-section">
+        <div class="jv-section-title">📦 Запчасти</div>`;
+    if (parts.length === 0) {
+        html += `<div style="padding:10px 14px;color:#4a6f82;font-size:0.85rem;">Нет запчастей</div>`;
+    } else {
+        html += `<div class="jv-row header grid-3"><span>Наименование</span><span>Кол-во</span><span>Сумма</span></div>`;
+        parts.forEach(p => {
+            html += `<div class="jv-row grid-3">
+                <span>${escapeHtml(p.name)}</span>
+                <span>${p.qty} шт.</span>
+                <span>${((p.qty || 0) * (p.price || 0)).toFixed(0)} ₽</span>
+            </div>`;
+        });
+        html += `<div class="jv-total">Итого запчасти: ${partsTotal.toFixed(0)} ₽</div>`;
+    }
+    html += `</div>`;
+
+    // Работы
+    html += `<div class="jv-section">
+        <div class="jv-section-title">🔧 Работы</div>`;
+    if (works.length === 0) {
+        html += `<div style="padding:10px 14px;color:#4a6f82;font-size:0.85rem;">Нет работ</div>`;
+    } else {
+        html += `<div class="jv-row header grid-4"><span>Наименование</span><span>Примечание</span><span>Стоимость</span><span></span></div>`;
+        works.forEach(w => {
+            const cost = w.cost || 0;
+            const costDisc = discountPercent > 0 ? cost * (1 - discountPercent / 100) : cost;
+            let priceHtml = '';
+            if (discountPercent > 0) {
+                priceHtml = `<span class="old-price">${cost.toFixed(0)} ₽</span><span class="new-price">${costDisc.toFixed(0)} ₽</span>`;
+            } else {
+                priceHtml = `${cost.toFixed(0)} ₽`;
+            }
+            html += `<div class="jv-row grid-4">
+                <span>${escapeHtml(w.name)}</span>
+                <span style="color:#3a657e;font-size:0.75rem;font-style:italic;">${escapeHtml(w.note || '')}</span>
+                <span>${priceHtml}</span>
+                <span></span>
+            </div>`;
+        });
+        html += `<div class="jv-total">
+            ${discountPercent > 0
+                ? `Итого работы со скидкой ${discountPercent}%: <span class="new-price">${worksTotalWithDiscount.toFixed(0)} ₽</span>`
+                : `Итого работы: ${worksTotal.toFixed(0)} ₽`}
+        </div>`;
+    }
+    html += `</div>`;
+
+    // Общая сумма
+    html += `<div style="margin-top:16px; padding:14px; background:#f8fafc; border-radius:8px; border:2px solid #0b2b3c; text-align:center;">
+        <div style="font-size:1.2rem; font-weight:700; color:#0b2b3c;">ОБЩАЯ СТОИМОСТЬ: ${grandTotal.toFixed(0)} ₽</div>
+        ${discountPercent > 0 ? `<div style="font-size:0.85rem; color:#0a6030; margin-top:4px;">✅ Вы сэкономили ${discountAmount.toFixed(0)} ₽</div>` : ''}
+    </div>`;
+
+    document.getElementById('journalViewContent').innerHTML = html;
+}
+
+// --- Вспомогательные ---
+function escapeHtml(str) {
+    return String(str || '').replace(/[&<>"']/g, s => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[s]);
+}
+
+function getSystemName(sysId) {
+    const names = {
+        engine: 'Двигатель',
+        cooling: 'Система охлаждения',
+        brakes: 'Тормозная система',
+        ignition: 'Система зажигания',
+        lights: 'Световые приборы',
+        ac: 'Кондиционирование',
+        exhaust: 'Выхлопная система',
+        interior_electronics: 'Салонная электроника',
+        suspension: 'Подвеска'
+    };
+    return names[sysId] || sysId;
+}
+
+// ============================================================
+// ЗАПРОС СТОИМОСТИ
+// ============================================================
 function openPriceRequestModal() {
     document.getElementById('priceRequestModal').classList.add('active');
     document.getElementById('priceRequestText').value = '';
 }
+
 function closePriceRequestModal() {
     document.getElementById('priceRequestModal').classList.remove('active');
 }
@@ -470,37 +893,53 @@ function closePriceRequestModal() {
 async function submitPriceRequest() {
     const text = document.getElementById('priceRequestText').value.trim();
     if (!text) { showNotification('⚠️ Введите описание', 'error'); return; }
+
     try {
         const jsonData = await loadJsonFromServer();
         if (!jsonData) { showNotification('❌ Ошибка', 'error'); return; }
+
         if (!jsonData.priceRequests) jsonData.priceRequests = [];
         if (!jsonData.priceRequestIdCounter) jsonData.priceRequestIdCounter = 1;
+
         jsonData.priceRequests.forEach(r => {
-            if (r.client_id === currentClient.id && r.status === 'active') r.status = 'archived';
+            if (r.client_id === currentClient.id && r.status === 'active') {
+                r.status = 'archived';
+            }
         });
+
         const newId = jsonData.priceRequestIdCounter++;
         jsonData.priceRequests.push({
-            id: newId, client_id: currentClient.id, request_text: text,
-            reply_text: '', status: 'active', timestamp: new Date().toISOString()
+            id: newId,
+            client_id: currentClient.id,
+            request_text: text,
+            reply_text: '',
+            status: 'active',
+            timestamp: new Date().toISOString()
         });
+
         await updateJsonOnServer(jsonData);
         closePriceRequestModal();
         await loadMyPriceRequest();
         showNotification('✅ Запрос отправлен!', 'success');
-    } catch (e) { showNotification('❌ Ошибка: ' + e.message, 'error'); }
+    } catch (e) {
+        showNotification('❌ Ошибка: ' + e.message, 'error');
+    }
 }
 
 async function loadMyPriceRequest() {
     const container = document.getElementById('myPriceRequest');
     if (!container) return;
+
     try {
         const jsonData = await loadJsonFromServer();
         if (!jsonData || !jsonData.priceRequests) {
             container.innerHTML = '<div class="empty-state" style="padding:12px;">Нет запросов</div>';
             return;
         }
+
         const now = Date.now();
         const tenDays = 10 * 24 * 60 * 60 * 1000;
+
         const myRequests = jsonData.priceRequests
             .filter(r => r.client_id === currentClient.id)
             .filter(r => {
@@ -508,14 +947,17 @@ async function loadMyPriceRequest() {
                 return r.status === 'active' || r.status === 'replied' || age < tenDays;
             })
             .sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+
         if (myRequests.length === 0) {
             container.innerHTML = '<div class="empty-state" style="padding:12px;">Нет активных запросов</div>';
             return;
         }
+
         const req = myRequests[0];
         const statusClass = req.status === 'replied' ? 'replied' : 'active';
         const statusText = req.status === 'replied' ? '✅ Ответ получен' : '⏳ Ожидает ответа';
         const date = new Date(req.timestamp).toLocaleString();
+
         container.innerHTML = `
             <div class="price-request-card">
                 <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;">
@@ -526,7 +968,11 @@ async function loadMyPriceRequest() {
                     <strong>Что нужно:</strong><br>${req.request_text}
                     <div style="font-size:0.7rem;color:#3a657e;margin-top:4px;">📅 ${date}</div>
                 </div>
-                ${req.reply_text ? `<div class="req-reply"><strong>💬 Ответ сервиса:</strong><br>${req.reply_text}</div>` : ''}
+                ${req.reply_text ? `
+                    <div class="req-reply">
+                        <strong>💬 Ответ сервиса:</strong><br>${req.reply_text}
+                    </div>
+                ` : ''}
             </div>
         `;
     } catch (e) {
@@ -534,6 +980,9 @@ async function loadMyPriceRequest() {
     }
 }
 
+// ============================================================
+// ЗАПИСЬ НА ОБСЛУЖИВАНИЕ
+// ============================================================
 function toggleBookingForm() {
     const form = document.getElementById('bookingForm');
     form.classList.toggle('hidden');
@@ -546,36 +995,53 @@ function toggleBookingForm() {
 
 async function createBooking() {
     if (!currentClient) return;
+
     const type = document.getElementById('bkType').value;
     const date = document.getElementById('bkDate').value;
     const time = document.getElementById('bkTime').value;
     const reason = document.getElementById('bkReason').value.trim();
+
     if (!date) { showNotification('⚠️ Выберите дату', 'error'); return; }
+
     try {
         const jsonData = await loadJsonFromServer();
         if (!jsonData) { showNotification('❌ Ошибка', 'error'); return; }
+
         if (!jsonData.bookings) jsonData.bookings = [];
+
         const newId = jsonData.bookings.length > 0
             ? Math.max(...jsonData.bookings.map(b => b.id || 0)) + 1 : 1;
+
         jsonData.bookings.push({
-            id: newId, client_id: currentClient.id,
-            name: currentClient.name, phone: currentClient.phone,
-            plate: currentClient.plate, car: currentClient.car,
+            id: newId,
+            client_id: currentClient.id,
+            name: currentClient.name,
+            phone: currentClient.phone,
+            plate: currentClient.plate,
+            car: currentClient.car,
             type, date, time: time || null, reason: reason || null,
-            status: 'новая', is_new: true, created_at: new Date().toISOString()
+            status: 'новая', is_new: true,
+            created_at: new Date().toISOString()
         });
+
         await updateJsonOnServer(jsonData);
         showNotification('✅ Заявка отправлена!', 'success');
         document.getElementById('bookingForm').classList.add('hidden');
         await loadBooking();
         await loadActiveBookings();
         await loadHistory();
-    } catch (e) { showNotification('❌ Ошибка: ' + e.message, 'error'); }
+    } catch (e) {
+        showNotification('❌ Ошибка: ' + e.message, 'error');
+    }
 }
 
+// ============================================================
+// ОТМЕНА
+// ============================================================
 async function cancelBooking() {
     if (!currentBooking) return;
     if (!confirm('Отменить запись?')) return;
+
     try {
         const jsonData = await loadJsonFromServer();
         if (!jsonData || !jsonData.bookings) return;
@@ -585,9 +1051,14 @@ async function cancelBooking() {
         showNotification('✅ Запись отменена', 'success');
         currentBooking = null;
         await loadClientData();
-    } catch (e) { showNotification('❌ Ошибка', 'error'); }
+    } catch (e) {
+        showNotification('❌ Ошибка', 'error');
+    }
 }
 
+// ============================================================
+// ОБНОВЛЕНИЕ
+// ============================================================
 async function refreshStatus() {
     if (!currentClient) return;
     await loadBooking();
@@ -607,6 +1078,9 @@ function startAutoRefresh() {
     }, 15000);
 }
 
+// ============================================================
+// ВЫХОД
+// ============================================================
 function logout() {
     if (!confirm('Выйти?')) return;
     if (statusCheckInterval) clearInterval(statusCheckInterval);
@@ -620,6 +1094,9 @@ function logout() {
     document.getElementById('authCode').value = '';
 }
 
+// ============================================================
+// УВЕДОМЛЕНИЯ
+// ============================================================
 function showNotification(message, type = 'info') {
     const existing = document.querySelector('.notification');
     if (existing) existing.remove();
@@ -635,25 +1112,38 @@ function showNotification(message, type = 'info') {
 }
 
 // ============================================================
-// ИНИЦИАЛИЗАЦИЯ — с обработкой QR-параметров
+// ИНИЦИАЛИЗАЦИЯ — с автовходом из QR
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('bkDate').value = new Date().toISOString().slice(0,10);
 
-    // 1) Автозаполнение из QR-кода карты клиента (?plate=...&code=...)
+    // === Автовход из QR-кода ===
     const urlParams = new URLSearchParams(window.location.search);
     const qrPlate = urlParams.get('plate');
     const qrCode  = urlParams.get('code');
+
+    console.log('🔍 URL:', window.location.href);
+    console.log('🔍 Параметры:', { qrPlate, qrCode });
+
     if (qrPlate && qrCode) {
-        document.getElementById('authPlate').value = qrPlate.toUpperCase();
-        document.getElementById('authCode').value  = qrCode;
-        // Убираем параметры из адресной строки, чтобы не светить код
+        const cleanPlate = qrPlate.trim().toUpperCase();
+        const cleanCode  = String(qrCode).trim();
+
+        console.log('📝 После очистки:', { cleanPlate, cleanCode });
+        console.log('📝 Нормализованный plate:', normalizePlate(cleanPlate));
+
+        document.getElementById('authPlate').value = cleanPlate;
+        document.getElementById('authCode').value  = cleanCode;
+        document.getElementById('qrBanner').classList.remove('hidden');
         window.history.replaceState({}, document.title, window.location.pathname);
-        // Автовход через 300 мс (даём DOM догрузиться)
-        setTimeout(() => { login(); }, 300);
+
+        setTimeout(() => {
+            console.log('🚀 Автовход...');
+            login();
+        }, 400);
     }
 
-    // 2) Автозаполнение после регистрации
+    // === Автозаполнение после регистрации ===
     const saved = localStorage.getItem('palych_new_client');
     if (saved) {
         try {
@@ -663,12 +1153,27 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem('palych_new_client');
         } catch(e) {}
     }
+
+    // === Закрытие модалки по клику на фон ===
+    const jvModal = document.getElementById('journalViewModal');
+    if (jvModal) {
+        jvModal.addEventListener('click', function(e) {
+            if (e.target === this) closeJournalView();
+        });
+    }
+    const prModal = document.getElementById('priceRequestModal');
+    if (prModal) {
+        prModal.addEventListener('click', function(e) {
+            if (e.target === this) closePriceRequestModal();
+        });
+    }
 });
 
-console.log('🚀 PalЫCH Client v4.9 загружен!');
-console.log('✅ Поддержка QR-автозаполнения (?plate=...&code=...)');
+console.log('🚀 PalЫCH Client v' + APP_VERSION + ' загружен!');
+console.log('✅ Автовход из QR + просмотр актов и диагностики');
 </script>
 <script>
+    // Регистрация Service Worker
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./service-worker.js')
@@ -676,15 +1181,23 @@ console.log('✅ Поддержка QR-автозаполнения (?plate=...&
                 .catch(err => console.warn('⚠️ Ошибка SW:', err));
         });
     }
+
+    // Установка PWA
     let deferredPrompt = null;
     window.addEventListener('beforeinstallprompt', (e) => {
+        console.log('💡 PWA можно установить');
         e.preventDefault();
         deferredPrompt = e;
     });
+
     window.installApp = async function() {
-        if (!deferredPrompt) { alert('Установка недоступна'); return; }
+        if (!deferredPrompt) {
+            alert('Установка недоступна. Используйте меню браузера: "Добавить на главный экран"');
+            return;
+        }
         deferredPrompt.prompt();
-        await deferredPrompt.userChoice;
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log('Установка:', outcome);
         deferredPrompt = null;
     };
 </script>

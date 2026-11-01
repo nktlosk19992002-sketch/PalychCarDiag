@@ -2766,8 +2766,7 @@ function updateAct() {
         ${discountPercent > 0 ? `<div style="font-size:0.85rem; color:#0a6030; margin-top:4px;">✅ Вы сэкономили ${discountAmount.toFixed(2)} ₽</div>` : ''}</div>`;
 
     html += `<div style="margin-top:20px; padding-top:10px; border-top:2px solid #e4ecf4; display:flex; justify-content:space-between; font-size:0.8rem; color:#3a657e;">
-        <div>Подпись мастера: _________________</div>
-        <div>Подпись клиента: _________________</div></div>`;
+        
     html += `<div style="margin-top:8px; text-align:right; font-size:0.75rem; color:#3a657e;">${new Date().toLocaleString()}</div></div>`;
     container.innerHTML = html;
 }

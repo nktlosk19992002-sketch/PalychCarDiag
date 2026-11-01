@@ -2273,7 +2273,7 @@ function downloadCardPNG() {
 
     // QR-код
     const qrSize = 260;
-const qrUrl = `https://nktlosk19992002-sketch.github.io/PalychCarDiag/index.html?plate=${encodeURIComponent(plate)}&code=${encodeURIComponent(code)}`;
+const qrUrl = `https://nktlosk19992002-sketch.github.io/PalychCarDiag/client.html?plate=${encodeURIComponent(plate)}&code=${encodeURIComponent(code)}`;
 const qrCanvas = makeQRCanvas(qrUrl, qrSize);
     // Белый фон под QR
     ctx.fillStyle = '#ffffff';

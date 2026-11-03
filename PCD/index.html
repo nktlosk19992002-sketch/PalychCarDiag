@@ -219,7 +219,28 @@
         .toast.error { border-left-color: #b33c3c; }
         .toast.info { border-left-color: #2d6b84; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-    </style>
+   /* ============================================================ */
+/* ЖЕСТКАЯ ФИКСАЦИЯ ДЛЯ ПК (чтобы таблица была ровной) */
+/* ============================================================ */
+@media (min-width: 769px) {
+    .bookings-table, .clients-table {
+        display: table !important;
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .bookings-table thead, .clients-table thead { display: table-header-group !important; }
+    .bookings-table tbody, .clients-table tbody { display: table-row-group !important; }
+    .bookings-table tr, .clients-table tr { display: table-row !important; }
+    .bookings-table th, .clients-table th { display: table-cell !important; background: #e4ecf4; padding: 12px 8px; text-align: left; font-size: 0.75rem; font-weight: 700; color: #1a4055; white-space: nowrap; }
+    .bookings-table td, .clients-table td { display: table-cell !important; padding: 6px 6px; border-bottom: 1px solid #e9eff6; vertical-align: middle; }
+    .bookings-table input, .bookings-table select, .clients-table select { width: 100%; padding: 6px 8px; border: 1px solid transparent; border-radius: 6px; font-size: 0.8rem; background: transparent; }
+    .bookings-table input:focus, .bookings-table select:focus, .clients-table select:focus { background: white; border-color: #f6b83d; outline: none; box-shadow: 0 0 0 2px rgba(246,184,61,0.2); }
+    .bookings-table tr:hover td { background-color: #f8fafc; }
+}
+   </style>
 </head>
 <body>
 <div class="app-container">
@@ -2873,7 +2894,10 @@ function renderBookings() {
     if (totalEl) totalEl.textContent = bookings.filter(b => b.is_new !== true).length;
     tbody.innerHTML = '';
 
-    if (filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="12" style="text-align:center;padding:20px;color:#4a6f82;">Нет записей</td></tr>`; return; }
+    if (filtered.length === 0) { 
+        tbody.innerHTML = `<tr><td colspan="12" style="text-align:center;padding:20px;color:#4a6f82;">Нет записей</td></tr>`; 
+        return; 
+    }
 
     filtered.forEach((b, idx) => {
         const isClosed = CLOSED_STATUSES.includes(b.status);
@@ -2891,20 +2915,39 @@ function renderBookings() {
                         <button class="btn-sm" style="background:#6c5b7b;color:white;padding:2px 6px;border-radius:15px;border:none;cursor:pointer;font-size:0.6rem;" onclick="manualLinkBookingToRepair(${b.id})">+ Ремонт</button>`;
         }
 
-        tbody.innerHTML += `<tr class="${isClosed ? 'inactive-row' : ''}">
-    <td data-label="№">${idx+1}</td>
-    <td data-label="Имя"><input type="text" value="${b.name}" ...
-    <td data-label="Телефон"><input type="text" value="${b.phone}" ...
-    <td data-label="Номер"><input type="text" value="${b.plate || ''}" ...
-    <td data-label="Дата"><input type="date" value="${b.date}" ...
-    <td data-label="Время"><input type="time" value="${b.time || ''}" ...
-    <td data-label="Марка"><input type="text" value="${b.car}" ...
-    <td data-label="Тип"><select ...>...</select></td>
-    <td data-label="Статус"><select ...>...</select></td>
-    <td data-label="Причина"><input type="text" value="${b.reason||''}" ...
-    <td data-label="Связь">${linkHtml}</td>
-    <td data-label="Действия">...кнопки...</td>
-</tr>`;
+        // ✅ ПРАВИЛЬНОЕ СОЗДАНИЕ СТРОКИ
+        const tr = document.createElement('tr');
+        if (isClosed) tr.className = 'inactive-row';
+        
+        tr.innerHTML = `
+            <td data-label="№">${idx+1}</td>
+            <td data-label="Имя"><input type="text" value="${b.name}" ${disabled} onchange="updateBooking(${b.id},'name',this.value)"></td>
+            <td data-label="Телефон"><input type="text" value="${b.phone}" ${disabled} onchange="updateBooking(${b.id},'phone',this.value)"></td>
+            <td data-label="Номер"><input type="text" value="${b.plate || ''}" ${disabled} onchange="updateBooking(${b.id},'plate',this.value)" style="text-transform:uppercase;font-weight:700;"></td>
+            <td data-label="Дата"><input type="date" value="${b.date}" ${disabled} onchange="updateBooking(${b.id},'date',this.value)"></td>
+            <td data-label="Время"><input type="time" value="${b.time || ''}" ${disabled} onchange="updateBooking(${b.id},'time',this.value)"></td>
+            <td data-label="Марка"><input type="text" value="${b.car}" ${disabled} onchange="updateBooking(${b.id},'car',this.value)"></td>
+            <td data-label="Тип">
+                <select ${disabled} onchange="updateBooking(${b.id},'type',this.value)" style="width:100%;padding:4px;border-radius:6px;">
+                    <option value="diagnostic" ${b.type==='diagnostic'?'selected':''}>🔍 Диагностика</option>
+                    <option value="repair" ${b.type==='repair'?'selected':''}>🔧 Ремонт</option>
+                    <option value="maintenance" ${b.type==='maintenance'?'selected':''}>🛠️ ТО</option>
+                </select>
+            </td>
+            <td data-label="Статус">
+                <select ${disabled} onchange="updateBooking(${b.id},'status',this.value)" class="status-select">
+                    ${BOOKING_STATUSES.map(s => `<option value="${s}" ${b.status===s?'selected':''}>${s}</option>`).join('')}
+                </select>
+            </td>
+            <td data-label="Причина"><input type="text" value="${b.reason||''}" ${disabled} onchange="updateBooking(${b.id},'reason',this.value)"></td>
+            <td data-label="Связь">${linkHtml}</td>
+            <td data-label="Действия">
+                <button class="btn-sm" style="background:#2d6b84;color:white;padding:4px 10px;border-radius:30px;border:none;cursor:pointer;" onclick="showBookingDetail(${b.id})" title="Детали">ℹ️</button>
+                <button class="btn-copy" onclick="copyBooking(${b.id})" title="Копировать">📋</button>
+                <button class="btn-danger" onclick="deleteBooking(${b.id})" title="Удалить">✕</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
     });
 }
 

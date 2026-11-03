@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PalЫCH Car Diagnost v4.9.1</title>
+    <title>PalЫCH Car Diagnost v5.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0b2b3c">
@@ -417,6 +417,168 @@
             border: none;
             font-weight: 700;
         }
+		/* ============================================================ */
+/* НОВОЕ: ДАШБОРД И МОБИЛЬНАЯ АДАПТАЦИЯ (v5.0) */
+/* ============================================================ */
+
+/* --- Статистика на главной --- */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+.stat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    border-left: 6px solid #f6b83d;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.stat-card .stat-title {
+    font-size: 0.85rem;
+    color: #3a657e;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+.stat-card .stat-value {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #0b2b3c;
+    margin-top: 8px;
+}
+.stat-card.revenue { border-left-color: #1f7b4a; }
+.stat-card.clients { border-left-color: #2d6b84; }
+.stat-card.bookings { border-left-color: #d4a017; }
+.stat-card.requests { border-left-color: #b33c3c; }
+
+/* --- Всплывающие уведомления (Toast) --- */
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.toast {
+    background: #0b2b3c;
+    color: white;
+    padding: 14px 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-left: 4px solid #f6b83d;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideIn 0.3s ease-out;
+}
+.toast.success { border-left-color: #1f7b4a; }
+.toast.error { border-left-color: #b33c3c; }
+.toast.info { border-left-color: #2d6b84; }
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* --- Мобильная адаптация (для экранов < 768px) --- */
+@media (max-width: 768px) {
+    /* Шапка */
+    .app-header { padding: 12px 16px; flex-direction: column; align-items: stretch; }
+    .app-header h1 { font-size: 1.4rem; justify-content: center; }
+    .app-header .sub { display: none; }
+    .nav-buttons { overflow-x: auto; padding-bottom: 4px; flex-wrap: nowrap; }
+    .nav-buttons button { padding: 8px 12px; font-size: 0.75rem; }
+    
+    /* Табы */
+    .tabs { overflow-x: auto; flex-wrap: nowrap; padding: 0 10px; }
+    .tab-btn { padding: 12px 16px; font-size: 0.85rem; }
+
+    /* Таблицы -> Карточки */
+    .diagnostic-table, .bookings-table, .clients-table, .works-table {
+        display: block;
+        width: 100%;
+    }
+    .diagnostic-table thead, .bookings-table thead, .clients-table thead, .works-table thead {
+        display: none; /* Скрываем заголовки */
+    }
+    .diagnostic-table tbody, .bookings-table tbody, .clients-table tbody, .works-table tbody {
+        display: block;
+    }
+    .diagnostic-table tr, .bookings-table tr, .clients-table tr, .works-table tr {
+        display: block;
+        background: white;
+        border-radius: 12px;
+        margin-bottom: 12px;
+        padding: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        border: 1px solid #e4ecf4;
+    }
+    .diagnostic-table td, .bookings-table td, .clients-table td, .works-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 0;
+        border-bottom: 1px solid #f0f4f8;
+        font-size: 0.85rem;
+    }
+    .diagnostic-table td:last-child, .bookings-table td:last-child, .clients-table td:last-child, .works-table td:last-child {
+        border-bottom: none;
+        justify-content: flex-end;
+        gap: 6px;
+        padding-top: 10px;
+    }
+    /* Подписи для ячеек в мобильной версии */
+    .diagnostic-table td::before, .bookings-table td::before, .clients-table td::before, .works-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #3a657e;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        margin-right: 10px;
+    }
+    /* Скрываем пустые подписи */
+    .diagnostic-table td[data-label=""]::before, .bookings-table td[data-label=""]::before, .clients-table td[data-label=""]::before {
+        content: none;
+    }
+
+    /* Поля ввода в карточках */
+    .bookings-table input, .clients-table input, .bookings-table select {
+        width: 60% !important;
+        text-align: right;
+        margin-left: 10px;
+    }
+    .bookings-table td:last-child input, .bookings-table td:last-child select {
+        width: 100% !important;
+        text-align: left;
+    }
+
+    /* Главное меню (плитки) */
+    .main-menu { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .menu-card { padding: 16px 10px; }
+    .menu-card i { font-size: 2rem; }
+    .menu-card h2 { font-size: 1rem; }
+    .menu-card p { font-size: 0.7rem; }
+
+    /* Модальные окна */
+    .modal-box { padding: 16px; width: 100%; max-height: 95vh; border-radius: 16px 16px 0 0; position: fixed; bottom: 0; left: 0; right: 0; margin: 0; }
+    .modal-title { font-size: 1.1rem; }
+    
+    /* Дашборд */
+    .dashboard-grid { grid-template-columns: 1fr 1fr; }
+    .stat-card { padding: 12px; }
+    .stat-card .stat-value { font-size: 1.4rem; }
+
+    /* Прочее */
+    .file-status-bar { flex-direction: column; gap: 4px; text-align: center; }
+}
     </style>
 </head>
 <body>
@@ -447,6 +609,25 @@
     </div>
 
     <!-- ГЛАВНАЯ -->
+	<!-- НОВОЕ: ДАШБОРД -->
+<div class="dashboard-grid">
+    <div class="stat-card revenue">
+        <span class="stat-title"><i class="fas fa-ruble-sign"></i> Выручка за месяц</span>
+        <span class="stat-value" id="statRevenue">0 ₽</span>
+    </div>
+    <div class="stat-card clients">
+        <span class="stat-title"><i class="fas fa-users"></i> Всего клиентов</span>
+        <span class="stat-value" id="statClients">0</span>
+    </div>
+    <div class="stat-card bookings">
+        <span class="stat-title"><i class="fas fa-calendar-alt"></i> Записей сегодня</span>
+        <span class="stat-value" id="statBookings">0</span>
+    </div>
+    <div class="stat-card requests">
+        <span class="stat-title"><i class="fas fa-calculator"></i> Запросов стоимости</span>
+        <span class="stat-value" id="statRequests">0</span>
+    </div>
+</div>
     <div id="page-home" class="tab-content active">
         <div class="file-status-bar">
             <span><i class="fas fa-database"></i> <span id="currentFileName">Нет файла</span></span>
@@ -980,6 +1161,8 @@
 
 <!-- Скрытая зона для печати карты -->
 <div id="printAreaCard" style="position:absolute; left:-9999px; top:0;"></div>
+<!-- Контейнер для всплывающих уведомлений -->
+<div class="toast-container" id="toastContainer"></div>
 <script>
 // ============================================================
 // КОНФИГУРАЦИЯ SUPABASE
@@ -2766,7 +2949,8 @@ function updateAct() {
         ${discountPercent > 0 ? `<div style="font-size:0.85rem; color:#0a6030; margin-top:4px;">✅ Вы сэкономили ${discountAmount.toFixed(2)} ₽</div>` : ''}</div>`;
 
     html += `<div style="margin-top:20px; padding-top:10px; border-top:2px solid #e4ecf4; display:flex; justify-content:space-between; font-size:0.8rem; color:#3a657e;">
- </div>`;
+        <div>Подпись мастера: _________________</div>
+        <div>Подпись клиента: _________________</div></div>`;
     html += `<div style="margin-top:8px; text-align:right; font-size:0.75rem; color:#3a657e;">${new Date().toLocaleString()}</div></div>`;
     container.innerHTML = html;
 }
@@ -3318,27 +3502,19 @@ function renderBookings() {
         }
 
         tbody.innerHTML += `<tr class="${isClosed ? 'inactive-row' : ''}">
-            <td>${idx+1}</td>
-            <td><input type="text" value="${b.name}" ${disabled} onchange="updateBooking(${b.id},'name',this.value)"></td>
-            <td><input type="text" value="${b.phone}" ${disabled} onchange="updateBooking(${b.id},'phone',this.value)"></td>
-            <td><input type="text" value="${b.plate || ''}" ${disabled} onchange="updateBooking(${b.id},'plate',this.value)" style="text-transform:uppercase;font-weight:700;"></td>
-            <td><input type="date" value="${b.date}" ${disabled} onchange="updateBooking(${b.id},'date',this.value)"></td>
-            <td><input type="time" value="${b.time || ''}" ${disabled} onchange="updateBooking(${b.id},'time',this.value)"></td>
-            <td><input type="text" value="${b.car}" ${disabled} onchange="updateBooking(${b.id},'car',this.value)"></td>
-            <td><select ${disabled} onchange="updateBooking(${b.id},'type',this.value)" style="width:100%;padding:4px;border-radius:6px;">
-                <option value="diagnostic" ${b.type==='diagnostic'?'selected':''}>🔍 Диагностика</option>
-                <option value="repair" ${b.type==='repair'?'selected':''}>🔧 Ремонт</option>
-                <option value="maintenance" ${b.type==='maintenance'?'selected':''}>🛠️ ТО</option>
-            </select></td>
-            <td><select ${disabled} onchange="updateBooking(${b.id},'status',this.value)" class="status-select">
-                ${BOOKING_STATUSES.map(s => `<option value="${s}" ${b.status===s?'selected':''}>${s}</option>`).join('')}
-            </select></td>
-            <td><input type="text" value="${b.reason||''}" ${disabled} onchange="updateBooking(${b.id},'reason',this.value)"></td>
-            <td>${linkHtml}</td>
-            <td><button class="btn-sm" style="background:#2d6b84;color:white;padding:4px 10px;border-radius:30px;border:none;cursor:pointer;" onclick="showBookingDetail(${b.id})" title="Детали">ℹ️</button>
-                <button class="btn-copy" onclick="copyBooking(${b.id})" title="Копировать">📋</button>
-                <button class="btn-danger" onclick="deleteBooking(${b.id})" title="Удалить">✕</button></td>
-        </tr>`;
+    <td data-label="№">${idx+1}</td>
+    <td data-label="Имя"><input type="text" value="${b.name}" ...
+    <td data-label="Телефон"><input type="text" value="${b.phone}" ...
+    <td data-label="Номер"><input type="text" value="${b.plate || ''}" ...
+    <td data-label="Дата"><input type="date" value="${b.date}" ...
+    <td data-label="Время"><input type="time" value="${b.time || ''}" ...
+    <td data-label="Марка"><input type="text" value="${b.car}" ...
+    <td data-label="Тип"><select ...>...</select></td>
+    <td data-label="Статус"><select ...>...</select></td>
+    <td data-label="Причина"><input type="text" value="${b.reason||''}" ...
+    <td data-label="Связь">${linkHtml}</td>
+    <td data-label="Действия">...кнопки...</td>
+</tr>`;
     });
 }
 
@@ -3776,6 +3952,125 @@ document.querySelectorAll('#page-repair .tabs .tab-btn').forEach(btn => { btn.ad
 // Закрытие модалки карты по клику на фон
 document.getElementById('cardPreviewModal')?.addEventListener('click', function(e) { if (e.target === this) closeCardPreview(); });
 document.getElementById('clientEditModal')?.addEventListener('click', function(e) { if (e.target === this) closeClientEdit(); });
+// ============================================================
+// НОВОЕ: СТАТИСТИКА НА ГЛАВНОЙ (v5.0)
+// ============================================================
+function updateDashboardStats() {
+    // 1. Выручка за текущий месяц (суммируем works в журнале)
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    let revenue = 0;
+    journal.forEach(entry => {
+        if (entry.type === 'repair' && entry.date) {
+            const entryDate = new Date(entry.date);
+            if (entryDate.getMonth() === currentMonth && entryDate.getFullYear() === currentYear) {
+                // Считаем работы с учётом скидки
+                const worksTotal = (entry.works || []).reduce((sum, w) => sum + (w.cost || 0), 0);
+                let discPercent = 0;
+                if (entry.carData && entry.carData.discount && entry.carData.discount !== 'none') {
+                    const d = discounts.find(x => x.id === parseInt(entry.carData.discount));
+                    if (d) discPercent = d.percent;
+                }
+                revenue += worksTotal * (1 - discPercent / 100);
+            }
+        }
+    });
+    
+    // 2. Всего клиентов
+    const clientsCount = clients.filter(c => !c.is_new).length;
+    
+    // 3. Записей на сегодня
+    const todayStr = now.toISOString().slice(0, 10);
+    const bookingsToday = bookings.filter(b => b.date === todayStr && !CLOSED_STATUSES.includes(b.status)).length;
+    
+    // 4. Запросов стоимости (активных)
+    const activeRequests = priceRequests.filter(r => r.status === 'active').length;
+
+    // Обновляем UI
+    document.getElementById('statRevenue').textContent = Math.round(revenue).toLocaleString('ru-RU') + ' ₽';
+    document.getElementById('statClients').textContent = clientsCount;
+    document.getElementById('statBookings').textContent = bookingsToday;
+    document.getElementById('statRequests').textContent = activeRequests;
+}
+
+// Вызываем обновление при загрузке и при синхронизации
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(updateDashboardStats, 1000);
+});
+// Переопределяем syncFromCloud и sendToCloud, чтобы обновлять статистику
+const originalSync = window.syncFromCloud;
+window.syncFromCloud = async function() {
+    if (originalSync) await originalSync();
+    updateDashboardStats();
+};
+const originalSend = window.sendToCloud;
+window.sendToCloud = async function() {
+    if (originalSend) await originalSend();
+    updateDashboardStats();
+};
+
+// ============================================================
+// НОВОЕ: ВСПЛЫВАЮЩИЕ УВЕДОМЛЕНИЯ (Toast)
+// ============================================================
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    const icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle');
+    toast.innerHTML = `<i class="fas ${icon}"></i> <span>${message}</span>`;
+    
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(100%)';
+        toast.style.transition = 'all 0.3s';
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+
+// Переопределяем старую функцию showNotification, чтобы она использовала новый Toast
+const originalShowNotification = window.showNotification;
+window.showNotification = function(message, type = 'info') {
+    showToast(message, type);
+};
+
+// ============================================================
+// НОВОЕ: АВТО-ОБНОВЛЕНИЕ ОНЛАЙН-ЗАЯВОК С УВЕДОМЛЕНИЕМ
+// ============================================================
+let lastSeenRequestsCount = 0;
+let lastSeenBookingsCount = 0;
+
+setInterval(async () => {
+    // Проверяем только если мы на главной странице
+    if (!document.getElementById('page-home').classList.contains('active')) return;
+    
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (jsonData) {
+            // Проверка новых запросов стоимости
+            const activeReqs = (jsonData.priceRequests || []).filter(r => r.status === 'active').length;
+            if (activeReqs > lastSeenRequestsCount && lastSeenRequestsCount !== 0) {
+                showToast(`У вас ${activeReqs - lastSeenRequestsCount} новых запросов стоимости!`, 'info');
+            }
+            lastSeenRequestsCount = activeReqs;
+            
+            // Проверка новых записей от клиентов (is_new)
+            const newBk = (jsonData.bookings || []).filter(b => b.is_new === true).length;
+            if (newBk > lastSeenBookingsCount && lastSeenBookingsCount !== 0) {
+                showToast(`Новая онлайн-заявка от клиента!`, 'info');
+            }
+            lastSeenBookingsCount = newBk;
+            
+            // Обновляем статистику
+            updateDashboardStats();
+        }
+    } catch (e) {}
+}, 30000); // Каждые 30 секунд
 console.log('🚀 PalЫCH Car Diagnost v4.9 загружен!');
 console.log('✅ Добавлена печать карты клиента 85×54 мм с QR-кодом');
 </script>

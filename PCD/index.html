@@ -3630,10 +3630,8 @@ console.log('✅ Добавлена печать карты клиента 85×5
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   OneSignalDeferred.push(async function(OneSignal) {
-   await OneSignal.init({
+    await OneSignal.init({
   appId: "d79491d7-5fe0-4544-b322-6bf8210409a0",
-  serviceWorkerPath: "PCD/OneSignalSDKWorker.js",   // путь от корня сайта (PalychCarDiag/)
-  serviceWorkerParam: { scope: "/PalychCarDiag/PCD/" }, // абсолютный путь от корня домена
   notifyButton: {
     enable: true,
     position: 'bottom-left',
@@ -3643,4 +3641,3 @@ console.log('✅ Добавлена печать карты клиента 85×5
 </script>
 </body>
 </html>
-	

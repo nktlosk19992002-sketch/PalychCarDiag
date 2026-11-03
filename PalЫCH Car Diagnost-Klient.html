@@ -101,6 +101,19 @@
 
         .empty-state { color: #3a657e; font-size: 0.85rem; text-align: center; padding: 20px; }
         .plate-badge { background: #f6b83d; color: #0b2b3c; padding: 2px 8px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; display: inline-block; }
+
+        /* ===== ЧАТ ===== */
+        .chat-msg { display: flex; margin-bottom: 8px; }
+        .chat-msg.client { justify-content: flex-end; }
+        .chat-msg.master { justify-content: flex-start; }
+        .chat-bubble { max-width: 80%; padding: 8px 14px; border-radius: 16px; font-size: 0.9rem; line-height: 1.35; }
+        .chat-msg.client .chat-bubble { background: #0b2b3c; color: white; border-bottom-right-radius: 4px; }
+        .chat-msg.master .chat-bubble { background: white; color: #0b2b3c; border: 1px solid #e4ecf4; border-bottom-left-radius: 4px; }
+        .chat-time { font-size: 0.65rem; opacity: 0.6; margin-top: 3px; }
+
+        /* ===== ЗВЁЗДЫ ОЦЕНКИ ===== */
+        #reviewStars span { font-size: 2.2rem; margin: 0 4px; color: #888; transition: color 0.2s; }
+        #reviewStars span:hover { transform: scale(1.15); display: inline-block; }
     </style>
 </head>
 <body>
@@ -196,6 +209,19 @@
                 <button class="btn" onclick="toggleBookingForm()" style="background:#888;"><i class="fas fa-times"></i> Закрыть</button>
             </div>
 
+            <!-- ЧАТ С МАСТЕРОМ -->
+            <h3 class="section-title">
+                <i class="fas fa-comments"></i> Чат с мастером
+                <span id="chatUnreadBadge" class="hidden" style="background:#b33c3c;color:white;padding:2px 10px;border-radius:20px;font-size:0.7rem;">0</span>
+            </h3>
+            <div id="chatContainer" style="background:white;border:1px solid #e4ecf4;border-radius:16px;overflow:hidden;margin-bottom:16px;">
+                <div id="chatMessages" style="height:300px;overflow-y:auto;padding:12px;background:#f8fafc;"></div>
+                <div style="display:flex;gap:8px;padding:10px;border-top:1px solid #e4ecf4;background:white;">
+                    <input type="text" id="chatInput" placeholder="Написать сообщение..." style="flex:1;padding:10px 14px;border:2px solid #d4dee9;border-radius:50px;font-size:0.9rem;" onkeydown="if(event.key==='Enter'){event.preventDefault();sendChatMessage();}">
+                    <button class="btn" style="width:auto;padding:10px 18px;margin:0;" onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+
             <h3 class="section-title"><i class="fas fa-history"></i> История обслуживания</h3>
             <div id="historyContainer"></div>
 
@@ -226,6 +252,26 @@
     </div>
 </div>
 
+<!-- МОДАЛКА ОЦЕНКИ КАЧЕСТВА -->
+<div class="modal-overlay" id="reviewModal">
+    <div class="modal-box" style="max-width:450px;">
+        <h3 style="color:#0b2b3c;margin-bottom:12px;"><i class="fas fa-star" style="color:#f6b83d;"></i> Оцените качество работ</h3>
+        <div style="text-align:center;margin:14px 0;" id="reviewStars">
+            <span onclick="setReviewRating(1)" data-rating="1">☆</span>
+            <span onclick="setReviewRating(2)" data-rating="2">☆</span>
+            <span onclick="setReviewRating(3)" data-rating="3">☆</span>
+            <span onclick="setReviewRating(4)" data-rating="4">☆</span>
+            <span onclick="setReviewRating(5)" data-rating="5">☆</span>
+        </div>
+        <div class="form-group">
+            <label>Комментарий (необязательно)</label>
+            <textarea id="reviewText" rows="3" placeholder="Что понравилось или что можно улучшить?"></textarea>
+        </div>
+        <button class="btn btn-success" onclick="submitReview()"><i class="fas fa-paper-plane"></i> Отправить оценку</button>
+        <button class="btn" onclick="closeReviewModal()" style="background:#888;"><i class="fas fa-times"></i> Отмена</button>
+    </div>
+</div>
+
 <script>
 // ============================================================
 // КОНФИГ
@@ -237,6 +283,8 @@ let currentClient = null;
 let currentBooking = null;
 let myPriceRequest = null;
 let statusCheckInterval = null;
+let myChat = null;
+let chatPollTimer = null;
 
 // ============================================================
 // РАБОТА С JSON НА СЕРВЕРЕ
@@ -407,6 +455,8 @@ async function loadClientData() {
     await loadActiveBookings();
     await loadHistory();
     await loadMyPriceRequest();
+    await loadChat();
+    startChatPolling();
 }
 
 async function loadBooking() {
@@ -501,7 +551,7 @@ function renderActiveBookings(bookings) {
 }
 
 // ============================================================
-// ИСТОРИЯ ОБСЛУЖИВАНИЯ (С КНОПКОЙ "ОТКРЫТЬ")
+// ИСТОРИЯ ОБСЛУЖИВАНИЯ (С ОЦЕНКОЙ)
 // ============================================================
 async function loadHistory() {
     const container = document.getElementById('historyContainer');
@@ -513,22 +563,35 @@ async function loadHistory() {
         }
         
         const history = jsonData.journal.filter(j => j.clientId === currentClient.id).slice(0, 10);
+        const allReviews = jsonData.reviews || [];
         
         if (history.length === 0) {
             container.innerHTML = '<div class="empty-state">История пуста</div>';
             return;
         }
         
-        // Сортируем: сначала новые
         history.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
         container.innerHTML = history.map(e => {
             const icon = e.type === 'diagnostic' ? '🔍' : '🔧';
             const name = e.type === 'diagnostic' ? 'Диагностика' : 'Ремонт';
+            const review = allReviews.find(r => r.journal_id === e.id);
+            
+            let reviewBtn = '';
+            if (e.type === 'repair') {
+                if (review) {
+                    const stars = '⭐'.repeat(review.rating);
+                    reviewBtn = `<div style="font-size:0.8rem;color:#0a6030;margin-top:4px;">Ваша оценка: ${stars}</div>`;
+                } else {
+                    reviewBtn = `<button class="btn" style="width:auto;padding:6px 14px;font-size:0.75rem;background:#f6b83d;color:#0b2b3c;margin-top:4px;" onclick="openReviewModal(${e.id})"><i class="fas fa-star"></i> Оценить работу</button>`;
+                }
+            }
+
             return `<div class="history-card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
                 <div style="flex:1;">
                     <div><strong>${icon} ${name}</strong> <span style="font-size:0.8rem;color:#3a657e;">${e.car||''}</span></div>
                     <div style="font-size:0.8rem; color:#3a657e; margin-top:2px;">📅 ${e.date||''} | Гос. номер: ${e.plate||'—'}</div>
+                    ${reviewBtn}
                 </div>
                 <button class="btn" style="width:auto; padding:8px 16px; font-size:0.8rem; background:#2d6b84;" onclick="openHistoryDetail(${e.id})">
                     <i class="fas fa-eye"></i> Открыть
@@ -558,7 +621,6 @@ async function openHistoryDetail(entryId) {
         let html = '';
 
         if (entry.type === 'repair') {
-            // === ОТРИСОВКА АКТА ВЫПОЛНЕННЫХ РАБОТ ===
             const parts = entry.parts || [];
             const works = entry.works || [];
             const carData = entry.carData || {};
@@ -566,7 +628,6 @@ async function openHistoryDetail(entryId) {
             const partsTotal = parts.reduce((sum, p) => sum + (p.qty * p.price), 0);
             const worksTotal = works.reduce((sum, w) => sum + w.cost, 0);
             
-            // Восстанавливаем скидку из carData
             let discountPercent = 0;
             let discountName = 'Нет';
             
@@ -639,7 +700,6 @@ async function openHistoryDetail(entryId) {
             </div></div>`;
 
         } else if (entry.type === 'diagnostic') {
-            // === ОТРИСОВКА ЛИСТА ДИАГНОСТИКИ ===
             const carData = entry.carData || {};
             const systems = entry.systems || [];
             const tables = entry.tables || {};
@@ -691,6 +751,192 @@ async function openHistoryDetail(entryId) {
 
 function closeHistoryDetailModal() {
     document.getElementById('historyDetailModal').classList.remove('active');
+}
+
+// ============================================================
+// ЧАТ С МАСТЕРОМ
+// ============================================================
+async function loadChat() {
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData || !jsonData.chats) {
+            myChat = null;
+            renderChat([]);
+            return;
+        }
+        myChat = jsonData.chats.find(c => c.client_id === currentClient.id) || null;
+        if (myChat) {
+            let changed = false;
+            myChat.messages.forEach(m => {
+                if (m.from === 'master' && !m.read) { m.read = true; changed = true; }
+            });
+            if (changed) {
+                myChat.unread_for_client = 0;
+                myChat.updated_at = new Date().toISOString();
+                await updateJsonOnServer(jsonData);
+            }
+        }
+        renderChat(myChat ? myChat.messages : []);
+    } catch (e) { console.error('loadChat:', e); }
+}
+
+function renderChat(messages) {
+    const container = document.getElementById('chatMessages');
+    const badge = document.getElementById('chatUnreadBadge');
+    if (!container) return;
+
+    const unread = myChat ? (myChat.unread_for_client || 0) : 0;
+    if (badge) {
+        if (unread > 0) { badge.textContent = unread; badge.classList.remove('hidden'); }
+        else badge.classList.add('hidden');
+    }
+
+    if (!messages || messages.length === 0) {
+        container.innerHTML = '<div style="text-align:center;color:#3a657e;padding:30px;font-size:0.85rem;">Напишите мастеру — он ответит здесь</div>';
+        return;
+    }
+
+    container.innerHTML = messages.map(m => {
+        const time = new Date(m.timestamp).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        const date = new Date(m.timestamp).toLocaleDateString('ru-RU');
+        const cls = m.from === 'client' ? 'client' : 'master';
+        const text = String(m.text || '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[s]);
+        return `<div class="chat-msg ${cls}">
+            <div class="chat-bubble">${text}<div class="chat-time">${date} ${time}</div></div>
+        </div>`;
+    }).join('');
+
+    container.scrollTop = container.scrollHeight;
+}
+
+async function sendChatMessage() {
+    const input = document.getElementById('chatInput');
+    const text = input.value.trim();
+    if (!text || !currentClient) return;
+    input.value = '';
+
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData) return;
+
+        if (!jsonData.chats) jsonData.chats = [];
+        if (!jsonData.chatIdCounter) jsonData.chatIdCounter = 1;
+        if (!jsonData.messageIdCounter) jsonData.messageIdCounter = 1;
+
+        let chat = jsonData.chats.find(c => c.client_id === currentClient.id);
+        if (!chat) {
+            chat = {
+                id: jsonData.chatIdCounter++,
+                client_id: currentClient.id,
+                booking_id: null,
+                messages: [],
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+                unread_for_master: 0,
+                unread_for_client: 0
+            };
+            jsonData.chats.push(chat);
+        }
+
+        chat.messages.push({
+            id: jsonData.messageIdCounter++,
+            from: 'client',
+            text,
+            timestamp: new Date().toISOString(),
+            read: false
+        });
+        chat.unread_for_master = (chat.unread_for_master || 0) + 1;
+        chat.updated_at = new Date().toISOString();
+
+        await updateJsonOnServer(jsonData);
+        myChat = chat;
+        renderChat(chat.messages);
+    } catch (e) {
+        showNotification('❌ Ошибка отправки', 'error');
+        input.value = text;
+    }
+}
+
+function startChatPolling() {
+    if (chatPollTimer) clearInterval(chatPollTimer);
+    chatPollTimer = setInterval(() => {
+        if (currentClient) loadChat();
+    }, 10000);
+}
+
+// ============================================================
+// ОЦЕНКА КАЧЕСТВА
+// ============================================================
+let reviewJournalId = null;
+let reviewRating = 0;
+
+function openReviewModal(journalId) {
+    reviewJournalId = journalId;
+    reviewRating = 0;
+    document.getElementById('reviewText').value = '';
+    updateReviewStars();
+    document.getElementById('reviewModal').classList.add('active');
+}
+
+function closeReviewModal() {
+    document.getElementById('reviewModal').classList.remove('active');
+    reviewJournalId = null;
+    reviewRating = 0;
+}
+
+function setReviewRating(n) {
+    reviewRating = n;
+    updateReviewStars();
+}
+
+function updateReviewStars() {
+    document.querySelectorAll('#reviewStars span').forEach(s => {
+        const r = parseInt(s.dataset.rating);
+        s.textContent = r <= reviewRating ? '★' : '☆';
+        s.style.color = r <= reviewRating ? '#f6b83d' : '#888';
+    });
+}
+
+async function submitReview() {
+    if (!reviewRating || reviewRating < 1) {
+        showNotification('⚠️ Поставьте оценку', 'error');
+        return;
+    }
+    if (!reviewJournalId) return;
+
+    const text = document.getElementById('reviewText').value.trim();
+
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData) return;
+
+        if (!jsonData.reviews) jsonData.reviews = [];
+        if (!jsonData.reviewIdCounter) jsonData.reviewIdCounter = 1;
+
+        if (jsonData.reviews.find(r => r.journal_id === reviewJournalId && r.client_id === currentClient.id)) {
+            showNotification('Вы уже оценили эту работу', 'info');
+            closeReviewModal();
+            return;
+        }
+
+        jsonData.reviews.push({
+            id: jsonData.reviewIdCounter++,
+            client_id: currentClient.id,
+            journal_id: reviewJournalId,
+            rating: reviewRating,
+            text,
+            timestamp: new Date().toISOString(),
+            reply: '',
+            reply_timestamp: null
+        });
+
+        await updateJsonOnServer(jsonData);
+        closeReviewModal();
+        await loadHistory();
+        showNotification('✅ Спасибо за оценку!', 'success');
+    } catch (e) {
+        showNotification('❌ Ошибка: ' + e.message, 'error');
+    }
 }
 
 // ============================================================
@@ -880,6 +1126,7 @@ async function refreshStatus() {
     await loadActiveBookings();
     await loadHistory();
     await loadMyPriceRequest();
+    await loadChat();
     showNotification('✅ Данные обновлены', 'success');
 }
 
@@ -899,9 +1146,11 @@ function startAutoRefresh() {
 function logout() {
     if (!confirm('Выйти?')) return;
     if (statusCheckInterval) clearInterval(statusCheckInterval);
+    if (chatPollTimer) clearInterval(chatPollTimer);
     currentClient = null;
     currentBooking = null;
     myPriceRequest = null;
+    myChat = null;
     document.getElementById('authForm').classList.remove('hidden');
     document.getElementById('registerForm').classList.add('hidden');
     document.getElementById('dashboard').classList.add('hidden');
@@ -941,7 +1190,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch(e) {}
     }
 
-    // Регистрация Service Worker (PWA)
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./service-worker.js')
@@ -951,8 +1199,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-console.log('🚀 PalЫCH Client v4.8 загружен!');
-console.log('✅ Просмотр деталей из истории, статус "готово", тип ТО');
+console.log('🚀 PalЫCH Client v4.9 загружен!');
+console.log('✅ Чат с мастером + оценка качества');
 </script>
 </body>
 </html>

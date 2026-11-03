@@ -40,7 +40,17 @@
         .tab-content.active { display: block; }
         @keyframes fade { 0% { opacity: 0.5; transform: translateY(6px); } 100% { opacity: 1; transform: translateY(0); } }
 
-        .main-menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; }
+        /* Дашборд */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px; }
+        .stat-card { background: white; border-radius: 16px; padding: 20px; border-left: 6px solid #f6b83d; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .stat-card .stat-title { font-size: 0.85rem; color: #3a657e; font-weight: 600; text-transform: uppercase; }
+        .stat-card .stat-value { font-size: 1.8rem; font-weight: 800; color: #0b2b3c; margin-top: 8px; }
+        .stat-card.revenue { border-left-color: #1f7b4a; }
+        .stat-card.clients { border-left-color: #2d6b84; }
+        .stat-card.bookings { border-left-color: #d4a017; }
+        .stat-card.requests { border-left-color: #b33c3c; }
+
+        .main-menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-top: 20px; }
         .menu-card { background: white; border-radius: 24px; padding: 24px 20px; text-align: center; cursor: pointer; transition: 0.3s; border: 2px solid #e4ecf4; }
         .menu-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); border-color: #f6b83d; }
         .menu-card i { font-size: 2.8rem; margin-bottom: 10px; display: block; }
@@ -78,6 +88,50 @@
         .modal-close { position: sticky; top: 0; float: right; background: #eef2f7; border: none; width: 36px; height: 36px; border-radius: 40px; font-size: 1.2rem; cursor: pointer; z-index: 10; }
         .modal-title { font-size: 1.4rem; font-weight: 700; color: #0b2b3c; margin-bottom: 12px; border-bottom: 3px solid #f6b83d; padding-bottom: 6px; }
 
+        /* ============================================================ */
+        /* ТАБЛИЦЫ (ИДЕАЛЬНО ДЛЯ ПК) */
+        /* ============================================================ */
+        .bookings-table, .clients-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            table-layout: auto;
+        }
+        .bookings-table th, .clients-table th {
+            background: #e4ecf4;
+            padding: 12px 8px;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #1a4055;
+            white-space: nowrap;
+        }
+        .bookings-table td, .clients-table td {
+            padding: 6px 6px;
+            border-bottom: 1px solid #e9eff6;
+            vertical-align: middle;
+        }
+        .bookings-table input[type="text"], .bookings-table input[type="date"], .bookings-table input[type="time"], .bookings-table select, .clients-table select {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            background: transparent;
+            transition: 0.2s;
+        }
+        .bookings-table input:focus, .bookings-table select:focus, .clients-table select:focus {
+            background: white;
+            border-color: #f6b83d;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(246,184,61,0.2);
+        }
+        .bookings-table tr:hover td { background-color: #f8fafc; }
+
         .diagnostic-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.82rem; }
         .diagnostic-table th { text-align: left; background: #e4ecf4; padding: 8px 6px; font-size: 0.75rem; color: #1a4055; }
         .diagnostic-table td { padding: 6px 5px; border-bottom: 1px solid #e9eff6; vertical-align: middle; }
@@ -107,25 +161,14 @@
         .settings-param-list .param-tag { background: white; border: 1px solid #d0dce8; border-radius: 20px; padding: 2px 10px; font-size: 0.75rem; display: flex; align-items: center; gap: 6px; }
         .settings-param-list .param-tag .remove { color: #b33c3c; cursor: pointer; font-weight: 700; }
 
-        .bookings-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        .bookings-table th { background: #e4ecf4; padding: 10px 8px; text-align: left; font-size: 0.75rem; color: #1a4055; }
-        .bookings-table td { padding: 8px 6px; border-bottom: 1px solid #e9eff6; vertical-align: middle; }
-        .bookings-table input[type="text"], .bookings-table input[type="date"], .bookings-table input[type="time"], .bookings-table select { width: 100%; padding: 4px 6px; border: 1px solid #d0dce8; border-radius: 6px; font-size: 0.8rem; }
-        .bookings-table .inactive-row { opacity: 0.6; background: #f5f5f5; }
-
-        .clients-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        .clients-table th { background: #e4ecf4; padding: 10px 8px; text-align: left; font-size: 0.75rem; color: #1a4055; }
-        .clients-table td { padding: 8px 6px; border-bottom: 1px solid #e9eff6; vertical-align: middle; }
-
-        .client-badge { display: inline-block; background: #d3f0d8; color: #0a6030; padding: 2px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; }
-        .discount-badge { display: inline-block; background: #f6b83d; color: #0b2b3c; padding: 2px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; }
-
         .price-section { margin-top: 16px; border: 1px solid #e4ecf4; border-radius: 10px; overflow: hidden; }
         .price-section .section-title { background: #0b2b3c; color: white; padding: 10px 16px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; }
         .price-row { display: grid; grid-template-columns: 2.5fr 1fr 1fr 0.5fr; padding: 6px 14px; border-bottom: 1px solid #eef2f7; font-size: 0.85rem; align-items: center; }
         .price-row.header { background: #eef3f8; font-weight: 700; }
 
         .plate-badge { background: #f6b83d; color: #0b2b3c; padding: 2px 12px; border-radius: 12px; font-weight: 700; font-size: 0.8rem; display: inline-block; }
+        .client-badge { display: inline-block; background: #d3f0d8; color: #0a6030; padding: 2px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; }
+        .discount-badge { display: inline-block; background: #f6b83d; color: #0b2b3c; padding: 2px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; }
 
         .sync-status { font-size: 0.7rem; padding: 2px 10px; border-radius: 20px; }
         .sync-ok { background: #d3f0d8; color: #0a6030; }
@@ -155,517 +198,77 @@
         .booking-detail-modal .modal-box { max-width: 600px; }
         .booking-detail-modal .detail-row { display: flex; padding: 6px 0; border-bottom: 1px solid #eef2f7; }
         .booking-detail-modal .detail-row .label { font-weight: 600; min-width: 130px; color: #1f4055; }
-		/* ==== Модалка редактирования клиента ==== */
-.client-edit-modal .modal-box {
-    max-width: 560px;
-}
-.client-edit-modal .form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-}
-.client-edit-modal .form-row.full {
-    grid-template-columns: 1fr;
-}
-.client-edit-modal .code-row {
-    display: flex;
-    gap: 8px;
-    align-items: flex-end;
-}
-.client-edit-modal .code-row .form-group {
-    flex: 1;
-    margin-bottom: 0;
-}
-.client-edit-modal .code-row button {
-    white-space: nowrap;
-    padding: 10px 16px;
-    border-radius: 12px;
-    border: none;
-    background: #d4a017;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    font-size: 0.85rem;
-}
-.client-edit-modal .code-row button:hover {
-    background: #b88a0e;
-}
-.client-edit-modal .client-id-info {
-    background: #eef3f8;
-    padding: 8px 14px;
-    border-radius: 10px;
-    font-size: 0.8rem;
-    color: #3a657e;
-    margin-bottom: 14px;
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-.client-edit-modal .client-id-info b { color: #0b2b3c; }
-.client-edit-modal .modal-actions {
-    display: flex;
-    gap: 8px;
-    justify-content: flex-end;
-    margin-top: 18px;
-    flex-wrap: wrap;
-}
-.client-edit-modal .warning-box {
-    background: #fff8e6;
-    border-left: 4px solid #d4a017;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-size: 0.8rem;
-    color: #6b4a00;
-    margin-bottom: 14px;
-}
 
-        /* ===== КАРТА КЛИЕНТА 85x54 мм ===== */
+        /* ===== Карта клиента ===== */
         .client-card {
-            width: 85mm;
-            height: 54mm;
+            width: 85mm; height: 54mm;
             background: linear-gradient(135deg, #0b2b3c 0%, #1f4a5e 60%, #0b2b3c 100%);
-            border-radius: 3mm;
-            color: white;
-            padding: 3.5mm 4mm;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-            margin: 0 auto;
+            border-radius: 3mm; color: white; padding: 3.5mm 4mm;
+            box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif;
+            position: relative; overflow: hidden;
+            display: flex; flex-direction: column; justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25); margin: 0 auto;
         }
-        .client-card::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            height: 2.5mm;
-            background: #f6b83d;
+        .client-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2.5mm; background: #f6b83d; }
+        .client-card .cc-header { display: flex; align-items: center; gap: 1.5mm; font-size: 9pt; font-weight: 700; z-index: 1; }
+        .client-card .cc-logo { width: 7mm; height: 7mm; border-radius: 50%; background: #f6b83d; color: #0b2b3c; display: flex; align-items: center; justify-content: center; font-size: 11pt; font-weight: 900; }
+        .client-card .cc-body { display: flex; gap: 2.5mm; align-items: center; flex: 1; margin-top: 1mm; z-index: 1; }
+        .client-card .cc-info { flex: 1; font-size: 7.5pt; line-height: 1.25; }
+        .client-card .cc-name { font-size: 9pt; font-weight: 700; margin-bottom: 0.8mm; }
+        .client-card .cc-line { color: #d4e9f5; font-size: 6.5pt; }
+        .client-card .cc-plate { display: inline-block; background: #f6b83d; color: #0b2b3c; padding: 0.4mm 1.8mm; border-radius: 1.5mm; font-weight: 900; font-size: 7.5pt; margin-top: 0.8mm; }
+        .client-card .cc-code { display: inline-block; background: rgba(255,255,255,0.12); color: #f6b83d; padding: 0.4mm 1.8mm; border-radius: 1.5mm; font-weight: 700; font-size: 6.5pt; margin-left: 1mm; }
+        .client-card .cc-qr { width: 20mm; height: 20mm; background: white; border-radius: 1.5mm; padding: 1mm; display: flex; align-items: center; justify-content: center; }
+
+        /* ===== ЭТИКЕТКА МАСЛА ===== */
+        .oil-label { width: 80mm; height: 50mm; background: #fff; border: 2px solid #0b2b3c; border-radius: 3mm; box-sizing: border-box; display: flex; flex-direction: column; }
+        .oil-label .ol-header { background: #0b2b3c; color: white; padding: 2mm 3mm; display: flex; align-items: center; gap: 2mm; }
+        .oil-label .ol-logo { width: 8mm; height: 8mm; border-radius: 50%; background: #f6b83d; color: #0b2b3c; display: flex; align-items: center; justify-content: center; font-weight: 900; }
+        .oil-label .ol-title { font-size: 9pt; font-weight: 800; line-height: 1.1; }
+        .oil-label .ol-body { flex: 1; padding: 2mm 3mm; display: grid; grid-template-columns: 1fr 1fr; gap: 1mm 3mm; font-size: 7pt; }
+        .oil-label .ol-footer { background: #f6b83d; padding: 1.5mm 3mm; font-size: 6pt; font-weight: 700; display: flex; justify-content: space-between; }
+
+        /* Уведомления (Toast) */
+        .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: #0b2b3c; color: white; padding: 14px 20px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); font-weight: 600; font-size: 0.9rem; border-left: 4px solid #f6b83d; display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s ease-out; }
+        .toast.success { border-left-color: #1f7b4a; }
+        .toast.error { border-left-color: #b33c3c; }
+        .toast.info { border-left-color: #2d6b84; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* ============================================================ */
+        /* МОБИЛЬНАЯ ВЕРСИЯ (Карточки) */
+        /* ============================================================ */
+        @media (max-width: 768px) {
+            .app-header { padding: 12px 16px; flex-direction: column; align-items: stretch; }
+            .app-header h1 { font-size: 1.4rem; justify-content: center; }
+            .app-header .sub { display: none; }
+            .nav-buttons { overflow-x: auto; padding-bottom: 4px; flex-wrap: nowrap; }
+            .nav-buttons button { padding: 8px 12px; font-size: 0.75rem; white-space: nowrap; }
+            .tabs { overflow-x: auto; flex-wrap: nowrap; padding: 0 10px; }
+            .tab-btn { padding: 12px 16px; font-size: 0.85rem; white-space: nowrap; }
+            
+            .bookings-table, .clients-table { display: block; width: 100%; background: transparent; box-shadow: none; }
+            .bookings-table thead, .clients-table thead { display: none; }
+            .bookings-table tbody, .clients-table tbody { display: block; }
+            .bookings-table tr, .clients-table tr { display: block; background: white; border-radius: 12px; margin-bottom: 12px; padding: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #e4ecf4; }
+            .bookings-table td, .clients-table td { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f0f4f8; font-size: 0.9rem; }
+            .bookings-table td:last-child, .clients-table td:last-child { border-bottom: none; justify-content: flex-end; gap: 6px; padding-top: 10px; }
+            .bookings-table td::before, .clients-table td::before { content: attr(data-label); font-weight: 600; color: #3a657e; font-size: 0.75rem; text-transform: uppercase; margin-right: 10px; }
+            
+            .bookings-table input, .clients-table input, .bookings-table select { width: 60% !important; text-align: right; background: #f8fafc; border: 1px solid #e4ecf4; margin-left: 10px; }
+            
+            .main-menu { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .menu-card { padding: 16px 10px; }
+            .menu-card i { font-size: 2rem; }
+            .menu-card h2 { font-size: 1rem; }
+            
+            .dashboard-grid { grid-template-columns: 1fr 1fr; }
+            .stat-card { padding: 12px; }
+            .stat-card .stat-value { font-size: 1.4rem; }
+            
+            .modal-box { padding: 16px; width: 100%; max-height: 95vh; border-radius: 16px 16px 0 0; position: fixed; bottom: 0; left: 0; right: 0; margin: 0; }
         }
-        .client-card::before {
-            content: '';
-            position: absolute;
-            top: -10mm; right: -10mm;
-            width: 30mm; height: 30mm;
-            border-radius: 50%;
-            background: rgba(246,184,61,0.08);
-        }
-        .client-card .cc-header {
-            display: flex;
-            align-items: center;
-            gap: 1.5mm;
-            font-size: 9pt;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            z-index: 1;
-        }
-        .client-card .cc-header .cc-logo {
-            width: 7mm; height: 7mm;
-            border-radius: 50%;
-            background: #f6b83d;
-            color: #0b2b3c;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 11pt; font-weight: 900;
-            flex-shrink: 0;
-        }
-        .client-card .cc-header small {
-            display: block;
-            font-size: 4.5pt;
-            color: #8ab4c9;
-            font-weight: 400;
-            letter-spacing: 1px;
-        }
-        .client-card .cc-body {
-            display: flex;
-            gap: 2.5mm;
-            align-items: center;
-            flex: 1;
-            margin-top: 1mm;
-            z-index: 1;
-        }
-        .client-card .cc-info {
-            flex: 1;
-            font-size: 7.5pt;
-            line-height: 1.25;
-            overflow: hidden;
-            min-width: 0;
-        }
-        .client-card .cc-info .cc-name {
-            font-size: 9pt;
-            font-weight: 700;
-            margin-bottom: 0.8mm;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .client-card .cc-info .cc-line {
-            color: #d4e9f5;
-            font-size: 6.5pt;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .client-card .cc-info .cc-plate {
-            display: inline-block;
-            background: #f6b83d;
-            color: #0b2b3c;
-            padding: 0.4mm 1.8mm;
-            border-radius: 1.5mm;
-            font-weight: 900;
-            font-size: 7.5pt;
-            margin-top: 0.8mm;
-            letter-spacing: 0.3px;
-        }
-        .client-card .cc-info .cc-code {
-            display: inline-block;
-            background: rgba(255,255,255,0.12);
-            color: #f6b83d;
-            padding: 0.4mm 1.8mm;
-            border-radius: 1.5mm;
-            font-weight: 700;
-            font-size: 6.5pt;
-            margin-left: 1mm;
-            letter-spacing: 1px;
-            border: 0.3mm dashed #f6b83d;
-        }
-        .client-card .cc-qr {
-    width: 24mm; height: 24mm;
-    background: white;
-    border-radius: 1.5mm;
-    padding: 0.5mm;
-    box-sizing: border-box;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-}
-     .client-card .cc-qr canvas, .client-card .cc-qr img {
-    width: 100%; height: 100%;
-    image-rendering: pixelated;
-    image-rendering: crisp-edges;
-    display: block;
-}
-        .client-card .cc-footer {
-            font-size: 4.5pt;
-            color: #8ab4c9;
-            text-align: right;
-            margin-bottom: 0.5mm;
-            z-index: 1;
-        }
-
-        /* Модалка предпросмотра карты */
-        .card-preview-modal .modal-box {
-            max-width: 480px;
-            text-align: center;
-        }
-        .card-preview-modal .card-actions {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 16px;
-        }
-
-        @media print {
-            body * { visibility: hidden; }
-            #printArea, #printArea * { visibility: visible; }
-            #printArea { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; background: white; }
-            #printAreaRepair, #printAreaRepair * { visibility: visible; }
-            #printAreaRepair { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; background: white; }
-            #printAreaCard, #printAreaCard * { visibility: visible; }
-            #printAreaCard {
-                position: absolute;
-                left: 0; top: 0;
-                width: 85mm;
-                padding: 0;
-                margin: 0;
-                background: white;
-            }
-            #printAreaCard .client-card {
-                box-shadow: none;
-                margin: 0;
-                page-break-inside: avoid;
-            }
-            @page {
-                size: 85mm 54mm;
-                margin: 0;
-            }
-        }
-
-         */
-/* НОВОЕ: ДАШБОРД И МОБИЛЬНАЯ АДАПТАЦИЯ (v5.0) */
-/* ============================================================ */
-
-/* --- Статистика на главной --- */
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-    margin-bottom: 20px;
-}
-.stat-card {
-    background: white;
-    border-radius: 16px;
-    padding: 20px;
-    border-left: 6px solid #f6b83d;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-.stat-card .stat-title {
-    font-size: 0.85rem;
-    color: #3a657e;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-.stat-card .stat-value {
-    font-size: 1.8rem;
-    font-weight: 800;
-    color: #0b2b3c;
-    margin-top: 8px;
-}
-.stat-card.revenue { border-left-color: #1f7b4a; }
-.stat-card.clients { border-left-color: #2d6b84; }
-.stat-card.bookings { border-left-color: #d4a017; }
-.stat-card.requests { border-left-color: #b33c3c; }
-
-/* --- Всплывающие уведомления (Toast) --- */
-.toast-container {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-.toast {
-    background: #0b2b3c;
-    color: white;
-    padding: 14px 20px;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    font-weight: 600;
-    font-size: 0.9rem;
-    border-left: 4px solid #f6b83d;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    animation: slideIn 0.3s ease-out;
-}
-.toast.success { border-left-color: #1f7b4a; }
-.toast.error { border-left-color: #b33c3c; }
-.toast.info { border-left-color: #2d6b84; }
-
-@keyframes slideIn {
-    from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-}
-
-/* --- Мобильная адаптация (для экранов < 768px) --- */
-/* ============================================================ */
-/* АДАПТИВНОСТЬ (ПК и Мобилки) */
-/* ============================================================ */
-
-/* --- Стили для ПК (по умолчанию) --- */
-.bookings-table, .clients-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.85rem;
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-.bookings-table th, .clients-table th {
-    background: #e4ecf4;
-    padding: 12px 8px;
-    text-align: left;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: #1a4055;
-    white-space: nowrap;
-}
-
-.bookings-table td, .clients-table td {
-    padding: 8px 6px;
-    border-bottom: 1px solid #e9eff6;
-    vertical-align: middle;
-}
-
-.bookings-table input[type="text"], 
-.bookings-table input[type="date"], 
-.bookings-table input[type="time"], 
-.bookings-table select,
-.clients-table select {
-    width: 100%;
-    padding: 6px 8px;
-    border: 1px solid transparent;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    background: transparent;
-    transition: 0.2s;
-}
-
-.bookings-table input:focus, 
-.bookings-table select:focus,
-.clients-table select:focus {
-    background: white;
-    border-color: #f6b83d;
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(246,184,61,0.2);
-}
-
-.bookings-table tr:hover td {
-    background-color: #f8fafc;
-}
-
-/* ============================================================ */
-/* 1. БАЗОВЫЕ СТИЛИ ДЛЯ ПК (ТАБЛИЦЫ) */
-/* ============================================================ */
-.bookings-table, .clients-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.85rem;
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    table-layout: auto; /* Важно для правильных пропорций */
-}
-
-.bookings-table th, .clients-table th {
-    background: #e4ecf4;
-    padding: 12px 8px;
-    text-align: left;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: #1a4055;
-    white-space: nowrap;
-}
-
-.bookings-table td, .clients-table td {
-    padding: 6px 6px;
-    border-bottom: 1px solid #e9eff6;
-    vertical-align: middle;
-}
-
-/* Поля ввода в таблице на ПК (плоские, без рамок) */
-.bookings-table input[type="text"], 
-.bookings-table input[type="date"], 
-.bookings-table input[type="time"], 
-.bookings-table select,
-.clients-table select {
-    width: 100%;
-    padding: 6px 8px;
-    border: 1px solid transparent;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    background: transparent;
-    transition: 0.2s;
-}
-
-.bookings-table input:focus, 
-.bookings-table select:focus,
-.clients-table select:focus {
-    background: white;
-    border-color: #f6b83d;
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(246,184,61,0.2);
-}
-
-.bookings-table tr:hover td {
-    background-color: #f8fafc;
-}
-
-/* ============================================================ */
-/* 2. МОБИЛЬНАЯ ВЕРСИЯ (ТОЛЬКО ДЛЯ ЭКРАНОВ < 768px) */
-/* ============================================================ */
-@media (max-width: 768px) {
-    /* Шапка */
-    .app-header { padding: 12px 16px; flex-direction: column; align-items: stretch; }
-    .app-header h1 { font-size: 1.4rem; justify-content: center; }
-    .app-header .sub { display: none; }
-    .nav-buttons { overflow-x: auto; padding-bottom: 4px; flex-wrap: nowrap; }
-    .nav-buttons button { padding: 8px 12px; font-size: 0.75rem; white-space: nowrap; }
-    
-    /* Табы */
-    .tabs { overflow-x: auto; flex-wrap: nowrap; padding: 0 10px; }
-    .tab-btn { padding: 12px 16px; font-size: 0.85rem; white-space: nowrap; }
-
-    /* Таблицы -> Карточки */
-    .diagnostic-table, .bookings-table, .clients-table, .works-table {
-        display: block;
-        width: 100%;
-        background: transparent;
-        box-shadow: none;
-    }
-    .diagnostic-table thead, .bookings-table thead, .clients-table thead, .works-table thead {
-        display: none;
-    }
-    .diagnostic-table tbody, .bookings-table tbody, .clients-table tbody, .works-table tbody {
-        display: block;
-    }
-    .diagnostic-table tr, .bookings-table tr, .clients-table tr, .works-table tr {
-        display: block;
-        background: white;
-        border-radius: 12px;
-        margin-bottom: 12px;
-        padding: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        border: 1px solid #e4ecf4;
-    }
-    .diagnostic-table td, .bookings-table td, .clients-table td, .works-table td {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 8px 0;
-        border-bottom: 1px solid #f0f4f8;
-        font-size: 0.9rem;
-    }
-    .diagnostic-table td:last-child, .bookings-table td:last-child, .clients-table td:last-child, .works-table td:last-child {
-        border-bottom: none;
-        justify-content: flex-end;
-        gap: 6px;
-        padding-top: 10px;
-    }
-    /* Подписи для ячеек (data-label) */
-    .diagnostic-table td::before, .bookings-table td::before, .clients-table td::before, .works-table td::before {
-        content: attr(data-label);
-        font-weight: 600;
-        color: #3a657e;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        margin-right: 10px;
-    }
-
-    /* Поля ввода на мобилках */
-    .bookings-table input, .clients-table input, .bookings-table select {
-        width: 60% !important;
-        text-align: right;
-        background: #f8fafc;
-        border: 1px solid #e4ecf4;
-        margin-left: 10px;
-    }
-    
-    /* Главное меню (плитки) */
-    .main-menu { grid-template-columns: 1fr 1fr; gap: 12px; }
-    .menu-card { padding: 16px 10px; }
-    .menu-card i { font-size: 2rem; }
-    .menu-card h2 { font-size: 1rem; }
-    
-    /* Дашборд */
-    .dashboard-grid { grid-template-columns: 1fr 1fr; }
-    .stat-card { padding: 12px; }
-    .stat-card .stat-value { font-size: 1.4rem; }
-
-    /* Модальные окна */
-    .modal-box { padding: 16px; width: 100%; max-height: 95vh; border-radius: 16px 16px 0 0; position: fixed; bottom: 0; left: 0; right: 0; margin: 0; }
-}
-
     </style>
 </head>
 <body>
@@ -696,25 +299,6 @@
     </div>
 
     <!-- ГЛАВНАЯ -->
-	<!-- НОВОЕ: ДАШБОРД -->
-<div class="dashboard-grid">
-    <div class="stat-card revenue">
-        <span class="stat-title"><i class="fas fa-ruble-sign"></i> Выручка за месяц</span>
-        <span class="stat-value" id="statRevenue">0 ₽</span>
-    </div>
-    <div class="stat-card clients">
-        <span class="stat-title"><i class="fas fa-users"></i> Всего клиентов</span>
-        <span class="stat-value" id="statClients">0</span>
-    </div>
-    <div class="stat-card bookings">
-        <span class="stat-title"><i class="fas fa-calendar-alt"></i> Записей сегодня</span>
-        <span class="stat-value" id="statBookings">0</span>
-    </div>
-    <div class="stat-card requests">
-        <span class="stat-title"><i class="fas fa-calculator"></i> Запросов стоимости</span>
-        <span class="stat-value" id="statRequests">0</span>
-    </div>
-</div>
     <div id="page-home" class="tab-content active">
         <div class="file-status-bar">
             <span><i class="fas fa-database"></i> <span id="currentFileName">Нет файла</span></span>
@@ -722,6 +306,27 @@
             <span id="cloudStatus"><span class="sync-status sync-wait">☁️ Проверка...</span></span>
         </div>
 
+        <!-- НОВОЕ: ДАШБОРД -->
+        <div class="dashboard-grid">
+            <div class="stat-card revenue">
+                <span class="stat-title"><i class="fas fa-ruble-sign"></i> Выручка за месяц</span>
+                <span class="stat-value" id="statRevenue">0 ₽</span>
+            </div>
+            <div class="stat-card clients">
+                <span class="stat-title"><i class="fas fa-users"></i> Всего клиентов</span>
+                <span class="stat-value" id="statClients">0</span>
+            </div>
+            <div class="stat-card bookings">
+                <span class="stat-title"><i class="fas fa-calendar-alt"></i> Записей сегодня</span>
+                <span class="stat-value" id="statBookings">0</span>
+            </div>
+            <div class="stat-card requests">
+                <span class="stat-title"><i class="fas fa-calculator"></i> Запросов стоимости</span>
+                <span class="stat-value" id="statRequests">0</span>
+            </div>
+        </div>
+
+        <!-- ЗАПРОСЫ СТОИМОСТИ -->
         <div class="requests-box" style="border-color: #6c5b7b;">
             <div class="flex-between" style="margin-bottom: 8px;">
                 <h3 style="color:#0b2b3c; font-size:1rem;">
@@ -740,6 +345,7 @@
             </div>
         </div>
 
+        <!-- ОНЛАЙН ЗАЯВКИ -->
         <div class="requests-box">
             <div class="flex-between" style="margin-bottom: 8px;">
                 <h3 style="color:#0b2b3c; font-size:1rem;">
@@ -759,46 +365,14 @@
         </div>
 
         <div class="main-menu">
-            <div class="menu-card" onclick="switchMode('diag')">
-                <i class="fas fa-stethoscope" style="color:#f6b83d;"></i>
-                <h2>Диагностика</h2>
-                <p>Проверка систем</p>
-            </div>
-            <div class="menu-card" onclick="switchMode('repair')">
-                <i class="fas fa-tools" style="color:#1f7b4a;"></i>
-                <h2>Ремонт</h2>
-                <p>Запчасти и работы</p>
-            </div>
-            <div class="menu-card" onclick="switchMode('bookings')">
-                <i class="fas fa-calendar-check" style="color:#d4a017;"></i>
-                <h2>Записи</h2>
-                <p>Учёт клиентов</p>
-            </div>
-            <div class="menu-card" onclick="switchMode('clients')">
-                <i class="fas fa-users" style="color:#2d6b84;"></i>
-                <h2>Клиенты</h2>
-                <p>База клиентов</p>
-            </div>
-            <div class="menu-card" onclick="switchMode('prices')">
-                <i class="fas fa-ruble-sign" style="color:#e67e22;"></i>
-                <h2>Прайс</h2>
-                <p>Цены на услуги</p>
-            </div>
-            <div class="menu-card" onclick="switchMode('journal')">
-                <i class="fas fa-book" style="color:#2d6b84;"></i>
-                <h2>Журнал</h2>
-                <p>Сохранённые записи</p>
-            </div>
-            <div class="menu-card" onclick="switchMode('etalons')">
-                <i class="fas fa-database" style="color:#8b5cf6;"></i>
-                <h2>Эталоны</h2>
-                <p>Нормальные значения</p>
-            </div>
-            <div class="menu-card" onclick="switchMode('settings')">
-                <i class="fas fa-cog" style="color:#6c5b7b;"></i>
-                <h2>Настройки</h2>
-                <p>Управление</p>
-            </div>
+            <div class="menu-card" onclick="switchMode('diag')"><i class="fas fa-stethoscope" style="color:#f6b83d;"></i><h2>Диагностика</h2><p>Проверка систем</p></div>
+            <div class="menu-card" onclick="switchMode('repair')"><i class="fas fa-tools" style="color:#1f7b4a;"></i><h2>Ремонт</h2><p>Запчасти и работы</p></div>
+            <div class="menu-card" onclick="switchMode('bookings')"><i class="fas fa-calendar-check" style="color:#d4a017;"></i><h2>Записи</h2><p>Учёт клиентов</p></div>
+            <div class="menu-card" onclick="switchMode('clients')"><i class="fas fa-users" style="color:#2d6b84;"></i><h2>Клиенты</h2><p>База клиентов</p></div>
+            <div class="menu-card" onclick="switchMode('prices')"><i class="fas fa-ruble-sign" style="color:#e67e22;"></i><h2>Прайс</h2><p>Цены на услуги</p></div>
+            <div class="menu-card" onclick="switchMode('journal')"><i class="fas fa-book" style="color:#2d6b84;"></i><h2>Журнал</h2><p>Сохранённые записи</p></div>
+            <div class="menu-card" onclick="switchMode('etalons')"><i class="fas fa-database" style="color:#8b5cf6;"></i><h2>Эталоны</h2><p>Нормальные значения</p></div>
+            <div class="menu-card" onclick="switchMode('settings')"><i class="fas fa-cog" style="color:#6c5b7b;"></i><h2>Настройки</h2><p>Управление</p></div>
         </div>
     </div>
 
@@ -848,9 +422,7 @@
                     <button class="btn-primary" onclick="printDiag()"><i class="fas fa-print"></i> Печать</button>
                 </div>
             </div>
-            <div id="printArea">
-                <div id="reportContent" style="margin-top:10px;"></div>
-            </div>
+            <div id="printArea"><div id="reportContent" style="margin-top:10px;"></div></div>
             <div id="saveReportFeedback" style="margin-top:8px; font-weight:500; color:#1b6d3b;"></div>
         </div>
     </div>
@@ -871,11 +443,7 @@
                     <div class="form-group"><label>Год выпуска</label><input type="number" id="repairYear" placeholder="2020"></div>
                     <div class="form-group"><label>Пробег (км)</label><input type="number" id="repairMileage" placeholder="125000"></div>
                     <div class="form-group"><label>Дата ремонта</label><input type="date" id="repairDate"></div>
-                    <div class="form-group"><label>Скидка</label>
-                        <select id="repairDiscount" onchange="updateAct()">
-                            <option value="none">Без скидки</option>
-                        </select>
-                    </div>
+                    <div class="form-group"><label>Скидка</label><select id="repairDiscount" onchange="updateAct()"><option value="none">Без скидки</option></select></div>
                 </div>
                 <div style="display:flex; gap:8px; flex-wrap:wrap; min-width:120px;">
                     <button class="btn-success" onclick="saveRepairCarInfo()" style="white-space:nowrap;"><i class="fas fa-save"></i> Сохранить</button>
@@ -898,10 +466,7 @@
         <div id="repair3" class="tab-content" style="padding:14px 0 0;">
             <div class="flex-between">
                 <h3 style="color:#0b2b3c;font-size:1rem;"><i class="fas fa-wrench" style="color:#f6b83d;"></i> Работы</h3>
-                <div>
-                    <button class="btn-success" onclick="addWork()"><i class="fas fa-plus"></i> Добавить</button>
-                    <button class="btn-primary" onclick="addWorkFromPrice()"><i class="fas fa-list"></i> Из прайса</button>
-                </div>
+                <div><button class="btn-success" onclick="addWork()"><i class="fas fa-plus"></i> Добавить</button><button class="btn-primary" onclick="addWorkFromPrice()"><i class="fas fa-list"></i> Из прайса</button></div>
             </div>
             <div style="margin-top:10px; overflow-x:auto;">
                 <table class="diagnostic-table works-table" id="worksTable">
@@ -919,9 +484,7 @@
                     <button class="btn-primary" onclick="printRepair()"><i class="fas fa-print"></i> Печать</button>
                 </div>
             </div>
-            <div id="printAreaRepair">
-                <div id="actContent" style="margin-top:10px;"></div>
-            </div>
+            <div id="printAreaRepair"><div id="actContent" style="margin-top:10px;"></div></div>
             <div id="actFeedback" style="margin-top:8px; font-weight:500; color:#1b6d3b;"></div>
         </div>
     </div>
@@ -929,116 +492,56 @@
     <!-- ===== ЗАПИСИ ===== -->
     <div id="page-bookings" class="tab-content">
         <h3 style="color:#0b2b3c; margin-bottom:12px;"><i class="fas fa-calendar-check" style="color:#f6b83d;"></i> Записи клиентов</h3>
-        
         <div class="bookings-form" style="background:#f8fafc;padding:16px;border-radius:12px;margin-bottom:16px;border:1px solid #e4ecf4;">
             <div class="row-4col">
-                <div class="form-group" style="margin-bottom:0;">
-                    <label>Клиент</label>
-                    <select id="bk_client" onchange="selectClientForBooking()">
-                        <option value="">Выберите клиента...</option>
-                    </select>
-                </div>
+                <div class="form-group" style="margin-bottom:0;"><label>Клиент</label><select id="bk_client" onchange="selectClientForBooking()"><option value="">Выберите...</option></select></div>
                 <div class="form-group" style="margin-bottom:0;"><label>Имя</label><input type="text" id="bk_name" placeholder="Иван Петров"></div>
                 <div class="form-group" style="margin-bottom:0;"><label>Телефон</label><input type="text" id="bk_phone" placeholder="+7 999 123-45-67"></div>
                 <div class="form-group" style="margin-bottom:0;"><label>Марка</label><input type="text" id="bk_car" placeholder="BMW X5"></div>
                 <div class="form-group" style="margin-bottom:0;"><label>Гос. номер</label><input type="text" id="bk_plate" placeholder="А123ВС777"></div>
                 <div class="form-group" style="margin-bottom:0;"><label>Дата</label><input type="date" id="bk_date"></div>
                 <div class="form-group" style="margin-bottom:0;"><label>Время</label><input type="time" id="bk_time"></div>
-                <div class="form-group" style="margin-bottom:0;"><label>Тип</label>
-                    <select id="bk_type">
-                        <option value="diagnostic">🔍 Диагностика</option>
-                        <option value="repair">🔧 Ремонт</option>
-                        <option value="maintenance">🛠️ Тех. обслуживание (ТО)</option>
-                    </select>
-                </div>
+                <div class="form-group" style="margin-bottom:0;"><label>Тип</label><select id="bk_type"><option value="diagnostic">🔍 Диагностика</option><option value="repair">🔧 Ремонт</option><option value="maintenance">🛠️ ТО</option></select></div>
                 <div class="form-group" style="margin-bottom:0;"><label>Причина</label><input type="text" id="bk_reason" placeholder="Причина записи"></div>
-                <div style="display:flex; align-items:flex-end; gap:6px;">
-                    <button class="btn-success" onclick="addBookingFromForm()" style="width:100%;"><i class="fas fa-plus"></i> Добавить</button>
-                </div>
+                <div style="display:flex; align-items:flex-end; gap:6px;"><button class="btn-success" onclick="addBookingFromForm()" style="width:100%;"><i class="fas fa-plus"></i> Добавить</button></div>
             </div>
         </div>
-        
         <div class="flex-between" style="margin-bottom:8px;">
             <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
                 <span style="font-size:0.85rem; color:#3a657e;">Всего: <strong id="bookingsTotal">0</strong></span>
                 <select id="bookingsFilter" onchange="renderBookings()" style="padding:4px 10px; border:1px solid #d0dce8; border-radius:8px; font-size:0.8rem;">
-                    <option value="all">Все записи</option>
-                    <option value="новая">Новая</option>
-                    <option value="в работе">В работе</option>
-                    <option value="ожидается">Ожидается</option>
-                    <option value="готово">✅ Готово</option>
-                    <option value="отремонтирована">Отремонтирована</option>
-                    <option value="не отремонтирована">Не отремонтирована</option>
-                    <option value="продиагностирована">Продиагностирована</option>
-                    <option value="closed">Закрытые</option>
+                    <option value="all">Все записи</option><option value="новая">Новая</option><option value="в работе">В работе</option><option value="ожидается">Ожидается</option><option value="готово">✅ Готово</option><option value="отремонтирована">Отремонтирована</option><option value="не отремонтирована">Не отремонтирована</option><option value="продиагностирована">Продиагностирована</option><option value="closed">Закрытые</option>
                 </select>
             </div>
-            <span style="font-size:0.8rem; color:#3a657e;">💾 Данные сохраняются в общий файл</span>
         </div>
-        
         <div style="overflow-x:auto;">
             <table class="bookings-table" id="bookingsTable">
                 <thead>
-                    <tr>
-                        <th>№</th>
-                        <th>Имя</th>
-                        <th>Телефон</th>
-                        <th>Гос. номер</th>
-                        <th>Дата</th>
-                        <th>Время</th>
-                        <th>Марка</th>
-                        <th>Тип</th>
-                        <th>Статус</th>
-                        <th>Причина</th>
-                        <th>Связь</th>
-                        <th>Действия</th>
-                    </tr>
+                    <tr><th>№</th><th>Имя</th><th>Телефон</th><th>Гос. номер</th><th>Дата</th><th>Время</th><th>Марка</th><th>Тип</th><th>Статус</th><th>Причина</th><th>Связь</th><th>Действия</th></tr>
                 </thead>
                 <tbody id="bookingsBody"></tbody>
             </table>
         </div>
-        <div id="bookingsFeedback" style="margin-top:10px; font-weight:500; color:#1b6d3b;"></div>
     </div>
 
     <!-- ===== КЛИЕНТЫ ===== -->
     <div id="page-clients" class="tab-content">
         <div class="flex-between">
-            <h3 style="color:#0b2b3c;font-size:1.1rem;">
-                <i class="fas fa-users" style="color:#f6b83d;"></i> База клиентов
-            </h3>
+            <h3 style="color:#0b2b3c;font-size:1.1rem;"><i class="fas fa-users" style="color:#f6b83d;"></i> База клиентов</h3>
             <div class="no-print" style="display:flex; gap:6px; flex-wrap:wrap;">
-                <button class="btn-success" onclick="addClientForm()">
-                    <i class="fas fa-plus"></i> Добавить клиента
-                </button>
-                <button class="btn-primary" onclick="syncClientCodes()" style="background:#2d6b84;">
-                    <i class="fas fa-sync"></i> Синхр. коды
-                </button>
-                <button class="btn-primary" onclick="restoreClientStats()" style="background:#6c5b7b;">
-                    <i class="fas fa-heartbeat"></i> Восст. статистику
-                </button>
+                <button class="btn-success" onclick="addClientForm()"><i class="fas fa-plus"></i> Добавить</button>
+                <button class="btn-primary" onclick="syncClientCodes()" style="background:#2d6b84;"><i class="fas fa-sync"></i> Синхр. коды</button>
+                <button class="btn-primary" onclick="restoreClientStats()" style="background:#6c5b7b;"><i class="fas fa-heartbeat"></i> Восст. статистику</button>
             </div>
         </div>
-        
         <div style="margin-top:12px; overflow-x:auto;">
             <table class="clients-table" id="clientsTable">
                 <thead>
-                    <tr>
-                        <th>№</th>
-                        <th>Имя</th>
-                        <th>Телефон</th>
-                        <th>Гос. номер</th>
-                        <th>Марка</th>
-                        <th>Тип авто</th>
-                        <th>Код доступа</th>
-                        <th>Диагностик</th>
-                        <th>Ремонтов</th>
-                        <th>Действия</th>
-                    </tr>
+                    <tr><th>№</th><th>Имя</th><th>Телефон</th><th>Гос. номер</th><th>Марка</th><th>Тип авто</th><th>Код доступа</th><th>Диагностик</th><th>Ремонтов</th><th>Действия</th></tr>
                 </thead>
                 <tbody id="clientsBody"></tbody>
             </table>
         </div>
-        <div id="clientsFeedback" style="margin-top:10px; font-weight:500; color:#1b6d3b;"></div>
     </div>
 
     <!-- ===== ПРАЙС-ЛИСТ ===== -->
@@ -1060,196 +563,46 @@
     <!-- ===== ЖУРНАЛ ===== -->
     <div id="page-journal" class="tab-content">
         <h3 style="color:#0b2b3c; margin-bottom:12px;"><i class="fas fa-book" style="color:#f6b83d;"></i> Журнал сохранённых записей</h3>
-        
         <div class="journal-filters" style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
             <select id="journalFilter" onchange="renderJournal()" style="padding:6px 12px;border-radius:10px;border:1px solid #d0dce8;">
-                <option value="all">Все записи</option>
-                <option value="diagnostic">🔍 Диагностика</option>
-                <option value="repair">🔧 Ремонт</option>
+                <option value="all">Все записи</option><option value="diagnostic">🔍 Диагностика</option><option value="repair">🔧 Ремонт</option>
             </select>
-            <input type="text" id="journalSearch" placeholder="Поиск по авто или номеру..." oninput="renderJournal()" style="padding:6px 12px;border-radius:10px;border:1px solid #d0dce8;flex:1;">
+            <input type="text" id="journalSearch" placeholder="Поиск..." oninput="renderJournal()" style="padding:6px 12px;border-radius:10px;border:1px solid #d0dce8;flex:1;">
             <span style="font-size:0.85rem; color:#3a657e; margin-left:auto;" id="journalFilterCount">Найдено: 0</span>
         </div>
-        
         <div id="journalList"></div>
-        <div id="emptyJournal" style="color:#4f6f82; background:#edf3fa; padding:24px; border-radius:14px; text-align:center;">
-            <i class="fas fa-inbox" style="font-size:1.8rem; display:block; margin-bottom:6px;"></i>
-            <p>Нет сохранённых записей</p>
-        </div>
+        <div id="emptyJournal" style="color:#4f6f82; background:#edf3fa; padding:24px; border-radius:14px; text-align:center;"><i class="fas fa-inbox" style="font-size:1.8rem; display:block; margin-bottom:6px;"></i><p>Нет записей</p></div>
     </div>
 
     <!-- ===== ЭТАЛОНЫ ===== -->
     <div id="page-etalons" class="tab-content">
-        <div class="flex-between">
-            <h3 style="color:#0b2b3c;font-size:1.1rem;"><i class="fas fa-database" style="color:#f6b83d;"></i> Эталонные значения</h3>
-            <span style="font-size:0.8rem; color:#3a657e;">💾 Данные сохраняются в общий файл</span>
-        </div>
-        
-        <div class="search-box" style="margin:12px 0;">
-            <input type="text" id="etalonSearch" placeholder="🔍 Поиск по системам и параметрам..." oninput="renderEtalons()" style="width:100%;padding:10px;border-radius:10px;border:1px solid #d0dce8;">
-        </div>
-        
+        <div class="flex-between"><h3 style="color:#0b2b3c;font-size:1.1rem;"><i class="fas fa-database" style="color:#f6b83d;"></i> Эталонные значения</h3></div>
+        <div class="search-box" style="margin:12px 0;"><input type="text" id="etalonSearch" placeholder="🔍 Поиск..." oninput="renderEtalons()" style="width:100%;padding:10px;border-radius:10px;border:1px solid #d0dce8;"></div>
         <div id="etalonsContainer" style="margin-top:12px;"></div>
-        <div id="etalonsFeedback" style="margin-top:10px; font-weight:500; color:#1b6d3b;"></div>
     </div>
 
     <!-- ===== НАСТРОЙКИ ===== -->
     <div id="page-settings" class="tab-content">
         <h3 style="color:#0b2b3c; margin-bottom:16px;"><i class="fas fa-cog" style="color:#f6b83d;"></i> Настройки</h3>
-        
-        <div class="settings-group">
-            <h4>💰 Система скидок</h4>
-            <div id="discountsContainer">
-                <div class="settings-item" style="border-bottom: none;">
-                    <span class="param-name">Название скидки</span>
-                    <span class="param-name" style="min-width:80px;">Процент</span>
-                    <span style="min-width:80px;">Действия</span>
-                </div>
-                <div id="discountsList"></div>
-                <div class="settings-item" style="border-bottom: none; padding-top:10px;">
-                    <input type="text" id="newDiscountName" placeholder="Название скидки" style="flex:1; min-width:120px; padding:4px 8px; border:1px solid #d0dce8; border-radius:6px; font-size:0.85rem;">
-                    <input type="number" id="newDiscountPercent" placeholder="%" style="width:80px; padding:4px 8px; border:1px solid #d0dce8; border-radius:6px; font-size:0.85rem;">
-                    <button class="btn-sm btn-success" onclick="addDiscount()"><i class="fas fa-plus"></i> Добавить</button>
-                </div>
-            </div>
-        </div>
-        
+        <div class="settings-group"><h4>💰 Система скидок</h4><div id="discountsList"></div></div>
         <div id="settingsContainer"></div>
         <div style="margin-top:16px;">
-            <button class="btn-success" onclick="addNewSystem()"><i class="fas fa-plus"></i> Добавить новую систему</button>
-            <button class="btn-primary" onclick="saveSettings()" style="margin-left:10px;"><i class="fas fa-save"></i> Сохранить настройки</button>
+            <button class="btn-success" onclick="addNewSystem()"><i class="fas fa-plus"></i> Добавить систему</button>
+            <button class="btn-primary" onclick="saveSettings()" style="margin-left:10px;"><i class="fas fa-save"></i> Сохранить</button>
         </div>
-        <div id="settingsFeedback" style="margin-top:10px; font-weight:500; color:#1b6d3b;"></div>
     </div>
 </div>
 
-<!-- Modal для диагностики -->
-<div class="modal-overlay" id="diagModal">
-    <div class="modal-box">
-        <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
-        <div class="modal-title" id="modalSystemTitle">Система</div>
-        <div id="modalTableWrapper"></div>
-    </div>
-</div>
-
-<!-- Modal для выбора работы из прайса -->
-<div class="modal-overlay" id="priceSelectModal">
-    <div class="modal-box" style="max-width: 800px;">
-        <button class="modal-close" onclick="closePriceSelectModal()"><i class="fas fa-times"></i></button>
-        <div class="modal-title">📋 Выберите работу из прайс-листа</div>
-        <div class="price-search" style="margin:10px 0;">
-            <input type="text" id="priceSelectSearch" placeholder="🔍 Поиск..." oninput="renderPriceSelect()" style="width:100%;padding:8px;border-radius:8px;border:1px solid #d0dce8;">
-        </div>
-        <div id="priceSelectContainer" style="max-height:500px; overflow-y:auto;"></div>
-    </div>
-</div>
-
-<!-- Modal для деталей записи -->
-<div class="modal-overlay booking-detail-modal" id="bookingDetailModal">
-    <div class="modal-box">
-        <button class="modal-close" onclick="closeBookingDetailModal()"><i class="fas fa-times"></i></button>
-        <div class="modal-title">📋 Детали записи</div>
-        <div id="bookingDetailContent"></div>
-        <div class="btn-group" style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
-            <button class="btn-success" onclick="insertBookingToDiag()"><i class="fas fa-stethoscope"></i> В диагностику</button>
-            <button class="btn-success" onclick="insertBookingToRepair()"><i class="fas fa-tools"></i> В ремонт</button>
-            <button class="btn-primary" onclick="closeBookingDetailModal()"><i class="fas fa-times"></i> Закрыть</button>
-        </div>
-        <div id="bookingInsertFeedback" style="margin-top:8px; font-weight:500; color:#1b6d3b;"></div>
-    </div>
-</div>
-
-<!-- ===== НОВОЕ: Modal для предпросмотра карты клиента ===== -->
-<div class="modal-overlay card-preview-modal" id="cardPreviewModal">
-    <div class="modal-box">
-        <button class="modal-close" onclick="closeCardPreview()"><i class="fas fa-times"></i></button>
-        <div class="modal-title">🪪 Карта клиента (85×54 мм)</div>
-        <div id="cardPreviewContent" style="padding: 16px 0;"></div>
-       <div class="card-actions">
-    <button class="btn-primary" onclick="printCardFromPreview()"><i class="fas fa-print"></i> Печать</button>
-    <button class="btn-success" onclick="downloadCardPNG()"><i class="fas fa-download"></i> Скачать PNG</button>
-    <button class="btn-warning" onclick="testQRCode()" style="background:#d4a017;color:white;"><i class="fas fa-qrcode"></i> Проверить QR</button>
-    <button class="btn-primary" onclick="closeCardPreview()" style="background:#888;"><i class="fas fa-times"></i> Закрыть</button>
-</div>
-    </div>
-</div>
-<!-- ===== МОДАЛКА РЕДАКТИРОВАНИЯ КЛИЕНТА ===== -->
-<div class="modal-overlay client-edit-modal" id="clientEditModal">
-    <div class="modal-box">
-        <button class="modal-close" onclick="closeClientEdit()"><i class="fas fa-times"></i></button>
-        <div class="modal-title">✏️ Редактирование клиента</div>
-
-        <div class="client-id-info" id="clientEditInfo">
-            <span>ID: <b id="editClientId">—</b></span>
-            <span>Диагностик: <b id="editClientDiagCount">0</b></span>
-            <span>Ремонтов: <b id="editClientRepairCount">0</b></span>
-        </div>
-
-        <div class="warning-box" id="clientPlateWarning" style="display:none;">
-            <i class="fas fa-exclamation-triangle"></i>
-            <span id="clientPlateWarningText"></span>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label>Имя *</label>
-                <input type="text" id="editClientName" placeholder="Иван Петров">
-            </div>
-            <div class="form-group">
-                <label>Телефон *</label>
-                <input type="text" id="editClientPhone" placeholder="+7 999 123-45-67">
-            </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label>Марка / Модель</label>
-                <input type="text" id="editClientCar" placeholder="BMW X5">
-            </div>
-            <div class="form-group">
-                <label>Гос. номер *</label>
-                <input type="text" id="editClientPlate" placeholder="А123ВС777" style="text-transform:uppercase;">
-            </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label>Тип авто</label>
-                <select id="editClientCarType">
-                    <option value="import">🚗 Иномарка</option>
-                    <option value="domestic">🚙 Отечественная</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Код доступа (4 цифры)</label>
-                <div class="code-row">
-                    <div class="form-group">
-                        <input type="text" id="editClientCode" maxlength="4" inputmode="numeric" placeholder="0000" style="letter-spacing:4px;font-weight:700;text-align:center;">
-                    </div>
-                    <button onclick="generateNewClientCode()" title="Сгенерировать новый код">
-                        <i class="fas fa-dice"></i> Новый
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal-actions">
-            <button class="btn-primary" onclick="saveClientEdit()" style="background:#1f7b4a;">
-                <i class="fas fa-save"></i> Сохранить
-            </button>
-            <button class="btn-primary" onclick="closeClientEdit()" style="background:#888;">
-                <i class="fas fa-times"></i> Отмена
-            </button>
-        </div>
-
-        <div id="clientEditFeedback" style="margin-top:10px; font-weight:600;"></div>
-    </div>
-</div>
-
-<!-- Скрытая зона для печати карты -->
-<div id="printAreaCard" style="position:absolute; left:-9999px; top:0;"></div>
-<!-- Контейнер для всплывающих уведомлений -->
+<!-- Модалки -->
+<div class="modal-overlay" id="diagModal"><div class="modal-box"><button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button><div class="modal-title" id="modalSystemTitle">Система</div><div id="modalTableWrapper"></div></div></div>
+<div class="modal-overlay" id="priceSelectModal"><div class="modal-box" style="max-width: 800px;"><button class="modal-close" onclick="closePriceSelectModal()"><i class="fas fa-times"></i></button><div class="modal-title">📋 Выберите работу</div><input type="text" id="priceSelectSearch" placeholder="🔍 Поиск..." oninput="renderPriceSelect()" style="width:100%;padding:8px;border-radius:8px;border:1px solid #d0dce8;margin-bottom:10px;"><div id="priceSelectContainer" style="max-height:500px; overflow-y:auto;"></div></div></div>
+<div class="modal-overlay booking-detail-modal" id="bookingDetailModal"><div class="modal-box"><button class="modal-close" onclick="closeBookingDetailModal()"><i class="fas fa-times"></i></button><div class="modal-title">📋 Детали записи</div><div id="bookingDetailContent"></div><div style="display:flex; gap:8px; margin-top:12px;"><button class="btn-success" onclick="insertBookingToDiag()"><i class="fas fa-stethoscope"></i> В диагностику</button><button class="btn-success" onclick="insertBookingToRepair()"><i class="fas fa-tools"></i> В ремонт</button></div></div></div>
+<div class="modal-overlay card-preview-modal" id="cardPreviewModal"><div class="modal-box" style="max-width:480px; text-align:center;"><button class="modal-close" onclick="closeCardPreview()"><i class="fas fa-times"></i></button><div class="modal-title">🪪 Карта клиента</div><div id="cardPreviewContent" style="padding:16px 0;"></div><div style="display:flex; gap:8px; justify-content:center; margin-top:16px;"><button class="btn-primary" onclick="printCardFromPreview()"><i class="fas fa-print"></i> Печать</button><button class="btn-success" onclick="downloadCardPNG()"><i class="fas fa-download"></i> PNG</button></div></div></div>
+<div class="modal-overlay oil-label-modal" id="oilLabelModal"><div class="modal-box" style="max-width:480px; text-align:center;"><button class="modal-close" onclick="closeOilLabel()"><i class="fas fa-times"></i></button><div class="modal-title">🏷️ Этикетка масла</div><input type="date" id="oilChangeDate" style="display:none"><div id="oilLabelPreview" style="padding:12px 0;"></div><div style="display:flex; gap:8px; justify-content:center; margin-top:16px;"><button class="btn-primary" onclick="printOilLabel()"><i class="fas fa-print"></i> Печать</button></div></div></div>
+<div class="modal-overlay client-edit-modal" id="clientEditModal"><div class="modal-box" style="max-width:560px;"><button class="modal-close" onclick="closeClientEdit()"><i class="fas fa-times"></i></button><div class="modal-title">✏️ Редактирование клиента</div><div id="clientEditInfo" style="background:#eef3f8;padding:8px 14px;border-radius:10px;margin-bottom:14px;font-size:0.8rem;"></div><div id="clientEditFeedback" style="margin-top:10px; font-weight:600;"></div></div></div>
 <div class="toast-container" id="toastContainer"></div>
+<div id="printAreaCard" style="position:absolute; left:-9999px; top:0;"></div>
+<div id="printAreaOil" style="position:absolute; left:-9999px; top:0;"></div>
 <script>
 // ============================================================
 // КОНФИГУРАЦИЯ SUPABASE

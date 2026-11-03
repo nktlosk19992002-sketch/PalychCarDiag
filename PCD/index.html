@@ -279,23 +279,58 @@
     box-shadow: 0 0 0 2px rgba(246,184,61,0.2);
 }
 .bookings-table tr:hover td { background-color: #f8fafc; }
+/* ============================================================ */
+/* ЖЕСТКАЯ ТАБЛИЦА ДЛЯ ПК (никакие мобильные правила не сработают) */
+/* ============================================================ */
+@media (min-width: 769px) {
+    .bookings-table, .clients-table {
+        display: table !important;
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .bookings-table thead, .clients-table thead { display: table-header-group !important; }
+    .bookings-table tbody, .clients-table tbody { display: table-row-group !important; }
+    .bookings-table tr, .clients-table tr { display: table-row !important; }
+    .bookings-table th, .clients-table th {
+        display: table-cell !important;
+        background: #e4ecf4;
+        padding: 12px 8px;
+        text-align: left;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #1a4055;
+        white-space: nowrap;
+    }
+    .bookings-table td, .clients-table td {
+        display: table-cell !important;
+        padding: 6px 6px;
+        border-bottom: 1px solid #e9eff6;
+        vertical-align: middle;
+    }
+    .bookings-table input, .bookings-table select, .clients-table select {
+        width: 100%;
+        padding: 6px 8px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        background: transparent;
+    }
+    .bookings-table input:focus, .bookings-table select:focus, .clients-table select:focus {
+        background: white;
+        border-color: #f6b83d;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(246,184,61,0.2);
+    }
+    .bookings-table tr:hover td { background-color: #f8fafc; }
+}
 
 /* ============================================================ */
-/* МОБИЛЬНАЯ ВЕРСИЯ (сработает ТОЛЬКО если экран < 768px) */
+/* МОБИЛЬНАЯ ВЕРСИЯ (только для < 768px) */
 /* ============================================================ */
 @media (max-width: 768px) {
-    /* Шапка */
-    .app-header { padding: 12px 16px; flex-direction: column; align-items: stretch; }
-    .app-header h1 { font-size: 1.4rem; justify-content: center; }
-    .app-header .sub { display: none; }
-    .nav-buttons { overflow-x: auto; padding-bottom: 4px; flex-wrap: nowrap; }
-    .nav-buttons button { padding: 8px 12px; font-size: 0.75rem; white-space: nowrap; }
-    
-    /* Табы */
-    .tabs { overflow-x: auto; flex-wrap: nowrap; padding: 0 10px; }
-    .tab-btn { padding: 12px 16px; font-size: 0.85rem; white-space: nowrap; }
-
-    /* Таблицы -> Карточки */
     .bookings-table, .clients-table { display: block !important; width: 100%; background: transparent; box-shadow: none; }
     .bookings-table thead, .clients-table thead { display: none !important; }
     .bookings-table tbody, .clients-table tbody { display: block !important; }
@@ -303,23 +338,7 @@
     .bookings-table td, .clients-table td { display: flex !important; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f0f4f8; font-size: 0.9rem; }
     .bookings-table td:last-child, .clients-table td:last-child { border-bottom: none; justify-content: flex-end; gap: 6px; padding-top: 10px; }
     .bookings-table td::before, .clients-table td::before { content: attr(data-label); font-weight: 600; color: #3a657e; font-size: 0.75rem; text-transform: uppercase; margin-right: 10px; }
-
-    /* Поля ввода на мобилках */
     .bookings-table input, .clients-table input, .bookings-table select { width: 60% !important; text-align: right; background: #f8fafc; border: 1px solid #e4ecf4; margin-left: 10px; }
-    
-    /* Главное меню (плитки) */
-    .main-menu { grid-template-columns: 1fr 1fr; gap: 12px; }
-    .menu-card { padding: 16px 10px; }
-    .menu-card i { font-size: 2rem; }
-    .menu-card h2 { font-size: 1rem; }
-    
-    /* Дашборд */
-    .dashboard-grid { grid-template-columns: 1fr 1fr; }
-    .stat-card { padding: 12px; }
-    .stat-card .stat-value { font-size: 1.4rem; }
-
-    /* Модальные окна */
-    .modal-box { padding: 16px; width: 100%; max-height: 95vh; border-radius: 16px 16px 0 0; position: fixed; bottom: 0; left: 0; right: 0; margin: 0; }
 }
     </style>
 </head>

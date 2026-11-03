@@ -3631,7 +3631,10 @@ console.log('✅ Добавлена печать карты клиента 85×5
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   OneSignalDeferred.push(async function(OneSignal) {
     await OneSignal.init({
-      appId: "d79491d7-5fe0-4544-b322-6bf8210409a0",
+       appId: "d79491d7-5fe0-4544-b322-6bf8210409a0",
+  // Указываем, что воркер лежит в папке PCD (относительно корня сайта PalychCarDiag)
+  serviceWorkerPath: "PCD/OneSignalSDKWorker.js",
+  serviceWorkerParam: { scope: "/PalychCarDiag/PCD/" },
       notifyButton: {
         enable: true,
         position: 'bottom-left',

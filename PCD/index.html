@@ -88,9 +88,6 @@
         .modal-close { position: sticky; top: 0; float: right; background: #eef2f7; border: none; width: 36px; height: 36px; border-radius: 40px; font-size: 1.2rem; cursor: pointer; z-index: 10; }
         .modal-title { font-size: 1.4rem; font-weight: 700; color: #0b2b3c; margin-bottom: 12px; border-bottom: 3px solid #f6b83d; padding-bottom: 6px; }
 
-        /* ============================================================ */
-        /* ТАБЛИЦЫ (ИДЕАЛЬНО ДЛЯ ПК) */
-        /* ============================================================ */
         .bookings-table, .clients-table {
             display: table !important;
             width: 100%;
@@ -183,7 +180,6 @@
         .booking-detail-modal .detail-row { display: flex; padding: 6px 0; border-bottom: 1px solid #eef2f7; }
         .booking-detail-modal .detail-row .label { font-weight: 600; min-width: 130px; color: #1f4055; }
 
-        /* ===== Карта клиента ===== */
         .client-card {
             width: 85mm; height: 54mm;
             background: linear-gradient(135deg, #0b2b3c 0%, #1f4a5e 60%, #0b2b3c 100%);
@@ -202,25 +198,9 @@
         .client-card .cc-line { color: #d4e9f5; font-size: 6.5pt; }
         .client-card .cc-plate { display: inline-block; background: #f6b83d; color: #0b2b3c; padding: 0.4mm 1.8mm; border-radius: 1.5mm; font-weight: 900; font-size: 7.5pt; margin-top: 0.8mm; }
         .client-card .cc-code { display: inline-block; background: rgba(255,255,255,0.12); color: #f6b83d; padding: 0.4mm 1.8mm; border-radius: 1.5mm; font-weight: 700; font-size: 6.5pt; margin-left: 1mm; }
-.client-card .cc-qr { 
-    width: 20mm; 
-    height: 20mm; 
-    background: white; 
-    border-radius: 1.5mm; 
-    padding: 1mm; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    flex-shrink: 0;
-}
-.client-card .cc-qr img,
-.client-card .cc-qr canvas { 
-    width: 100%; 
-    height: 100%; 
-    display: block; 
-    object-fit: contain; 
-}
-        /* ===== ЭТИКЕТКА МАСЛА ===== */
+        .client-card .cc-qr { width: 20mm; height: 20mm; background: white; border-radius: 1.5mm; padding: 1mm; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .client-card .cc-qr img, .client-card .cc-qr canvas { width: 100%; height: 100%; display: block; object-fit: contain; }
+
         .oil-label { width: 80mm; height: 50mm; background: #fff; border: 2px solid #0b2b3c; border-radius: 3mm; box-sizing: border-box; display: flex; flex-direction: column; }
         .oil-label .ol-header { background: #0b2b3c; color: white; padding: 2mm 3mm; display: flex; align-items: center; gap: 2mm; }
         .oil-label .ol-logo { width: 8mm; height: 8mm; border-radius: 50%; background: #f6b83d; color: #0b2b3c; display: flex; align-items: center; justify-content: center; font-weight: 900; }
@@ -228,135 +208,70 @@
         .oil-label .ol-body { flex: 1; padding: 2mm 3mm; display: grid; grid-template-columns: 1fr 1fr; gap: 1mm 3mm; font-size: 7pt; }
         .oil-label .ol-footer { background: #f6b83d; padding: 1.5mm 3mm; font-size: 6pt; font-weight: 700; display: flex; justify-content: space-between; }
 
-        /* Уведомления (Toast) */
         .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
         .toast { background: #0b2b3c; color: white; padding: 14px 20px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); font-weight: 600; font-size: 0.9rem; border-left: 4px solid #f6b83d; display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s ease-out; }
         .toast.success { border-left-color: #1f7b4a; }
         .toast.error { border-left-color: #b33c3c; }
         .toast.info { border-left-color: #2d6b84; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-   /* ============================================================ */
-/* ЖЕСТКАЯ ФИКСАЦИЯ ДЛЯ ПК (чтобы таблица была ровной) */
-/* ============================================================ */
-@media (min-width: 769px) {
-    .bookings-table, .clients-table {
-        display: table !important;
-        width: 100%;
-        border-collapse: collapse;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .bookings-table thead, .clients-table thead { display: table-header-group !important; }
-    .bookings-table tbody, .clients-table tbody { display: table-row-group !important; }
-    .bookings-table tr, .clients-table tr { display: table-row !important; }
-    .bookings-table th, .clients-table th { display: table-cell !important; background: #e4ecf4; padding: 12px 8px; text-align: left; font-size: 0.75rem; font-weight: 700; color: #1a4055; white-space: nowrap; }
-    .bookings-table td, .clients-table td { display: table-cell !important; padding: 6px 6px; border-bottom: 1px solid #e9eff6; vertical-align: middle; }
-    .bookings-table input, .bookings-table select, .clients-table select { width: 100%; padding: 6px 8px; border: 1px solid transparent; border-radius: 6px; font-size: 0.8rem; background: transparent; }
-    .bookings-table input:focus, .bookings-table select:focus, .clients-table select:focus { background: white; border-color: #f6b83d; outline: none; box-shadow: 0 0 0 2px rgba(246,184,61,0.2); }
-    .bookings-table tr:hover td { background-color: #f8fafc; }
-}
-/* ============================================================ */
-/* МОБИЛЬНАЯ ВЕРСИЯ (Карточки) — только для экранов < 768px */
-/* ============================================================ */
-@media (max-width: 768px) {
-    /* Шапка */
-    .app-header { padding: 12px 16px; flex-direction: column; align-items: stretch; }
-    .app-header h1 { font-size: 1.4rem; justify-content: center; }
-    .app-header .sub { display: none; }
-    .nav-buttons { overflow-x: auto; padding-bottom: 4px; flex-wrap: nowrap; }
-    .nav-buttons button { padding: 8px 12px; font-size: 0.75rem; white-space: nowrap; }
-    
-    /* Табы */
-    .tabs { overflow-x: auto; flex-wrap: nowrap; padding: 0 10px; }
-    .tab-btn { padding: 12px 16px; font-size: 0.85rem; white-space: nowrap; }
 
-    /* Таблицы -> Карточки */
-    .bookings-table, .clients-table { 
-        display: block !important; 
-        width: 100%; 
-        background: transparent; 
-        box-shadow: none; 
-        border-radius: 0;
-    }
-    .bookings-table thead, .clients-table thead { display: none !important; }
-    .bookings-table tbody, .clients-table tbody { display: block !important; }
-    .bookings-table tr, .clients-table tr { 
-        display: block !important; 
-        background: white; 
-        border-radius: 12px; 
-        margin-bottom: 12px; 
-        padding: 12px; 
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05); 
-        border: 1px solid #e4ecf4; 
-    }
-    .bookings-table td, .clients-table td { 
-        display: flex !important; 
-        justify-content: space-between; 
-        align-items: center; 
-        padding: 8px 0; 
-        border-bottom: 1px solid #f0f4f8; 
-        font-size: 0.9rem; 
-    }
-    .bookings-table td:last-child, .clients-table td:last-child { 
-        border-bottom: none; 
-        justify-content: flex-end; 
-        gap: 6px; 
-        padding-top: 10px; 
-    }
-    /* Подписи слева (берутся из data-label) */
-    .bookings-table td::before, .clients-table td::before { 
-        content: attr(data-label); 
-        font-weight: 600; 
-        color: #3a657e; 
-        font-size: 0.75rem; 
-        text-transform: uppercase; 
-        margin-right: 10px; 
-        min-width: 80px;
-    }
-    /* Поля ввода на мобилках */
-    .bookings-table input, .clients-table input, .bookings-table select { 
-        width: 60% !important; 
-        text-align: right; 
-        background: #f8fafc; 
-        border: 1px solid #e4ecf4; 
-        margin-left: 10px; 
-    }
-    /* Ячейки без подписи (для кнопок действий) */
-    .bookings-table td[data-label="Действия"]::before,
-    .clients-table td[data-label="Действия"]::before { content: none; }
-    
-    /* Главное меню */
-    .main-menu { grid-template-columns: 1fr 1fr; gap: 12px; }
-    .menu-card { padding: 16px 10px; }
-    .menu-card i { font-size: 2rem; }
-    .menu-card h2 { font-size: 1rem; }
-    
-    /* Дашборд */
-    .dashboard-grid { grid-template-columns: 1fr 1fr; }
-    .stat-card { padding: 12px; }
-    .stat-card .stat-value { font-size: 1.4rem; }
-    
-    /* Модальные окна */
-    .modal-box { 
-        padding: 16px; 
-        width: 100%; 
-        max-height: 95vh; 
-        border-radius: 16px 16px 0 0; 
-        position: fixed; 
-        bottom: 0; 
-        left: 0; 
-        right: 0; 
-        margin: 0; 
-    }
-}
-   </style>
+        /* ===== ЧАТ (МАСТЕР) ===== */
+        .chat-msg { display: flex; margin-bottom: 8px; }
+        .chat-msg.client { justify-content: flex-end; }
+        .chat-msg.master { justify-content: flex-start; }
+        .chat-bubble { max-width: 80%; padding: 8px 14px; border-radius: 16px; font-size: 0.9rem; line-height: 1.35; }
+        .chat-msg.client .chat-bubble { background: #0b2b3c; color: white; border-bottom-right-radius: 4px; }
+        .chat-msg.master .chat-bubble { background: white; color: #0b2b3c; border: 1px solid #e4ecf4; border-bottom-left-radius: 4px; }
+        .chat-time { font-size: 0.65rem; opacity: 0.6; margin-top: 3px; }
+        #chatList > div:hover { background: #eef3f8 !important; }
+
+        @media (min-width: 769px) {
+            .bookings-table, .clients-table { display: table !important; width: 100%; border-collapse: collapse; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+            .bookings-table thead, .clients-table thead { display: table-header-group !important; }
+            .bookings-table tbody, .clients-table tbody { display: table-row-group !important; }
+            .bookings-table tr, .clients-table tr { display: table-row !important; }
+            .bookings-table th, .clients-table th { display: table-cell !important; background: #e4ecf4; padding: 12px 8px; text-align: left; font-size: 0.75rem; font-weight: 700; color: #1a4055; white-space: nowrap; }
+            .bookings-table td, .clients-table td { display: table-cell !important; padding: 6px 6px; border-bottom: 1px solid #e9eff6; vertical-align: middle; }
+            .bookings-table input, .bookings-table select, .clients-table select { width: 100%; padding: 6px 8px; border: 1px solid transparent; border-radius: 6px; font-size: 0.8rem; background: transparent; }
+            .bookings-table input:focus, .bookings-table select:focus, .clients-table select:focus { background: white; border-color: #f6b83d; outline: none; box-shadow: 0 0 0 2px rgba(246,184,61,0.2); }
+            .bookings-table tr:hover td { background-color: #f8fafc; }
+        }
+        @media (max-width: 768px) {
+            .app-header { padding: 12px 16px; flex-direction: column; align-items: stretch; }
+            .app-header h1 { font-size: 1.4rem; justify-content: center; }
+            .app-header .sub { display: none; }
+            .nav-buttons { overflow-x: auto; padding-bottom: 4px; flex-wrap: nowrap; }
+            .nav-buttons button { padding: 8px 12px; font-size: 0.75rem; white-space: nowrap; }
+            .tabs { overflow-x: auto; flex-wrap: nowrap; padding: 0 10px; }
+            .tab-btn { padding: 12px 16px; font-size: 0.85rem; white-space: nowrap; }
+            .bookings-table, .clients-table { display: block !important; width: 100%; background: transparent; box-shadow: none; border-radius: 0; }
+            .bookings-table thead, .clients-table thead { display: none !important; }
+            .bookings-table tbody, .clients-table tbody { display: block !important; }
+            .bookings-table tr, .clients-table tr { display: block !important; background: white; border-radius: 12px; margin-bottom: 12px; padding: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #e4ecf4; }
+            .bookings-table td, .clients-table td { display: flex !important; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f0f4f8; font-size: 0.9rem; }
+            .bookings-table td:last-child, .clients-table td:last-child { border-bottom: none; justify-content: flex-end; gap: 6px; padding-top: 10px; }
+            .bookings-table td::before, .clients-table td::before { content: attr(data-label); font-weight: 600; color: #3a657e; font-size: 0.75rem; text-transform: uppercase; margin-right: 10px; min-width: 80px; }
+            .bookings-table input, .clients-table input, .bookings-table select { width: 60% !important; text-align: right; background: #f8fafc; border: 1px solid #e4ecf4; margin-left: 10px; }
+            .bookings-table td[data-label="Действия"]::before, .clients-table td[data-label="Действия"]::before { content: none; }
+            .main-menu { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .menu-card { padding: 16px 10px; }
+            .menu-card i { font-size: 2rem; }
+            .menu-card h2 { font-size: 1rem; }
+            .dashboard-grid { grid-template-columns: 1fr 1fr; }
+            .stat-card { padding: 12px; }
+            .stat-card .stat-value { font-size: 1.4rem; }
+            .modal-box { padding: 16px; width: 100%; max-height: 95vh; border-radius: 16px 16px 0 0; position: fixed; bottom: 0; left: 0; right: 0; margin: 0; }
+            #page-chats > div { grid-template-columns: 1fr !important; }
+            #chatList { max-height: 200px; }
+            #activeChatMessages { min-height: 250px; }
+        }
+    </style>
 </head>
 <body>
 <div class="app-container">
     <div class="app-header">
         <h1 onclick="goHome()"><i class="fas fa-car"></i> PalЫCH</h1>
-        <span class="sub"><i class="fas fa-wrench"></i> v5.2</span>
+        <span class="sub"><i class="fas fa-wrench"></i> v6.0</span>
         <div class="nav-buttons">
             <button class="active" onclick="goHome()"><i class="fas fa-home"></i> Главная</button>
             <button onclick="switchMode('diag')"><i class="fas fa-stethoscope"></i> Диагностика</button>
@@ -367,6 +282,7 @@
             <button onclick="switchMode('journal')"><i class="fas fa-book"></i> Журнал</button>
             <button onclick="switchMode('etalons')"><i class="fas fa-database"></i> Эталоны</button>
             <button onclick="switchMode('settings')"><i class="fas fa-cog"></i> Настройки</button>
+            <button onclick="switchMode('chats')"><i class="fas fa-comments"></i> Чат <span id="chatMasterBadge" class="hidden" style="background:#b33c3c;color:white;padding:1px 8px;border-radius:20px;font-size:0.65rem;margin-left:4px;">0</span></button>
         </div>
         <div class="file-actions">
             <button class="save-btn" onclick="saveAllToFile()"><i class="fas fa-save"></i> Сохранить</button>
@@ -387,7 +303,6 @@
             <span id="cloudStatus"><span class="sync-status sync-wait">☁️ Проверка...</span></span>
         </div>
 
-        <!-- ДАШБОРД -->
         <div class="dashboard-grid">
             <div class="stat-card revenue">
                 <span class="stat-title"><i class="fas fa-ruble-sign"></i> Выручка за месяц</span>
@@ -445,6 +360,25 @@
             </div>
         </div>
 
+        <!-- ОТЗЫВЫ КЛИЕНТОВ -->
+        <div class="requests-box" style="border-color:#1f7b4a;">
+            <div class="flex-between" style="margin-bottom: 8px;">
+                <h3 style="color:#0b2b3c; font-size:1rem;">
+                    <i class="fas fa-star" style="color:#f6b83d;"></i> Отзывы клиентов
+                    <span id="reviewsAvgBadge" style="background:#1f7b4a;color:white;padding:2px 10px;border-radius:20px;font-size:0.7rem;margin-left:8px;">—</span>
+                </h3>
+                <button class="btn-primary" onclick="loadReviews()" style="padding:6px 16px;font-size:0.8rem;">
+                    <i class="fas fa-sync"></i> Обновить
+                </button>
+            </div>
+            <div id="reviewsContainer" style="max-height:400px; overflow-y:auto;">
+                <div style="color:#3a657e; font-size:0.85rem; text-align:center; padding:20px;">
+                    <i class="fas fa-star" style="font-size:1.5rem; display:block; margin-bottom:6px;"></i>
+                    Загрузка отзывов...
+                </div>
+            </div>
+        </div>
+
         <div class="main-menu">
             <div class="menu-card" onclick="switchMode('diag')"><i class="fas fa-stethoscope" style="color:#f6b83d;"></i><h2>Диагностика</h2><p>Проверка систем</p></div>
             <div class="menu-card" onclick="switchMode('repair')"><i class="fas fa-tools" style="color:#1f7b4a;"></i><h2>Ремонт</h2><p>Запчасти и работы</p></div>
@@ -456,7 +390,8 @@
             <div class="menu-card" onclick="switchMode('settings')"><i class="fas fa-cog" style="color:#6c5b7b;"></i><h2>Настройки</h2><p>Управление</p></div>
         </div>
     </div>
-	    <!-- ===== ДИАГНОСТИКА ===== -->
+
+    <!-- ===== ДИАГНОСТИКА ===== -->
     <div id="page-diag" class="tab-content">
         <div class="tabs" style="background:transparent; border-bottom:1px solid #d0d9e4; padding:0;">
             <button class="tab-btn active" data-tab="diag1"><i class="fas fa-edit"></i> Регистрация</button>
@@ -661,6 +596,22 @@
         <div id="etalonsContainer" style="margin-top:12px;"></div>
     </div>
 
+    <!-- ===== ЧАТ ===== -->
+    <div id="page-chats" class="tab-content">
+        <h3 style="color:#0b2b3c; margin-bottom:12px;"><i class="fas fa-comments" style="color:#f6b83d;"></i> Чат с клиентами</h3>
+        <div style="display:grid; grid-template-columns:280px 1fr; gap:14px; min-height:500px;">
+            <div id="chatList" style="background:#f8fafc; border-radius:12px; padding:8px; overflow-y:auto; max-height:600px;"></div>
+            <div style="background:white; border:1px solid #e4ecf4; border-radius:12px; display:flex; flex-direction:column; overflow:hidden;">
+                <div id="activeChatHeader" style="padding:12px 16px; border-bottom:1px solid #e4ecf4; background:#f8fafc; font-weight:700; color:#0b2b3c;">Выберите чат</div>
+                <div id="activeChatMessages" style="flex:1; overflow-y:auto; padding:12px; background:#f8fafc; min-height:300px; max-height:500px;"></div>
+                <div style="display:flex; gap:8px; padding:10px; border-top:1px solid #e4ecf4;">
+                    <input type="text" id="masterChatInput" placeholder="Написать клиенту..." style="flex:1; padding:10px 14px; border:2px solid #d4dee9; border-radius:50px; font-size:0.9rem;" onkeydown="if(event.key==='Enter'){event.preventDefault();sendMasterChatMessage();}">
+                    <button class="btn-success" style="padding:10px 18px; border-radius:50px; border:none; cursor:pointer;" onclick="sendMasterChatMessage()"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- ===== НАСТРОЙКИ ===== -->
     <div id="page-settings" class="tab-content">
         <h3 style="color:#0b2b3c; margin-bottom:16px;"><i class="fas fa-cog" style="color:#f6b83d;"></i> Настройки</h3>
@@ -683,17 +634,12 @@
 <div class="toast-container" id="toastContainer"></div>
 <div id="printAreaCard" style="position:absolute; left:-9999px; top:0;"></div>
 <div id="printAreaOil" style="position:absolute; left:-9999px; top:0;"></div>
-
-
-</div>
 <script>
 // ============================================================
 // КОНФИГУРАЦИЯ SUPABASE
 // ============================================================
 const SUPABASE_URL = 'https://xpaqczxqkuzfwmnimzsx.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhwYXFjenhxa3V6ZndtbmltenN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5Njg4NDcsImV4cCI6MjEwNDU0NDg0N30.hH62d6aCsgBchg4MVPey714O3-FR9bNaqnsm_T32zAk';
-
-// URL клиентского приложения (для QR-кода на карте)
 const CLIENT_APP_URL = 'https://nktlosk19992002-sketch.github.io/PalychCarDiag/client.html';
 
 // ============================================================
@@ -739,9 +685,14 @@ let newRequests = [];
 let newClients = [];
 let priceRequests = [];
 let priceRequestIdCounter = 1;
-let currentCardClientId = null; // для модалки предпросмотра карты
+let currentCardClientId = null;
+let masterChats = [];
+let activeChatId = null;
+let masterChatPollTimer = null;
+let reviewsData = [];
+
 // ============================================================
-// УТИЛИТЫ: нормализация гос.номера (кириллица ↔ латиница)
+// УТИЛИТЫ
 // ============================================================
 function normalizePlate(plate) {
     if (!plate) return '';
@@ -756,6 +707,12 @@ function normalizePlate(plate) {
     return plate.replace(/[АВЕКМНОРСТУХавекмнорстух]/g, ch => map[ch] || ch)
                 .toUpperCase()
                 .replace(/\s/g, '');
+}
+
+function escapeHtml(str) {
+    return String(str || '').replace(/[&<>"']/g, s => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[s]);
 }
 
 // ============================================================
@@ -829,8 +786,7 @@ function createEmptyDiagTables() {
 }
 
 // ============================================================
-// QR-КОД ГЕНЕРАТОР — библиотека qrcode-generator (Kazuhiko Arase)
-// Public Domain, работает офлайн, проверена миллионами использований
+// QR-КОД ГЕНЕРАТОР (qrcode-generator, Kazuhiko Arase, Public Domain)
 // ============================================================
 const QRCodeLib = (function(){
 'use strict';
@@ -1093,7 +1049,6 @@ var qrcode = function(typeNumber, errorCorrectionLevel) {
     return _this;
 };
 
-// --- Вспомогательные классы ---
 var qr8BitByte = function(data) {
     var _mode = QRMode.MODE_8BIT_BYTE;
     var _data = data;
@@ -1350,7 +1305,6 @@ var QRUtil = (function() {
     _this.getLostPoint = function(qrcode) {
         var moduleCount = qrcode.getModuleCount();
         var lostPoint = 0;
-        // Level 1
         for (var row = 0; row < moduleCount; row += 1) {
             for (var col = 0; col < moduleCount; col += 1) {
                 var sameCount = 0;
@@ -1366,7 +1320,6 @@ var QRUtil = (function() {
                 if (sameCount > 5) lostPoint += (3 + sameCount - 5);
             }
         }
-        // Level 2
         for (var row = 0; row < moduleCount - 1; row += 1) {
             for (var col = 0; col < moduleCount - 1; col += 1) {
                 var count = 0;
@@ -1377,7 +1330,6 @@ var QRUtil = (function() {
                 if (count == 0 || count == 4) lostPoint += 3;
             }
         }
-        // Level 3
         for (var row = 0; row < moduleCount; row += 1) {
             for (var col = 0; col < moduleCount - 6; col += 1) {
                 if (qrcode.isDark(row, col) && !qrcode.isDark(row, col + 1) && qrcode.isDark(row, col + 2)
@@ -1392,7 +1344,6 @@ var QRUtil = (function() {
                     && qrcode.isDark(row + 6, col)) lostPoint += 40;
             }
         }
-        // Level 4
         var darkCount = 0;
         for (var col = 0; col < moduleCount; col += 1) {
             for (var row = 0; row < moduleCount; row += 1) {
@@ -1409,9 +1360,7 @@ var QRUtil = (function() {
 return qrcode;
 })();
 
-// --- Обёртка: рисует QR на canvas ---
 function makeQRCanvas(text, sizePx) {
-    // Определяем версию автоматически (typeNumber=0), ECC=M
     const qr = QRCodeLib(0, 'M');
     qr.addData(text);
     qr.make();
@@ -1453,7 +1402,7 @@ async function loadJsonFromServer() {
 
 async function saveJsonToServer(data) {
     try {
-        const jsonData = { ...data, version: '4.9', timestamp: new Date().toISOString() };
+        const jsonData = { ...data, version: '6.0', timestamp: new Date().toISOString() };
         const response = await fetch(`${SUPABASE_URL}/rest/v1/app_data?key=eq.palych_data`, {
             method: 'PATCH',
             headers: {
@@ -1486,7 +1435,7 @@ async function saveJsonToServer(data) {
 }
 
 // ============================================================
-// ОТПРАВКА НА СЕРВЕР
+// ОТПРАВКА / ЗАГРУЗКА С СЕРВЕРА
 // ============================================================
 window.sendToCloud = async function() {
     const btn = document.querySelector('.cloud-send');
@@ -1501,7 +1450,12 @@ window.sendToCloud = async function() {
             savedCarData, repairCarData, parts, works,
             etalonData, priceRequests, priceRequestIdCounter,
             clientIdCounter, bookingIdCounter, partIdCounter,
-            workIdCounter, systemIdCounter, discountIdCounter
+            workIdCounter, systemIdCounter, discountIdCounter,
+            chats: (typeof masterChats !== 'undefined' && masterChats.length > 0) ? masterChats : [],
+            reviews: reviewsData || [],
+            chatIdCounter: (masterChats && masterChats.length > 0) ? Math.max(...masterChats.map(c => c.id || 0), 0) + 1 : 1,
+            messageIdCounter: (masterChats && masterChats.length > 0) ? Math.max(...masterChats.flatMap(c => (c.messages || []).map(m => m.id || 0)), 0) + 1 : 1,
+            reviewIdCounter: (reviewsData && reviewsData.length > 0) ? Math.max(...reviewsData.map(r => r.id || 0), 0) + 1 : 1
         };
         await saveJsonToServer(data);
         alert('✅ Данные отправлены на сервер!');
@@ -1513,9 +1467,6 @@ window.sendToCloud = async function() {
     btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Отправить';
 };
 
-// ============================================================
-// ЗАГРУЗКА С СЕРВЕРА
-// ============================================================
 window.syncFromCloud = async function() {
     const btn = document.querySelector('.cloud-pull');
     btn.disabled = true;
@@ -1553,6 +1504,8 @@ window.syncFromCloud = async function() {
         renderAll();
         loadNewRequests();
         loadPriceRequests();
+        loadMasterChats();
+        loadReviews();
         alert(`✅ Загружено:\n• Клиентов: ${clients.length}\n• Записей: ${bookings.length}\n• Журнал: ${journal.length}`);
         document.getElementById('fileStatus').textContent = `✅ Загружено с сервера`;
     } catch (error) {
@@ -1567,7 +1520,7 @@ window.syncFromCloud = async function() {
 // ============================================================
 function saveAllToFile() {
     const data = {
-        version: '4.9', timestamp: new Date().toISOString(),
+        version: '6.0', timestamp: new Date().toISOString(),
         journal, diagTables: DIAG_TABLES,
         selectedSystems: Array.from(selectedSystems),
         savedCarData, repairCarData, parts, works,
@@ -1656,7 +1609,7 @@ function updateFileStatus() {
 function autoSaveToLocalStorage() {
     try {
         const data = {
-            version: '4.9', timestamp: new Date().toISOString(),
+            version: '6.0', timestamp: new Date().toISOString(),
             journal, diagTables: DIAG_TABLES,
             selectedSystems: Array.from(selectedSystems),
             savedCarData, repairCarData, parts, works,
@@ -1713,11 +1666,11 @@ function goHome() {
 
 function switchMode(mode) {
     document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-    const pageMap = { diag: 'page-diag', repair: 'page-repair', bookings: 'page-bookings', clients: 'page-clients', prices: 'page-prices', journal: 'page-journal', etalons: 'page-etalons', settings: 'page-settings' };
+    const pageMap = { diag: 'page-diag', repair: 'page-repair', bookings: 'page-bookings', clients: 'page-clients', prices: 'page-prices', journal: 'page-journal', etalons: 'page-etalons', settings: 'page-settings', chats: 'page-chats' };
     document.getElementById(pageMap[mode]).classList.add('active');
     document.querySelectorAll('.nav-buttons button').forEach(b => b.classList.remove('active'));
     const btns = document.querySelectorAll('.nav-buttons button');
-    const idx = { diag: 1, repair: 2, bookings: 3, clients: 4, prices: 5, journal: 6, etalons: 7, settings: 8 };
+    const idx = { diag: 1, repair: 2, bookings: 3, clients: 4, prices: 5, journal: 6, etalons: 7, settings: 8, chats: 9 };
     if (btns[idx[mode]]) btns[idx[mode]].classList.add('active');
     if (mode === 'diag') { renderSystemsGrid(); updateDiagnosticsTab(); updateReport(); }
     if (mode === 'repair') { renderParts(); renderWorks(); updateAct(); renderDiscounts(); }
@@ -1727,8 +1680,8 @@ function switchMode(mode) {
     if (mode === 'journal') renderJournal();
     if (mode === 'etalons') renderEtalons();
     if (mode === 'settings') { renderSettings(); renderDiscounts(); }
+    if (mode === 'chats') { loadMasterChats(); }
 }
-
 // ============================================================
 // УВЕДОМЛЕНИЯ
 // ============================================================
@@ -1743,7 +1696,7 @@ function showNotification(message, type = 'info') {
 }
 
 // ============================================================
-// ГЕНЕРАЦИЯ ЛОГОТИПА (без файлов)
+// ЛОГОТИП
 // ============================================================
 function getLogoDataURL() {
     const canvas = document.createElement('canvas');
@@ -1790,14 +1743,10 @@ function printRepair() {
     if (!content || content.innerHTML.trim() === '' || content.innerHTML.includes('Нет данных')) { alert('Нет данных для печати'); return; }
     window.print();
 }
-// ============================================================
-// ★★★ ПЕЧАТЬ ПЛАСТИКОВОЙ КАРТЫ КЛИЕНТА 85×54 мм С QR-КОДОМ ★★★
-// ============================================================
 
-/**
- * Формирует HTML карты клиента (85×54 мм) с QR-кодом.
- * QR ведёт на клиентское приложение с автозаполнением plate+code.
- */
+// ============================================================
+// КАРТА КЛИЕНТА 85×54
+// ============================================================
 function buildClientCardHTML(client) {
     if (!client) return '';
     const plate = (client.plate || '—').toUpperCase();
@@ -1806,17 +1755,14 @@ function buildClientCardHTML(client) {
     const car = client.car || '';
     const phone = client.phone || '';
     const qrUrl = `https://nktlosk19992002-sketch.github.io/PalychCarDiag/client.html?plate=${encodeURIComponent(plate)}&code=${encodeURIComponent(code)}`;
-const qrCanvas = makeQRCanvas(qrUrl, 280);
+    const qrCanvas = makeQRCanvas(qrUrl, 280);
     const qrDataUrl = qrCanvas.toDataURL('image/png');
 
     return `
         <div class="client-card">
             <div class="cc-header">
                 <div class="cc-logo">P</div>
-                <div>
-                    PalЫCH
-                    <small>CAR DIAGNOST</small>
-                </div>
+                <div>PalЫCH <small>CAR DIAGNOST</small></div>
             </div>
             <div class="cc-body">
                 <div class="cc-info">
@@ -1828,31 +1774,16 @@ const qrCanvas = makeQRCanvas(qrUrl, 280);
                         <span class="cc-code">PIN ${escapeHtml(code)}</span>
                     </div>
                 </div>
-                <div class="cc-qr">
-                    <img src="${qrDataUrl}" alt="QR">
-                </div>
+                <div class="cc-qr"><img src="${qrDataUrl}" alt="QR"></div>
             </div>
-            <div class="cc-footer">Отсканируйте QR для входа в кабинет</div>
         </div>
     `;
 }
 
-function escapeHtml(str) {
-    return String(str || '').replace(/[&<>"']/g, s => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-    })[s]);
-}
-
-/**
- * Открыть предпросмотр карты клиента в модалке.
- */
 function openClientCard(clientId) {
     const client = clients.find(c => c.id === clientId);
     if (!client) { alert('Клиент не найден'); return; }
-    if (!client.access_code) {
-        alert('У клиента нет кода доступа. Сгенерируйте код (кнопка 🔑).');
-        return;
-    }
+    if (!client.access_code) { alert('У клиента нет кода доступа.'); return; }
     currentCardClientId = clientId;
     document.getElementById('cardPreviewContent').innerHTML = buildClientCardHTML(client);
     document.getElementById('cardPreviewModal').classList.add('active');
@@ -1863,53 +1794,35 @@ function closeCardPreview() {
     currentCardClientId = null;
 }
 
-/**
- * Печать карты. Кладём HTML в скрытую зону #printAreaCard и вызываем print().
- * @media print показывает только #printAreaCard.
- */
 function printCardFromPreview() {
     if (currentCardClientId === null) return;
     const client = clients.find(c => c.id === currentCardClientId);
     if (!client) return;
     const printArea = document.getElementById('printAreaCard');
     printArea.innerHTML = buildClientCardHTML(client);
-    // Даём время на загрузку картинки QR
     setTimeout(() => {
         window.print();
-        // После печати прячем обратно (на случай, если window.print не блокирует)
         setTimeout(() => { printArea.innerHTML = ''; }, 1000);
     }, 200);
 }
 
-/**
- * Скачать карту как PNG (для отправки клиенту в мессенджер).
- * Рисуем карту на большом Canvas вручную (без html2canvas).
- */
 function downloadCardPNG() {
     if (currentCardClientId === null) return;
     const client = clients.find(c => c.id === currentCardClientId);
     if (!client) return;
-
-    // 85×54 мм при 300 DPI ≈ 1004×638 px. Возьмём 1000×635.
     const W = 1000, H = 635;
     const canvas = document.createElement('canvas');
     canvas.width = W;
     canvas.height = H;
     const ctx = canvas.getContext('2d');
-
-    // Фон — градиент
     const grad = ctx.createLinearGradient(0, 0, W, H);
     grad.addColorStop(0, '#0b2b3c');
     grad.addColorStop(0.6, '#1f4a5e');
     grad.addColorStop(1, '#0b2b3c');
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, W, H);
-
-    // Жёлтая полоса снизу
     ctx.fillStyle = '#f6b83d';
     ctx.fillRect(0, H - 30, W, 30);
-
-    // Круг-логотип
     const logoX = 55, logoY = 55, logoR = 32;
     ctx.beginPath();
     ctx.arc(logoX, logoY, logoR, 0, Math.PI * 2);
@@ -1920,8 +1833,6 @@ function downloadCardPNG() {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('P', logoX, logoY + 2);
-
-    // Название
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 32px "Segoe UI", sans-serif';
     ctx.textAlign = 'left';
@@ -1930,39 +1841,28 @@ function downloadCardPNG() {
     ctx.fillStyle = '#8ab4c9';
     ctx.font = '13px "Segoe UI", sans-serif';
     ctx.fillText('C A R   D I A G N O S T', 107, 70);
-
-    // Данные клиента
     const plate = (client.plate || '—').toUpperCase();
     const code = client.access_code || '—';
     const name = client.name || 'Клиент';
     const car = client.car || '';
     const phone = client.phone || '';
-
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 34px "Segoe UI", sans-serif';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'alphabetic';
-    // Обрезаем длинное имя
     let displayName = name;
-    while (ctx.measureText(displayName).width > 560 && displayName.length > 3) {
-        displayName = displayName.slice(0, -2) + '…';
-    }
+    while (ctx.measureText(displayName).width > 560 && displayName.length > 3) displayName = displayName.slice(0, -2) + '…';
     ctx.fillText(displayName, 55, 175);
-
     ctx.fillStyle = '#d4e9f5';
     ctx.font = '22px "Segoe UI", sans-serif';
     ctx.fillText(car || '', 55, 215);
     ctx.fillText(phone || '', 55, 250);
-
-    // Плашка с номером
     ctx.fillStyle = '#f6b83d';
     ctx.fillRect(55, 285, 220, 60);
     ctx.fillStyle = '#0b2b3c';
     ctx.font = 'bold 36px "Segoe UI", sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText(plate, 165, 325);
-
-    // Плашка с PIN
     ctx.fillStyle = 'rgba(255,255,255,0.12)';
     ctx.fillRect(295, 285, 200, 60);
     ctx.strokeStyle = '#f6b83d';
@@ -1976,23 +1876,16 @@ function downloadCardPNG() {
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 30px "Segoe UI", sans-serif';
     ctx.fillText(code, 395, 338);
-
-    // QR-код
     const qrSize = 260;
-const qrUrl = `https://nktlosk19992002-sketch.github.io/PalychCarDiag/client.html?plate=${encodeURIComponent(plate)}&code=${encodeURIComponent(code)}`;
-const qrCanvas = makeQRCanvas(qrUrl, qrSize);
-    // Белый фон под QR
+    const qrUrl = `https://nktlosk19992002-sketch.github.io/PalychCarDiag/client.html?plate=${encodeURIComponent(plate)}&code=${encodeURIComponent(code)}`;
+    const qrCanvas = makeQRCanvas(qrUrl, qrSize);
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(W - qrSize - 60, 80, qrSize + 40, qrSize + 40);
     ctx.drawImage(qrCanvas, W - qrSize - 40, 100, qrSize, qrSize);
-
-    // Подпись
     ctx.fillStyle = '#8ab4c9';
     ctx.font = '14px "Segoe UI", sans-serif';
     ctx.textAlign = 'right';
     ctx.fillText('Отсканируйте QR для входа в кабинет', W - 60, H - 45);
-
-    // Скачиваем
     const url = canvas.toDataURL('image/png');
     const a = document.createElement('a');
     a.href = url;
@@ -2001,32 +1894,6 @@ const qrCanvas = makeQRCanvas(qrUrl, qrSize);
     a.click();
     document.body.removeChild(a);
     showNotification('✅ Карта сохранена как PNG', 'success');
-}
-// Тест QR-кода: открывает QR в новой вкладке для сканирования с экрана
-function testQRCode() {
-    if (currentCardClientId === null) return;
-    const client = clients.find(c => c.id === currentCardClientId);
-    if (!client) return;
-    const plate = (client.plate || '').toUpperCase();
-    const code = client.access_code || '';
-    const qrUrl = `${CLIENT_APP_URL}?plate=${encodeURIComponent(plate)}&code=${encodeURIComponent(code)}`;
-    // Генерируем крупный QR (600x600) для удобного сканирования с экрана
-    const bigCanvas = makeQRCanvas(qrUrl, 600);
-    const dataUrl = bigCanvas.toDataURL('image/png');
-    const w = window.open();
-    w.document.write(`
-        <html><head><title>Тест QR</title>
-        <style>body{margin:0;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:#f4f7fb;font-family:sans-serif;}
-        img{border:2px solid #0b2b3c;border-radius:8px;background:white;padding:10px;}
-        p{color:#0b2b3c;font-weight:600;margin:20px;text-align:center;max-width:600px;}
-        code{background:#eef3f8;padding:2px 8px;border-radius:4px;font-size:0.85rem;word-break:break-all;}</style>
-        </head><body>
-        <p>📱 Наведите камеру телефона на QR-код:</p>
-        <img src="${dataUrl}" alt="QR">
-        <p style="font-size:0.85rem;color:#3a657e;">URL внутри QR:<br><code>${qrUrl}</code></p>
-        </body></html>
-    `);
-    w.document.close();
 }
 
 // ============================================================
@@ -2262,9 +2129,7 @@ function updateReport() {
         });
     }
     
-    html += `<div style="margin-top:20px; padding-top:10px; border-top:2px solid #e4ecf4; display:flex; justify-content:space-between; font-size:0.8rem; color:#3a657e;">
-
-    </div>`;
+    html += `<div style="margin-top:20px; padding-top:10px; border-top:2px solid #e4ecf4; display:flex; justify-content:space-between; font-size:0.8rem; color:#3a657e;"></div>`;
     html += `<div style="margin-top:8px; text-align:right; font-size:0.75rem; color:#3a657e;">${new Date().toLocaleString()}</div></div>`;
     container.innerHTML = html;
 }
@@ -2561,9 +2426,8 @@ function saveRepairToJournal() {
     setTimeout(() => { document.getElementById('actFeedback').innerHTML = ''; }, 3000);
     renderJournal(); updateFileStatus(); autoSaveToLocalStorage();
 }
-
 // ============================================================
-// ★ ИЗМЕНЕНО: renderClients() — добавлена кнопка 🪪
+// КЛИЕНТЫ
 // ============================================================
 function renderClients() {
     const tbody = document.getElementById('clientsBody');
@@ -2582,17 +2446,17 @@ function renderClients() {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td data-label="№">${idx+1}</td>
-            <td data-label="Имя"><strong>${c.name}</strong></td>
-            <td data-label="Телефон">${c.phone || '—'}</td>
-            <td data-label="Номер">${c.plate || '—'}</td>
-            <td data-label="Марка">${c.car || '—'}</td>
+            <td data-label="Имя"><strong>${escapeHtml(c.name)}</strong></td>
+            <td data-label="Телефон">${escapeHtml(c.phone || '—')}</td>
+            <td data-label="Номер">${escapeHtml(c.plate || '—')}</td>
+            <td data-label="Марка">${escapeHtml(c.car || '—')}</td>
             <td data-label="Тип">
                 <select onchange="updateClientCarType(${c.id},this.value)" style="padding:4px 8px;border:1px solid #d0dce8;border-radius:6px;font-size:0.8rem;background:white;">
                     <option value="import" ${carType==='import'?'selected':''}>🚗 Иномарка</option>
                     <option value="domestic" ${carType==='domestic'?'selected':''}>🚙 Отечественная</option>
                 </select>
             </td>
-            <td data-label="Код"><span class="client-badge">${c.access_code || '—'}</span></td>
+            <td data-label="Код"><span class="client-badge">${escapeHtml(c.access_code || '—')}</span></td>
             <td data-label="Диагностик">${diagCount}</td>
             <td data-label="Ремонтов">${repairCount}</td>
             <td data-label="Действия" style="white-space:nowrap;">
@@ -2608,6 +2472,7 @@ function renderClients() {
 }
 
 function updateClientCarType(clientId, carType) { const client = clients.find(c => c.id === clientId); if (client) { client.carType = carType; showNotification(`✅ Тип авто обновлён`, 'success'); autoSaveToLocalStorage(); } }
+
 // ============================================================
 // РЕДАКТИРОВАНИЕ КЛИЕНТА
 // ============================================================
@@ -2619,7 +2484,6 @@ function openClientEdit(clientId) {
 
     currentEditClientId = clientId;
 
-    // Заполняем поля
     document.getElementById('editClientId').textContent = client.id;
     document.getElementById('editClientName').value = client.name || '';
     document.getElementById('editClientPhone').value = client.phone || '';
@@ -2628,19 +2492,15 @@ function openClientEdit(clientId) {
     document.getElementById('editClientCarType').value = client.carType || 'import';
     document.getElementById('editClientCode').value = client.access_code || '';
 
-    // Статистика
     const diagCount = journal.filter(e => e.type === 'diagnostic' && e.clientId === client.id).length;
     const repairCount = journal.filter(e => e.type === 'repair' && e.clientId === client.id).length;
     document.getElementById('editClientDiagCount').textContent = diagCount;
     document.getElementById('editClientRepairCount').textContent = repairCount;
 
-    // Предупреждение о смене номера
     document.getElementById('clientPlateWarning').style.display = 'none';
     document.getElementById('clientEditFeedback').innerHTML = '';
 
     document.getElementById('clientEditModal').classList.add('active');
-
-    // Автоподсказка при изменении номера
     document.getElementById('editClientPlate').oninput = checkPlateDuplicate;
 }
 
@@ -2654,17 +2514,9 @@ function checkPlateDuplicate() {
     const warning = document.getElementById('clientPlateWarning');
     const warningText = document.getElementById('clientPlateWarningText');
     const feedback = document.getElementById('clientEditFeedback');
-
     feedback.innerHTML = '';
-
-    if (!plate) {
-        warning.style.display = 'none';
-        return;
-    }
-
-    // Ищем другого клиента с таким же номером
+    if (!plate) { warning.style.display = 'none'; return; }
     const dup = clients.find(c => c.id !== currentEditClientId && normalizePlate(c.plate) === plate);
-
     if (dup) {
         warning.style.display = 'block';
         warningText.innerHTML = `Гос. номер <b>${escapeHtml(plate)}</b> уже занят клиентом <b>${escapeHtml(dup.name)}</b> (ID: ${dup.id}). Сохранение будет отклонено.`;
@@ -2682,13 +2534,10 @@ function generateNewClientCode() {
 
 async function saveClientEdit() {
     if (currentEditClientId === null) return;
-
     const client = clients.find(c => c.id === currentEditClientId);
     if (!client) { alert('Клиент не найден'); return; }
-
     const feedback = document.getElementById('clientEditFeedback');
 
-    // Собираем данные
     const newName = document.getElementById('editClientName').value.trim();
     const newPhone = document.getElementById('editClientPhone').value.trim();
     const newCar = document.getElementById('editClientCar').value.trim();
@@ -2697,36 +2546,17 @@ async function saveClientEdit() {
     const newCarType = document.getElementById('editClientCarType').value;
     const newCode = document.getElementById('editClientCode').value.trim();
 
-    // Валидация
-    if (!newName) {
-        feedback.innerHTML = `<span style="color:#b33c3c;"><i class="fas fa-times-circle"></i> Введите имя клиента</span>`;
-        return;
-    }
-    if (!newPhone) {
-        feedback.innerHTML = `<span style="color:#b33c3c;"><i class="fas fa-times-circle"></i> Введите телефон</span>`;
-        return;
-    }
-    if (!newPlate) {
-        feedback.innerHTML = `<span style="color:#b33c3c;"><i class="fas fa-times-circle"></i> Введите гос. номер</span>`;
-        return;
-    }
-    if (!/^\d{4}$/.test(newCode)) {
-        feedback.innerHTML = `<span style="color:#b33c3c;"><i class="fas fa-times-circle"></i> Код доступа должен быть из 4 цифр</span>`;
-        return;
-    }
+    if (!newName) { feedback.innerHTML = `<span style="color:#b33c3c;"><i class="fas fa-times-circle"></i> Введите имя клиента</span>`; return; }
+    if (!newPhone) { feedback.innerHTML = `<span style="color:#b33c3c;"><i class="fas fa-times-circle"></i> Введите телефон</span>`; return; }
+    if (!newPlate) { feedback.innerHTML = `<span style="color:#b33c3c;"><i class="fas fa-times-circle"></i> Введите гос. номер</span>`; return; }
+    if (!/^\d{4}$/.test(newCode)) { feedback.innerHTML = `<span style="color:#b33c3c;"><i class="fas fa-times-circle"></i> Код доступа должен быть из 4 цифр</span>`; return; }
 
-    // Проверка дублей гос.номера
     const dup = clients.find(c => c.id !== currentEditClientId && normalizePlate(c.plate) === newPlate);
-    if (dup) {
-        feedback.innerHTML = `<span style="color:#b33c3c;"><i class="fas fa-times-circle"></i> Гос. номер ${escapeHtml(newPlate)} уже занят клиентом "${escapeHtml(dup.name)}"</span>`;
-        return;
-    }
+    if (dup) { feedback.innerHTML = `<span style="color:#b33c3c;"><i class="fas fa-times-circle"></i> Гос. номер ${escapeHtml(newPlate)} уже занят клиентом "${escapeHtml(dup.name)}"</span>`; return; }
 
-    // Сохраняем старые значения для обновления связанных записей
     const oldPlate = client.plate;
     const oldId = client.id;
 
-    // Обновляем клиента
     client.name = newName;
     client.phone = newPhone;
     client.car = newCar;
@@ -2734,41 +2564,23 @@ async function saveClientEdit() {
     client.carType = newCarType;
     client.access_code = newCode;
 
-    // Если гос.номер изменился — обновляем его в связанных записях
     if (normalizePlate(oldPlate) !== newPlate) {
-        let updatedBookings = 0;
-        let updatedJournal = 0;
-
         bookings.forEach(b => {
             if (b.client_id === oldId) {
-                b.plate = newPlate;
-                b.name = newName;
-                b.phone = newPhone;
-                b.car = newCar;
-                updatedBookings++;
+                b.plate = newPlate; b.name = newName; b.phone = newPhone; b.car = newCar;
             }
         });
-
         journal.forEach(j => {
             if (j.clientId === oldId) {
                 j.plate = newPlate;
-                j.car = newCar || j.car;
-                if (j.carData) {
-                    j.carData.plate = newPlate;
-                    if (newCar) j.carData.make = newCar;
-                }
-                updatedJournal++;
+                if (newCar) j.car = newCar;
+                if (j.carData) { j.carData.plate = newPlate; if (newCar) j.carData.make = newCar; }
             }
         });
-
         updateBookingsStorage();
-        console.log(`🔄 Обновлено: bookings=${updatedBookings}, journal=${updatedJournal}`);
     }
 
-    // Сохраняем локально
     autoSaveToLocalStorage();
-
-    // Синхронизируем с сервером (в фоне)
     feedback.innerHTML = `<span style="color:#d4a017;"><i class="fas fa-spinner fa-spin"></i> Сохранение на сервер...</span>`;
 
     try {
@@ -2776,46 +2588,15 @@ async function saveClientEdit() {
         if (jsonData && jsonData.clients) {
             const remoteClient = jsonData.clients.find(c => c.id === oldId);
             if (remoteClient) {
-                remoteClient.name = newName;
-                remoteClient.phone = newPhone;
-                remoteClient.car = newCar;
-                remoteClient.plate = newPlate;
-                remoteClient.carType = newCarType;
-                remoteClient.access_code = newCode;
+                remoteClient.name = newName; remoteClient.phone = newPhone; remoteClient.car = newCar;
+                remoteClient.plate = newPlate; remoteClient.carType = newCarType; remoteClient.access_code = newCode;
             } else {
-                // На сервере нет — добавляем
-                jsonData.clients.push({
-                    id: oldId, name: newName, phone: newPhone, car: newCar,
-                    plate: newPlate, carType: newCarType, access_code: newCode, is_new: false
-                });
+                jsonData.clients.push({ id: oldId, name: newName, phone: newPhone, car: newCar, plate: newPlate, carType: newCarType, access_code: newCode, is_new: false });
             }
-
-            // Обновляем связанные записи на сервере
             if (normalizePlate(oldPlate) !== newPlate) {
-                if (jsonData.bookings) {
-                    jsonData.bookings.forEach(b => {
-                        if (b.client_id === oldId) {
-                            b.plate = newPlate;
-                            b.name = newName;
-                            b.phone = newPhone;
-                            b.car = newCar;
-                        }
-                    });
-                }
-                if (jsonData.journal) {
-                    jsonData.journal.forEach(j => {
-                        if (j.clientId === oldId) {
-                            j.plate = newPlate;
-                            if (newCar) j.car = newCar;
-                            if (j.carData) {
-                                j.carData.plate = newPlate;
-                                if (newCar) j.carData.make = newCar;
-                            }
-                        }
-                    });
-                }
+                if (jsonData.bookings) jsonData.bookings.forEach(b => { if (b.client_id === oldId) { b.plate = newPlate; b.name = newName; b.phone = newPhone; b.car = newCar; } });
+                if (jsonData.journal) jsonData.journal.forEach(j => { if (j.clientId === oldId) { j.plate = newPlate; if (newCar) j.car = newCar; if (j.carData) { j.carData.plate = newPlate; if (newCar) j.carData.make = newCar; } } });
             }
-
             await saveJsonToServer(jsonData);
             feedback.innerHTML = `<span style="color:#0a6030;"><i class="fas fa-check-circle"></i> Сохранено на сервере!</span>`;
         } else {
@@ -2826,27 +2607,13 @@ async function saveClientEdit() {
         feedback.innerHTML = `<span style="color:#d4a017;"><i class="fas fa-exclamation-triangle"></i> Сохранено локально. Ошибка сервера: ${escapeHtml(e.message)}</span>`;
     }
 
-    // Обновляем UI
     renderClients();
     updateClientSelect();
     if (typeof renderBookings === 'function') renderBookings();
-
-    // Обновляем статистику в модалке
-    const diagCount = journal.filter(e => e.type === 'diagnostic' && e.clientId === oldId).length;
-    const repairCount = journal.filter(e => e.type === 'repair' && e.clientId === oldId).length;
-    document.getElementById('editClientDiagCount').textContent = diagCount;
-    document.getElementById('editClientRepairCount').textContent = repairCount;
-    document.getElementById('editClientPlate').value = newPlate;
-
     showNotification('✅ Данные клиента обновлены', 'success');
-
-    // Автозакрытие через 2 секунды
-    setTimeout(() => {
-        if (currentEditClientId === oldId) {
-            closeClientEdit();
-        }
-    }, 2000);
+    setTimeout(() => { if (currentEditClientId === oldId) closeClientEdit(); }, 2000);
 }
+
 function addClientForm() {
     const name = prompt('Имя клиента:'); if (!name || !name.trim()) return;
     const phone = prompt('Телефон:') || ''; const plate = (prompt('Гос. номер:') || '').trim().toUpperCase(); const car = prompt('Марка авто:') || '';
@@ -3033,18 +2800,17 @@ function renderBookings() {
                         <button class="btn-sm" style="background:#6c5b7b;color:white;padding:2px 6px;border-radius:15px;border:none;cursor:pointer;font-size:0.6rem;" onclick="manualLinkBookingToRepair(${b.id})">+ Ремонт</button>`;
         }
 
-        // ✅ ПРАВИЛЬНОЕ СОЗДАНИЕ СТРОКИ
         const tr = document.createElement('tr');
         if (isClosed) tr.className = 'inactive-row';
         
         tr.innerHTML = `
             <td data-label="№">${idx+1}</td>
-            <td data-label="Имя"><input type="text" value="${b.name}" ${disabled} onchange="updateBooking(${b.id},'name',this.value)"></td>
-            <td data-label="Телефон"><input type="text" value="${b.phone}" ${disabled} onchange="updateBooking(${b.id},'phone',this.value)"></td>
-            <td data-label="Номер"><input type="text" value="${b.plate || ''}" ${disabled} onchange="updateBooking(${b.id},'plate',this.value)" style="text-transform:uppercase;font-weight:700;"></td>
+            <td data-label="Имя"><input type="text" value="${escapeHtml(b.name)}" ${disabled} onchange="updateBooking(${b.id},'name',this.value)"></td>
+            <td data-label="Телефон"><input type="text" value="${escapeHtml(b.phone)}" ${disabled} onchange="updateBooking(${b.id},'phone',this.value)"></td>
+            <td data-label="Номер"><input type="text" value="${escapeHtml(b.plate || '')}" ${disabled} onchange="updateBooking(${b.id},'plate',this.value)" style="text-transform:uppercase;font-weight:700;"></td>
             <td data-label="Дата"><input type="date" value="${b.date}" ${disabled} onchange="updateBooking(${b.id},'date',this.value)"></td>
             <td data-label="Время"><input type="time" value="${b.time || ''}" ${disabled} onchange="updateBooking(${b.id},'time',this.value)"></td>
-            <td data-label="Марка"><input type="text" value="${b.car}" ${disabled} onchange="updateBooking(${b.id},'car',this.value)"></td>
+            <td data-label="Марка"><input type="text" value="${escapeHtml(b.car)}" ${disabled} onchange="updateBooking(${b.id},'car',this.value)"></td>
             <td data-label="Тип">
                 <select ${disabled} onchange="updateBooking(${b.id},'type',this.value)" style="width:100%;padding:4px;border-radius:6px;">
                     <option value="diagnostic" ${b.type==='diagnostic'?'selected':''}>🔍 Диагностика</option>
@@ -3057,7 +2823,7 @@ function renderBookings() {
                     ${BOOKING_STATUSES.map(s => `<option value="${s}" ${b.status===s?'selected':''}>${s}</option>`).join('')}
                 </select>
             </td>
-            <td data-label="Причина"><input type="text" value="${b.reason||''}" ${disabled} onchange="updateBooking(${b.id},'reason',this.value)"></td>
+            <td data-label="Причина"><input type="text" value="${escapeHtml(b.reason||'')}" ${disabled} onchange="updateBooking(${b.id},'reason',this.value)"></td>
             <td data-label="Связь">${linkHtml}</td>
             <td data-label="Действия">
                 <button class="btn-sm" style="background:#2d6b84;color:white;padding:4px 10px;border-radius:30px;border:none;cursor:pointer;" onclick="showBookingDetail(${b.id})" title="Детали">ℹ️</button>
@@ -3107,17 +2873,16 @@ function showBookingDetail(id) {
     const modal = document.getElementById('bookingDetailModal'); const content = document.getElementById('bookingDetailContent');
     const typeLabels = { diagnostic: '🔍 Диагностика', repair: '🔧 Ремонт', maintenance: '🛠️ ТО' };
     content.innerHTML = `
-        <div class="detail-row"><span class="label">Имя:</span><span class="value">${b.name || '—'}</span></div>
-        <div class="detail-row"><span class="label">Телефон:</span><span class="value">${b.phone || '—'}</span></div>
-        <div class="detail-row"><span class="label">Марка:</span><span class="value">${b.car || '—'}</span></div>
-        <div class="detail-row"><span class="label">Гос. номер:</span><span class="value">${b.plate || '—'}</span></div>
+        <div class="detail-row"><span class="label">Имя:</span><span class="value">${escapeHtml(b.name || '—')}</span></div>
+        <div class="detail-row"><span class="label">Телефон:</span><span class="value">${escapeHtml(b.phone || '—')}</span></div>
+        <div class="detail-row"><span class="label">Марка:</span><span class="value">${escapeHtml(b.car || '—')}</span></div>
+        <div class="detail-row"><span class="label">Гос. номер:</span><span class="value">${escapeHtml(b.plate || '—')}</span></div>
         <div class="detail-row"><span class="label">Дата:</span><span class="value">${b.date || '—'}</span></div>
         <div class="detail-row"><span class="label">Время:</span><span class="value">${b.time || '—'}</span></div>
         <div class="detail-row"><span class="label">Тип:</span><span class="value">${typeLabels[b.type] || b.type}</span></div>
         <div class="detail-row"><span class="label">Статус:</span><span class="value">${b.status || 'новая'}</span></div>
-        <div class="detail-row"><span class="label">Причина:</span><span class="value">${b.reason || '—'}</span></div>`;
+        <div class="detail-row"><span class="label">Причина:</span><span class="value">${escapeHtml(b.reason || '—')}</span></div>`;
     modal.classList.add('active');
-    const fb = document.getElementById('bookingInsertFeedback'); if (fb) fb.innerHTML = '';
 }
 function closeBookingDetailModal() { document.getElementById('bookingDetailModal').classList.remove('active'); currentBookingId = null; }
 function insertBookingToDiag() {
@@ -3157,7 +2922,7 @@ function renderJournal() {
     filtered.slice().reverse().forEach(entry => {
         const div = document.createElement('div'); div.className = 'journal-item';
         const typeLabel = entry.type === 'diagnostic' ? '🔍 Диагностика' : '🔧 Ремонт'; const typeClass = entry.type === 'diagnostic' ? 'diag' : 'repair';
-        div.innerHTML = `<div class="info"><span class="type ${typeClass}">${typeLabel}</span><span class="car">${entry.car}</span><span class="plate">${entry.plate || '—'}</span><span class="date"><i class="far fa-calendar-alt"></i> ${entry.date}</span></div>
+        div.innerHTML = `<div class="info"><span class="type ${typeClass}">${typeLabel}</span><span class="car">${escapeHtml(entry.car)}</span><span class="plate">${escapeHtml(entry.plate || '—')}</span><span class="date"><i class="far fa-calendar-alt"></i> ${entry.date}</span></div>
             <div class="actions"><button class="btn-sm" style="background:#0b2b3c;color:white;padding:4px 10px;border-radius:30px;border:none;cursor:pointer;" onclick="viewJournalEntry(${entry.id})"><i class="fas fa-eye"></i></button><button class="btn-danger" onclick="deleteJournalEntry(${entry.id})">✕</button></div>`;
         list.appendChild(div);
     });
@@ -3312,8 +3077,8 @@ async function loadNewRequests() {
         renderNewRequests(newRequests, newClients);
     } catch (e) { 
         console.error('Ошибка загрузки заявок:', e); 
-        document.getElementById('newRequestsContainer').innerHTML = 
-            `<div style="color:#b33c3c;text-align:center;padding:20px;">Ошибка загрузки</div>`;
+        const el = document.getElementById('newRequestsContainer');
+        if (el) el.innerHTML = `<div style="color:#b33c3c;text-align:center;padding:20px;">Ошибка загрузки</div>`;
     }
 }
 
@@ -3334,16 +3099,16 @@ function renderNewRequests(reqs, clis) {
     let html = '';
     clis.forEach(c => {
         html += `<div class="request-item client-item">
-            <div><span class="name">👤 ${c.name}</span>
-                <span style="font-size:0.8rem;color:#3a657e;margin-left:8px;">${c.plate || ''}</span>
+            <div><span class="name">👤 ${escapeHtml(c.name)}</span>
+                <span style="font-size:0.8rem;color:#3a657e;margin-left:8px;">${escapeHtml(c.plate || '')}</span>
                 <span class="badge-new" style="background:#f6b83d;color:#0b2b3c;">Новый клиент</span></div>
             <button class="btn-sm btn-success" onclick="acceptNewClient(${c.id})"><i class="fas fa-check"></i> Принять</button>
         </div>`;
     });
     reqs.forEach(b => {
         html += `<div class="request-item">
-            <div><span class="name">📋 ${b.name}</span>
-                <span style="font-size:0.8rem;color:#3a657e;margin-left:8px;">${b.plate || ''}</span>
+            <div><span class="name">📋 ${escapeHtml(b.name)}</span>
+                <span style="font-size:0.8rem;color:#3a657e;margin-left:8px;">${escapeHtml(b.plate || '')}</span>
                 <span class="badge-new" style="background:#2d6b84;color:white;">${typeLabels[b.type] || b.type}</span></div>
             <button class="btn-sm btn-success" onclick="acceptNewBooking(${b.id})"><i class="fas fa-check"></i> Принять</button>
         </div>`;
@@ -3391,8 +3156,8 @@ async function loadPriceRequests() {
         renderPriceRequests();
     } catch (e) { 
         console.error('Ошибка загрузки запросов:', e); 
-        document.getElementById('priceRequestsContainer').innerHTML = 
-            `<div style="color:#b33c3c;text-align:center;padding:20px;">Ошибка загрузки</div>`;
+        const el = document.getElementById('priceRequestsContainer');
+        if (el) el.innerHTML = `<div style="color:#b33c3c;text-align:center;padding:20px;">Ошибка загрузки</div>`;
     }
 }
 
@@ -3419,13 +3184,13 @@ function renderPriceRequests() {
         html += `<div class="price-request-item">
             <div class="req-header">
                 <div>
-                    <strong>👤 ${clientName}</strong>
-                    ${plate ? `<span style="font-size:0.8rem;color:#3a657e;"> (${plate})</span>` : ''}
+                    <strong>👤 ${escapeHtml(clientName)}</strong>
+                    ${plate ? `<span style="font-size:0.8rem;color:#3a657e;"> (${escapeHtml(plate)})</span>` : ''}
                     <span style="font-size:0.7rem;color:#6c5b7b;margin-left:8px;">📅 ${date}</span>
                     <span style="font-size:0.7rem;color:#b33c3c;margin-left:8px;">⏳ Осталось: ${daysLeft} дн.</span>
                 </div>
             </div>
-            <div class="req-text"><strong>Что нужно сделать:</strong><br>${req.request_text}</div>
+            <div class="req-text"><strong>Что нужно сделать:</strong><br>${escapeHtml(req.request_text)}</div>
             <div class="req-reply">
                 <textarea id="reply_${req.id}" rows="2" placeholder="Введите стоимость и комментарий..."></textarea>
                 <button class="btn-sm btn-success" onclick="replyToPriceRequest(${req.id})" style="margin-top:6px;"><i class="fas fa-paper-plane"></i> Ответить</button>
@@ -3466,7 +3231,274 @@ async function deletePriceRequest(requestId) {
 }
 
 // ============================================================
-// ИНИЦИАЛИЗАЦИЯ И PWA
+// ЧАТ (МАСТЕР)
+// ============================================================
+async function loadMasterChats() {
+    try {
+        const jsonData = await loadJsonFromServer();
+        masterChats = (jsonData && jsonData.chats) ? jsonData.chats : [];
+        renderChatList();
+        updateMasterChatBadge();
+        if (activeChatId) {
+            const chat = masterChats.find(c => c.id === activeChatId);
+            if (chat) renderActiveChat(chat);
+        }
+    } catch (e) { console.error('loadMasterChats:', e); }
+}
+
+function updateMasterChatBadge() {
+    const total = masterChats.reduce((sum, c) => sum + (c.unread_for_master || 0), 0);
+    const badge = document.getElementById('chatMasterBadge');
+    if (!badge) return;
+    if (total > 0) { badge.textContent = total; badge.classList.remove('hidden'); }
+    else badge.classList.add('hidden');
+}
+
+function renderChatList() {
+    const container = document.getElementById('chatList');
+    if (!container) return;
+
+    const sorted = masterChats.slice().sort((a, b) => {
+        const ua = a.unread_for_master || 0;
+        const ub = b.unread_for_master || 0;
+        if (ua !== ub) return ub - ua;
+        return new Date(b.updated_at || 0) - new Date(a.updated_at || 0);
+    });
+
+    if (sorted.length === 0) {
+        container.innerHTML = '<div style="text-align:center;color:#3a657e;padding:20px;font-size:0.85rem;">Нет чатов</div>';
+        return;
+    }
+
+    container.innerHTML = sorted.map(c => {
+        const client = clients.find(x => x.id === c.client_id);
+        const name = client ? client.name : 'Клиент #' + c.client_id;
+        const plate = client ? (client.plate || '') : '';
+        const lastMsg = c.messages && c.messages.length > 0 ? c.messages[c.messages.length - 1] : null;
+        const lastText = lastMsg ? (lastMsg.from === 'master' ? 'Вы: ' : '') + lastMsg.text.slice(0, 30) : 'Нет сообщений';
+        const unread = c.unread_for_master || 0;
+        const isActive = c.id === activeChatId;
+        const bg = isActive ? '#0b2b3c' : 'white';
+        const color = isActive ? 'white' : '#0b2b3c';
+        return `<div onclick="openMasterChat(${c.id})" style="padding:10px 12px;border-radius:10px;margin-bottom:6px;cursor:pointer;background:${bg};color:${color};border:1px solid ${isActive?'#f6b83d':'#e4ecf4'};">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;">
+                <strong style="font-size:0.85rem;">${escapeHtml(name)}</strong>
+                ${unread > 0 ? `<span style="background:#b33c3c;color:white;padding:1px 8px;border-radius:20px;font-size:0.65rem;">${unread}</span>` : ''}
+            </div>
+            <div style="font-size:0.7rem;opacity:0.75;">${escapeHtml(plate)}</div>
+            <div style="font-size:0.75rem;opacity:0.7;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(lastText)}</div>
+        </div>`;
+    }).join('');
+}
+
+async function openMasterChat(chatId) {
+    activeChatId = chatId;
+    const chat = masterChats.find(c => c.id === chatId);
+    if (!chat) return;
+
+    if ((chat.unread_for_master || 0) > 0) {
+        try {
+            const jsonData = await loadJsonFromServer();
+            if (jsonData && jsonData.chats) {
+                const remote = jsonData.chats.find(c => c.id === chatId);
+                if (remote) {
+                    remote.messages.forEach(m => { if (m.from === 'client') m.read = true; });
+                    remote.unread_for_master = 0;
+                    await saveJsonToServer(jsonData);
+                    chat.unread_for_master = 0;
+                    chat.messages.forEach(m => { if (m.from === 'client') m.read = true; });
+                }
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    renderChatList();
+    updateMasterChatBadge();
+    renderActiveChat(chat);
+}
+
+function renderActiveChat(chat) {
+    const header = document.getElementById('activeChatHeader');
+    const container = document.getElementById('activeChatMessages');
+    if (!header || !container) return;
+
+    const client = clients.find(x => x.id === chat.client_id);
+    header.innerHTML = `💬 ${escapeHtml(client ? client.name : 'Клиент #' + chat.client_id)} ${client && client.plate ? `— <span style="background:#f6b83d;color:#0b2b3c;padding:1px 8px;border-radius:8px;font-size:0.75rem;">${escapeHtml(client.plate)}</span>` : ''}`;
+
+    if (!chat.messages || chat.messages.length === 0) {
+        container.innerHTML = '<div style="text-align:center;color:#3a657e;padding:30px;font-size:0.85rem;">Нет сообщений</div>';
+        return;
+    }
+
+    container.innerHTML = chat.messages.map(m => {
+        const time = new Date(m.timestamp).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        const date = new Date(m.timestamp).toLocaleDateString('ru-RU');
+        const cls = m.from === 'master' ? 'client' : 'master';
+        return `<div class="chat-msg ${cls}">
+            <div class="chat-bubble">${escapeHtml(m.text)}<div class="chat-time">${date} ${time}</div></div>
+        </div>`;
+    }).join('');
+
+    container.scrollTop = container.scrollHeight;
+}
+
+async function sendMasterChatMessage() {
+    const input = document.getElementById('masterChatInput');
+    const text = input.value.trim();
+    if (!text || !activeChatId) return;
+    input.value = '';
+
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData || !jsonData.chats) return;
+
+        const chat = jsonData.chats.find(c => c.id === activeChatId);
+        if (!chat) return;
+
+        if (!jsonData.messageIdCounter) jsonData.messageIdCounter = 1;
+        chat.messages.push({
+            id: jsonData.messageIdCounter++,
+            from: 'master',
+            text,
+            timestamp: new Date().toISOString(),
+            read: false
+        });
+        chat.unread_for_client = (chat.unread_for_client || 0) + 1;
+        chat.updated_at = new Date().toISOString();
+
+        await saveJsonToServer(jsonData);
+        masterChats = jsonData.chats;
+        const localChat = masterChats.find(c => c.id === activeChatId);
+        if (localChat) renderActiveChat(localChat);
+        renderChatList();
+    } catch (e) {
+        showNotification('❌ Ошибка отправки', 'error');
+        input.value = text;
+    }
+}
+
+function startMasterChatPolling() {
+    if (masterChatPollTimer) clearInterval(masterChatPollTimer);
+    masterChatPollTimer = setInterval(() => {
+        loadMasterChats();
+    }, 15000);
+}
+
+// ============================================================
+// ОТЗЫВЫ (МАСТЕР)
+// ============================================================
+async function loadReviews() {
+    try {
+        const jsonData = await loadJsonFromServer();
+        reviewsData = (jsonData && jsonData.reviews) ? jsonData.reviews : [];
+        renderReviews();
+    } catch (e) { console.error('loadReviews:', e); }
+}
+
+function renderReviews() {
+    const container = document.getElementById('reviewsContainer');
+    const badge = document.getElementById('reviewsAvgBadge');
+    if (!container) return;
+
+    if (reviewsData.length === 0) {
+        if (badge) badge.textContent = '—';
+        container.innerHTML = '<div style="color:#3a657e;font-size:0.85rem;text-align:center;padding:20px;"><i class="fas fa-star" style="font-size:1.5rem;display:block;margin-bottom:6px;"></i>Нет отзывов</div>';
+        return;
+    }
+
+    const avg = reviewsData.reduce((s, r) => s + r.rating, 0) / reviewsData.length;
+    if (badge) badge.textContent = `⭐ ${avg.toFixed(1)} (${reviewsData.length})`;
+
+    const sorted = reviewsData.slice().sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+    container.innerHTML = sorted.map(r => {
+        const client = clients.find(c => c.id === r.client_id);
+        const clientName = client ? client.name : 'Клиент';
+        const plate = client ? (client.plate || '') : '';
+        const stars = '⭐'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+        const date = new Date(r.timestamp).toLocaleString('ru-RU');
+        const journalEntry = journal.find(j => j.id === r.journal_id);
+        const carInfo = journalEntry ? `${journalEntry.car || ''} (${journalEntry.plate || ''})` : '';
+
+        return `<div style="background:white;border-radius:10px;padding:10px 14px;margin-bottom:8px;border-left:4px solid #1f7b4a;">
+            <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;">
+                <div>
+                    <strong>👤 ${escapeHtml(clientName)}</strong>
+                    ${plate ? `<span style="font-size:0.8rem;color:#3a657e;"> (${escapeHtml(plate)})</span>` : ''}
+                    <span style="font-size:0.75rem;color:#6c5b7b;margin-left:8px;">${escapeHtml(carInfo)}</span>
+                </div>
+                <div style="font-size:0.85rem;">${stars}</div>
+            </div>
+            ${r.text ? `<div style="margin-top:6px;font-size:0.85rem;color:#0b2b3c;">"${escapeHtml(r.text)}"</div>` : ''}
+            <div style="font-size:0.7rem;color:#3a657e;margin-top:4px;">📅 ${date}</div>
+        </div>`;
+    }).join('');
+}
+
+// ============================================================
+// СТАТИСТИКА НА ГЛАВНОЙ
+// ============================================================
+function updateDashboardStats() {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    let revenue = 0;
+    journal.forEach(entry => {
+        if (entry.type === 'repair' && entry.date) {
+            const entryDate = new Date(entry.date);
+            if (entryDate.getMonth() === currentMonth && entryDate.getFullYear() === currentYear) {
+                const worksTotal = (entry.works || []).reduce((sum, w) => sum + (w.cost || 0), 0);
+                let discPercent = 0;
+                if (entry.carData && entry.carData.discount && entry.carData.discount !== 'none') {
+                    const d = discounts.find(x => x.id === parseInt(entry.carData.discount));
+                    if (d) discPercent = d.percent;
+                }
+                revenue += worksTotal * (1 - discPercent / 100);
+            }
+        }
+    });
+    
+    const clientsCount = clients.filter(c => !c.is_new).length;
+    const todayStr = now.toISOString().slice(0, 10);
+    const bookingsToday = bookings.filter(b => b.date === todayStr && !CLOSED_STATUSES.includes(b.status)).length;
+    const activeRequests = priceRequests.filter(r => r.status === 'active').length;
+
+    const sRev = document.getElementById('statRevenue');
+    const sCli = document.getElementById('statClients');
+    const sBk = document.getElementById('statBookings');
+    const sReq = document.getElementById('statRequests');
+    if (sRev) sRev.textContent = Math.round(revenue).toLocaleString('ru-RU') + ' ₽';
+    if (sCli) sCli.textContent = clientsCount;
+    if (sBk) sBk.textContent = bookingsToday;
+    if (sReq) sReq.textContent = activeRequests;
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    const icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle');
+    toast.innerHTML = `<i class="fas ${icon}"></i> <span>${escapeHtml(message)}</span>`;
+    container.appendChild(toast);
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(100%)';
+        toast.style.transition = 'all 0.3s';
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+
+window.showNotification = function(message, type = 'info') {
+    showToast(message, type);
+};
+
+// ============================================================
+// РЕНДЕР ВСЕГО
 // ============================================================
 function renderAll() {
     renderSystemsGrid(); updateDiagnosticsTab(); updateReport();
@@ -3476,6 +3508,9 @@ function renderAll() {
     autoSaveToLocalStorage();
 }
 
+// ============================================================
+// ИНИЦИАЛИЗАЦИЯ
+// ============================================================
 document.addEventListener('DOMContentLoaded', function() {
     const today = new Date().toISOString().slice(0,10);
     ['diagDate','repairDate','bk_date'].forEach(id => { const el = document.getElementById(id); if (el) el.value = today; });
@@ -3484,7 +3519,13 @@ document.addEventListener('DOMContentLoaded', function() {
     if (bookings.length > 0) { bookingIdCounter = Math.max(...bookings.map(b => b.id || 0)) + 1; }
     renderAll();
     loadNewRequests(); loadPriceRequests();
-    setInterval(autoSaveToLocalStorage, 30000); setInterval(loadNewRequests, 30000); setInterval(loadPriceRequests, 30000);
+    loadReviews();
+    startMasterChatPolling();
+    setInterval(autoSaveToLocalStorage, 30000);
+    setInterval(loadNewRequests, 30000);
+    setInterval(loadPriceRequests, 30000);
+    setInterval(loadReviews, 30000);
+    setTimeout(updateDashboardStats, 1000);
 
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -3500,130 +3541,11 @@ document.addEventListener('DOMContentLoaded', function() {
 document.querySelectorAll('#page-diag .tabs .tab-btn').forEach(btn => { btn.addEventListener('click', function() { const parent = this.closest('.tabs'); parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); this.classList.add('active'); const content = document.getElementById('page-diag'); content.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active')); content.querySelector('#' + this.dataset.tab).classList.add('active'); }); });
 document.querySelectorAll('#page-repair .tabs .tab-btn').forEach(btn => { btn.addEventListener('click', function() { const parent = this.closest('.tabs'); parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); this.classList.add('active'); const content = document.getElementById('page-repair'); content.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active')); content.querySelector('#' + this.dataset.tab).classList.add('active'); if (this.dataset.tab === 'repair4') updateAct(); }); });
 
-// Закрытие модалки карты по клику на фон
 document.getElementById('cardPreviewModal')?.addEventListener('click', function(e) { if (e.target === this) closeCardPreview(); });
 document.getElementById('clientEditModal')?.addEventListener('click', function(e) { if (e.target === this) closeClientEdit(); });
-// ============================================================
-// НОВОЕ: СТАТИСТИКА НА ГЛАВНОЙ (v5.0)
-// ============================================================
-function updateDashboardStats() {
-    // 1. Выручка за текущий месяц (суммируем works в журнале)
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
-    
-    let revenue = 0;
-    journal.forEach(entry => {
-        if (entry.type === 'repair' && entry.date) {
-            const entryDate = new Date(entry.date);
-            if (entryDate.getMonth() === currentMonth && entryDate.getFullYear() === currentYear) {
-                // Считаем работы с учётом скидки
-                const worksTotal = (entry.works || []).reduce((sum, w) => sum + (w.cost || 0), 0);
-                let discPercent = 0;
-                if (entry.carData && entry.carData.discount && entry.carData.discount !== 'none') {
-                    const d = discounts.find(x => x.id === parseInt(entry.carData.discount));
-                    if (d) discPercent = d.percent;
-                }
-                revenue += worksTotal * (1 - discPercent / 100);
-            }
-        }
-    });
-    
-    // 2. Всего клиентов
-    const clientsCount = clients.filter(c => !c.is_new).length;
-    
-    // 3. Записей на сегодня
-    const todayStr = now.toISOString().slice(0, 10);
-    const bookingsToday = bookings.filter(b => b.date === todayStr && !CLOSED_STATUSES.includes(b.status)).length;
-    
-    // 4. Запросов стоимости (активных)
-    const activeRequests = priceRequests.filter(r => r.status === 'active').length;
 
-    // Обновляем UI
-    document.getElementById('statRevenue').textContent = Math.round(revenue).toLocaleString('ru-RU') + ' ₽';
-    document.getElementById('statClients').textContent = clientsCount;
-    document.getElementById('statBookings').textContent = bookingsToday;
-    document.getElementById('statRequests').textContent = activeRequests;
-}
-
-// Вызываем обновление при загрузке и при синхронизации
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(updateDashboardStats, 1000);
-});
-// Переопределяем syncFromCloud и sendToCloud, чтобы обновлять статистику
-const originalSync = window.syncFromCloud;
-window.syncFromCloud = async function() {
-    if (originalSync) await originalSync();
-    updateDashboardStats();
-};
-const originalSend = window.sendToCloud;
-window.sendToCloud = async function() {
-    if (originalSend) await originalSend();
-    updateDashboardStats();
-};
-
-// ============================================================
-// НОВОЕ: ВСПЛЫВАЮЩИЕ УВЕДОМЛЕНИЯ (Toast)
-// ============================================================
-function showToast(message, type = 'info') {
-    const container = document.getElementById('toastContainer');
-    if (!container) return;
-    
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    const icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle');
-    toast.innerHTML = `<i class="fas ${icon}"></i> <span>${message}</span>`;
-    
-    container.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateX(100%)';
-        toast.style.transition = 'all 0.3s';
-        setTimeout(() => toast.remove(), 300);
-    }, 4000);
-}
-
-// Переопределяем старую функцию showNotification, чтобы она использовала новый Toast
-const originalShowNotification = window.showNotification;
-window.showNotification = function(message, type = 'info') {
-    showToast(message, type);
-};
-
-// ============================================================
-// НОВОЕ: АВТО-ОБНОВЛЕНИЕ ОНЛАЙН-ЗАЯВОК С УВЕДОМЛЕНИЕМ
-// ============================================================
-let lastSeenRequestsCount = 0;
-let lastSeenBookingsCount = 0;
-
-setInterval(async () => {
-    // Проверяем только если мы на главной странице
-    if (!document.getElementById('page-home').classList.contains('active')) return;
-    
-    try {
-        const jsonData = await loadJsonFromServer();
-        if (jsonData) {
-            // Проверка новых запросов стоимости
-            const activeReqs = (jsonData.priceRequests || []).filter(r => r.status === 'active').length;
-            if (activeReqs > lastSeenRequestsCount && lastSeenRequestsCount !== 0) {
-                showToast(`У вас ${activeReqs - lastSeenRequestsCount} новых запросов стоимости!`, 'info');
-            }
-            lastSeenRequestsCount = activeReqs;
-            
-            // Проверка новых записей от клиентов (is_new)
-            const newBk = (jsonData.bookings || []).filter(b => b.is_new === true).length;
-            if (newBk > lastSeenBookingsCount && lastSeenBookingsCount !== 0) {
-                showToast(`Новая онлайн-заявка от клиента!`, 'info');
-            }
-            lastSeenBookingsCount = newBk;
-            
-            // Обновляем статистику
-            updateDashboardStats();
-        }
-    } catch (e) {}
-}, 30000); // Каждые 30 секунд
-console.log('🚀 PalЫCH Car Diagnost v4.9 загружен!');
-console.log('✅ Добавлена печать карты клиента 85×54 мм с QR-кодом');
+console.log('🚀 PalЫCH Car Diagnost v6.0 загружен!');
+console.log('✅ Чат с клиентами + отзывы');
 </script>
 </body>
 </html>

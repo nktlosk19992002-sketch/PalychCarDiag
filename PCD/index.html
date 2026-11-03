@@ -684,16 +684,6 @@
 <div id="printAreaCard" style="position:absolute; left:-9999px; top:0;"></div>
 <div id="printAreaOil" style="position:absolute; left:-9999px; top:0;"></div>
 
-<!-- Кнопка включения Push-уведомлений -->
-<div id="pushNotificationBox" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: white; padding: 16px 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 2px solid #f6b83d; display: flex; align-items: center; gap: 12px;">
-    <div>
-        <div style="font-weight: 700; color: #0b2b3c; font-size: 0.9rem;">Уведомления</div>
-        <div style="font-size: 0.75rem; color: #3a657e;" id="pushStatusText">Не включены</div>
-    </div>
-    <button onclick="subscribeToPush()" id="enablePushBtn" style="background: #1f7b4a; color: white; border: none; padding: 10px 20px; border-radius: 30px; font-weight: 700; cursor: pointer; font-size: 0.85rem;">
-        <i class="fas fa-bell"></i> Включить
-    </button>
-</div>
 
 </div>
 <script>
@@ -3637,7 +3627,7 @@ console.log('✅ Добавлена печать карты клиента 85×5
 // ============================================================
 // PUSH-УВЕДОМЛЕНИЯ
 // ============================================================
-const VAPID_PUBLIC_KEY = 'BDfFn9Z5CpYrDLCc1LwGowbuWaZIJXkopu9d_zmlqJtZRJTFe43jYCmFyumZyrY-JX5qiwYvP_B7SWkxRnPPAjM'; // <-- ВАШ ПУБЛИЧНЫЙ КЛЮЧ
+// const VAPID_PUBLIC_KEY = 'BDfFn9Z5CpYrDLCc1LwGowbuWaZIJXkopu9d_zmlqJtZRJTFe43jYCmFyumZyrY-JX5qiwYvP_B7SWkxRnPPAjM'; // <-- ВАШ ПУБЛИЧНЫЙ КЛЮЧ
 
 function urlBase64ToUint8Array(base64String) {
     const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -3650,79 +3640,26 @@ function urlBase64ToUint8Array(base64String) {
     return outputArray;
 }
 
-async function subscribeToPush() {
-    const btn = document.getElementById('enablePushBtn');
-    const statusText = document.getElementById('pushStatusText');
-
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-        alert('Ваш браузер не поддерживает Push-уведомления.');
-        return;
-    }
-
-    try {
-        btn.disabled = true;
-        btn.innerHTML = 'Запрос...';
-        
-        const permission = await Notification.requestPermission();
-        if (permission !== 'granted') {
-            alert('Вы отклонили уведомления. Разрешите их в настройках браузера.');
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-bell"></i> Включить';
-            return;
-        }
-
-        const registration = await navigator.serviceWorker.ready;
-        const subscription = await registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
-        });
-
-        // Сохраняем подписку в Supabase
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/push_subscriptions`, {
-            method: 'POST',
-            headers: {
-                'apikey': SUPABASE_ANON_KEY,
-                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                'Content-Type': 'application/json',
-                'Prefer': 'return=representation'
-            },
-            body: JSON.stringify({ subscription: subscription })
-        });
-
-        if (response.ok) {
-            statusText.innerHTML = '<span style="color: #1f7b4a; font-weight: 600;">✅ Включены</span>';
-            btn.style.display = 'none';
-            alert('✅ Уведомления включены! Теперь вы будете получать оповещения.');
-        } else {
-            const err = await response.text();
-            console.error('Ошибка сохранения подписки:', err);
-            alert('Ошибка сохранения подписки: ' + err);
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-bell"></i> Включить';
-        }
-    } catch (error) {
-        console.error('Ошибка подписки:', error);
-        alert('Не удалось включить уведомления: ' + error.message);
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-bell"></i> Включить';
-    }
-}
-
-// Проверяем, не подписан ли уже этот браузер
-document.addEventListener('DOMContentLoaded', async () => {
-    if ('serviceWorker' in navigator && 'PushManager' in window) {
-        try {
-            const registration = await navigator.serviceWorker.ready;
-            const subscription = await registration.pushManager.getSubscription();
-            if (subscription) {
-                document.getElementById('pushStatusText').innerHTML = '<span style="color: #1f7b4a; font-weight: 600;">✅ Включены</span>';
-                document.getElementById('enablePushBtn').style.display = 'none';
-            }
-        } catch (e) {
-            console.log('Push не поддерживается или SW не готов:', e);
-        }
-    }
 });
+</script>
+<!-- OneSignal SDK -->
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "d79491d7-5fe0-4544-b322-6bf8210409a0",
+      notifyButton: {
+        enable: true,
+        position: 'bottom-left',
+        text: {
+          'tip.state.unsubscribed': 'Подписаться на уведомления',
+          'tip.state.subscribed': 'Вы подписаны',
+          'message.action.subscribed': 'Спасибо за подписку!',
+        }
+      },
+    });
+  });
 </script>
 </body>
 </html>

@@ -4,13 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PalЫCH - Клиентский кабинет</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- PWA -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0b2b3c">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="PalЫCH">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
         body { background: #f4f7fb; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
@@ -79,7 +82,9 @@
 
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); justify-content: center; align-items: center; z-index: 999; }
         .modal-overlay.active { display: flex; }
-        .modal-box { background: white; max-width: 450px; width: 90%; border-radius: 24px; padding: 24px; }
+        .modal-box { background: white; max-width: 450px; width: 90%; max-height: 85vh; border-radius: 24px; padding: 24px; overflow-y: auto; position: relative; }
+        
+        .modal-close { position: sticky; top: 0; float: right; background: #eef2f7; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 1rem; cursor: pointer; z-index: 10; }
 
         .notification {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
@@ -95,89 +100,20 @@
         .section-title i { color: #f6b83d; }
 
         .empty-state { color: #3a657e; font-size: 0.85rem; text-align: center; padding: 20px; }
+        .plate-badge { background: #f6b83d; color: #0b2b3c; padding: 2px 8px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; display: inline-block; }
 
-        /* Баннер автовхода из QR */
-        .qr-auto-banner {
-            background: linear-gradient(135deg, #1f7b4a 0%, #2a8b5a 100%);
-            color: white;
-            padding: 12px 18px;
-            border-radius: 12px;
-            margin-bottom: 14px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            animation: fadeIn 0.3s;
-        }
-        .qr-auto-banner i { font-size: 1.2rem; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        /* ===== ЧАТ ===== */
+        .chat-msg { display: flex; margin-bottom: 8px; }
+        .chat-msg.client { justify-content: flex-end; }
+        .chat-msg.master { justify-content: flex-start; }
+        .chat-bubble { max-width: 80%; padding: 8px 14px; border-radius: 16px; font-size: 0.9rem; line-height: 1.35; }
+        .chat-msg.client .chat-bubble { background: #0b2b3c; color: white; border-bottom-right-radius: 4px; }
+        .chat-msg.master .chat-bubble { background: white; color: #0b2b3c; border: 1px solid #e4ecf4; border-bottom-left-radius: 4px; }
+        .chat-time { font-size: 0.65rem; opacity: 0.6; margin-top: 3px; }
 
-        /* ==== Модалка просмотра акта/диагностики ==== */
-        .journal-view-modal .modal-box {
-            max-width: 700px;
-            max-height: 90vh;
-            overflow-y: auto;
-            padding: 24px 28px;
-        }
-        .journal-view-modal .modal-close {
-            position: sticky; top: 0; float: right;
-            background: #eef2f7; border: none;
-            width: 36px; height: 36px; border-radius: 40px;
-            font-size: 1.2rem; cursor: pointer; z-index: 10;
-        }
-        .journal-view-modal .modal-title {
-            font-size: 1.2rem; font-weight: 700; color: #0b2b3c;
-            margin-bottom: 12px; border-bottom: 3px solid #f6b83d;
-            padding-bottom: 6px;
-        }
-        .jv-section { margin-top: 14px; border: 1px solid #e4ecf4; border-radius: 8px; overflow: hidden; }
-        .jv-section-title {
-            background: #0b2b3c; color: white; padding: 8px 14px;
-            font-weight: 700; font-size: 0.9rem;
-        }
-        .jv-row {
-            display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
-            padding: 6px 12px; border-bottom: 1px solid #eef2f7;
-            font-size: 0.82rem; align-items: center;
-        }
-        .jv-row.header { background: #eef3f8; font-weight: 700; color: #1f4055; font-size: 0.75rem; }
-        .jv-row.grid-3 { grid-template-columns: 3fr 1fr 1fr; }
-        .jv-row.grid-4 { grid-template-columns: 2.5fr 1fr 1fr 1fr; }
-        .jv-total {
-            text-align: right; font-weight: 700; font-size: 1rem;
-            padding: 10px 14px; background: #f8fafc;
-            border-top: 2px solid #0b2b3c;
-            color: #0b2b3c;
-        }
-        .jv-total .old-price { text-decoration: line-through; color: #b33c3c; font-size: 0.85rem; margin-right: 8px; }
-        .jv-total .new-price { color: #0a6030; }
-        .jv-car-info {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 4px 20px;
-            background: #f8fafc; padding: 10px 14px; border-radius: 8px;
-            margin-bottom: 12px; border-left: 4px solid #f6b83d;
-            font-size: 0.85rem;
-        }
-        .jv-car-info b { color: #1f4055; }
-        .jv-plate-badge {
-            background: #f6b83d; color: #0b2b3c;
-            padding: 2px 10px; border-radius: 10px;
-            font-weight: 700; font-size: 0.8rem;
-            display: inline-block;
-        }
-        .jv-status-badge {
-            display: inline-block; padding: 2px 10px; border-radius: 20px;
-            font-size: 0.7rem; font-weight: 600;
-        }
-        .jv-status-ok { background: #d3f0d8; color: #0a6030; }
-        .jv-status-fail { background: #fadad8; color: #a12b2b; }
-        .jv-status-unknown { background: #e8ecf0; color: #4a5e6b; }
-        .jv-history-card { cursor: pointer; transition: 0.2s; }
-        .jv-history-card:hover { background: #f8fafc; border-color: #f6b83d; transform: translateX(2px); }
-        .jv-empty-msg {
-            text-align: center; color: #4a6f82; padding: 30px;
-            background: #f8fafc; border-radius: 8px;
-        }
+        /* ===== ЗВЁЗДЫ ОЦЕНКИ ===== */
+        #reviewStars span { font-size: 2.2rem; margin: 0 4px; color: #888; transition: color 0.2s; }
+        #reviewStars span:hover { transform: scale(1.15); display: inline-block; }
     </style>
 </head>
 <body>
@@ -193,17 +129,13 @@
         <!-- ===== АВТОРИЗАЦИЯ ===== -->
         <div id="authForm">
             <h2 style="color:#0b2b3c; font-size:1.2rem; margin-bottom:16px;"><i class="fas fa-lock" style="color:#f6b83d;"></i> Вход</h2>
-            <div id="qrBanner" class="qr-auto-banner hidden">
-                <i class="fas fa-qrcode"></i>
-                <span>Вход по QR-коду с карты клиента...</span>
-            </div>
             <div class="form-group">
                 <label>Гос. номер</label>
-                <input type="text" id="authPlate" placeholder="А123ВС777" style="text-transform:uppercase;" autocomplete="off">
+                <input type="text" id="authPlate" placeholder="А123ВС777" style="text-transform:uppercase;">
             </div>
             <div class="form-group">
                 <label>Код доступа</label>
-                <input type="password" id="authCode" placeholder="0000" maxlength="4" inputmode="numeric" style="letter-spacing:8px; font-weight:700; text-align:center;" autocomplete="off">
+                <input type="password" id="authCode" placeholder="0000" maxlength="4" inputmode="numeric" style="letter-spacing:8px; font-weight:700; text-align:center;">
             </div>
             <button class="btn" onclick="login()"><i class="fas fa-sign-in-alt"></i> Войти</button>
             <div class="auth-error" id="authError"></div>
@@ -277,6 +209,19 @@
                 <button class="btn" onclick="toggleBookingForm()" style="background:#888;"><i class="fas fa-times"></i> Закрыть</button>
             </div>
 
+            <!-- ЧАТ С МАСТЕРОМ -->
+            <h3 class="section-title">
+                <i class="fas fa-comments"></i> Чат с мастером
+                <span id="chatUnreadBadge" class="hidden" style="background:#b33c3c;color:white;padding:2px 10px;border-radius:20px;font-size:0.7rem;">0</span>
+            </h3>
+            <div id="chatContainer" style="background:white;border:1px solid #e4ecf4;border-radius:16px;overflow:hidden;margin-bottom:16px;">
+                <div id="chatMessages" style="height:300px;overflow-y:auto;padding:12px;background:#f8fafc;"></div>
+                <div style="display:flex;gap:8px;padding:10px;border-top:1px solid #e4ecf4;background:white;">
+                    <input type="text" id="chatInput" placeholder="Написать сообщение..." style="flex:1;padding:10px 14px;border:2px solid #d4dee9;border-radius:50px;font-size:0.9rem;" onkeydown="if(event.key==='Enter'){event.preventDefault();sendChatMessage();}">
+                    <button class="btn" style="width:auto;padding:10px 18px;margin:0;" onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+
             <h3 class="section-title"><i class="fas fa-history"></i> История обслуживания</h3>
             <div id="historyContainer"></div>
 
@@ -298,15 +243,32 @@
     </div>
 </div>
 
-<!-- МОДАЛКА ПРОСМОТРА АКТА/ДИАГНОСТИКИ -->
-<div class="modal-overlay journal-view-modal" id="journalViewModal">
-    <div class="modal-box">
-        <button class="modal-close" onclick="closeJournalView()"><i class="fas fa-times"></i></button>
-        <div class="modal-title" id="journalViewTitle">Просмотр</div>
-        <div id="journalViewContent"></div>
-        <div style="margin-top:16px; text-align:center;">
-            <button class="btn" onclick="closeJournalView()" style="background:#888;"><i class="fas fa-times"></i> Закрыть</button>
+<!-- МОДАЛКА ДЛЯ ПРОСМОТРА ДЕТАЛЕЙ ИЗ ИСТОРИИ -->
+<div class="modal-overlay" id="historyDetailModal">
+    <div class="modal-box" style="max-width: 600px;">
+        <button class="modal-close" onclick="closeHistoryDetailModal()"><i class="fas fa-times"></i></button>
+        <div id="historyDetailContent" style="margin-top:10px;"></div>
+        <button class="btn btn-refresh" onclick="closeHistoryDetailModal()" style="margin-top:16px;">Закрыть</button>
+    </div>
+</div>
+
+<!-- МОДАЛКА ОЦЕНКИ КАЧЕСТВА -->
+<div class="modal-overlay" id="reviewModal">
+    <div class="modal-box" style="max-width:450px;">
+        <h3 style="color:#0b2b3c;margin-bottom:12px;"><i class="fas fa-star" style="color:#f6b83d;"></i> Оцените качество работ</h3>
+        <div style="text-align:center;margin:14px 0;" id="reviewStars">
+            <span onclick="setReviewRating(1)" data-rating="1">☆</span>
+            <span onclick="setReviewRating(2)" data-rating="2">☆</span>
+            <span onclick="setReviewRating(3)" data-rating="3">☆</span>
+            <span onclick="setReviewRating(4)" data-rating="4">☆</span>
+            <span onclick="setReviewRating(5)" data-rating="5">☆</span>
         </div>
+        <div class="form-group">
+            <label>Комментарий (необязательно)</label>
+            <textarea id="reviewText" rows="3" placeholder="Что понравилось или что можно улучшить?"></textarea>
+        </div>
+        <button class="btn btn-success" onclick="submitReview()"><i class="fas fa-paper-plane"></i> Отправить оценку</button>
+        <button class="btn" onclick="closeReviewModal()" style="background:#888;"><i class="fas fa-times"></i> Отмена</button>
     </div>
 </div>
 
@@ -317,34 +279,15 @@
 const SUPABASE_URL = 'https://xpaqczxqkuzfwmnimzsx.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhwYXFjenhxa3V6ZndtbmltenN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5Njg4NDcsImV4cCI6MjEwNDU0NDg0N30.hH62d6aCsgBchg4MVPey714O3-FR9bNaqnsm_T32zAk';
 
-const APP_VERSION = '5.0';
-
 let currentClient = null;
 let currentBooking = null;
 let myPriceRequest = null;
 let statusCheckInterval = null;
-let cachedDiscounts = [];
+let myChat = null;
+let chatPollTimer = null;
 
 // ============================================================
-// НОРМАЛИЗАЦИЯ ГОС.НОМЕРА (кириллица → латиница)
-// ============================================================
-function normalizePlate(plate) {
-    if (!plate) return '';
-    const map = {
-        'А':'A', 'В':'B', 'Е':'E', 'К':'K', 'М':'M',
-        'Н':'H', 'О':'O', 'Р':'P', 'С':'C', 'Т':'T',
-        'У':'Y', 'Х':'X',
-        'а':'a', 'в':'b', 'е':'e', 'к':'k', 'м':'m',
-        'н':'h', 'о':'o', 'р':'p', 'с':'c', 'т':'t',
-        'у':'y', 'х':'x'
-    };
-    return plate.replace(/[АВЕКМНОРСТУХавекмнорстух]/g, ch => map[ch] || ch)
-                .toUpperCase()
-                .replace(/\s/g, '');
-}
-
-// ============================================================
-// РАБОТА С JSON
+// РАБОТА С JSON НА СЕРВЕРЕ
 // ============================================================
 async function loadJsonFromServer() {
     try {
@@ -353,18 +296,15 @@ async function loadJsonFromServer() {
         });
         if (!response.ok) return null;
         const result = await response.json();
-        const data = (result && result[0] && result[0].data) ? result[0].data : null;
-        // Кэшируем скидки
-        if (data && data.discounts) cachedDiscounts = data.discounts;
-        return data;
+        return (result && result[0] && result[0].data) ? result[0].data : null;
     } catch (e) {
-        console.error('loadJsonFromServer:', e);
+        console.error(e);
         return null;
     }
 }
 
 async function updateJsonOnServer(updatedData) {
-    const jsonData = { ...updatedData, version: APP_VERSION, timestamp: new Date().toISOString() };
+    const jsonData = { ...updatedData, version: '4.8', timestamp: new Date().toISOString() };
     const response = await fetch(`${SUPABASE_URL}/rest/v1/app_data?key=eq.palych_data`, {
         method: 'PATCH',
         headers: {
@@ -411,8 +351,7 @@ async function register() {
     const name = document.getElementById('regName').value.trim();
     const phone = document.getElementById('regPhone').value.trim();
     const car = document.getElementById('regCar').value.trim();
-    const rawPlate = document.getElementById('regPlate').value.trim();
-    const plate = normalizePlate(rawPlate);
+    const plate = document.getElementById('regPlate').value.trim().toUpperCase();
     const carType = document.getElementById('regCarType').value;
     const errorEl = document.getElementById('regError');
     const successEl = document.getElementById('registerSuccess');
@@ -428,9 +367,9 @@ async function register() {
 
     try {
         const jsonData = await loadJsonFromServer();
-        if (!jsonData) { errorEl.textContent = '❌ Ошибка загрузки данных'; errorEl.style.display = 'block'; return; }
+        if (!jsonData) { errorEl.textContent = '❌ Ошибка'; errorEl.style.display = 'block'; return; }
 
-        if (jsonData.clients && jsonData.clients.find(c => normalizePlate(c.plate) === plate)) {
+        if (jsonData.clients && jsonData.clients.find(c => c.plate === plate)) {
             errorEl.textContent = '❌ Такой номер уже зарегистрирован';
             errorEl.style.display = 'block';
             return;
@@ -440,14 +379,8 @@ async function register() {
         const newId = jsonData.clients ? Math.max(...jsonData.clients.map(c => c.id || 0), 0) + 1 : 1;
 
         const newClient = {
-            id: newId,
-            name,
-            phone,
-            car,
-            plate: plate,
-            access_code: accessCode,
-            carType,
-            is_new: true
+            id: newId, name, phone, car, plate,
+            access_code: accessCode, carType, is_new: true
         };
 
         if (!jsonData.clients) jsonData.clients = [];
@@ -458,7 +391,6 @@ async function register() {
         successEl.style.display = 'block';
         localStorage.setItem('palych_new_client', JSON.stringify({ plate, access_code: accessCode }));
     } catch (e) {
-        console.error('register:', e);
         errorEl.textContent = '❌ Ошибка: ' + e.message;
         errorEl.style.display = 'block';
     }
@@ -468,14 +400,10 @@ async function register() {
 // АВТОРИЗАЦИЯ
 // ============================================================
 async function login() {
-    const rawPlate = document.getElementById('authPlate').value.trim();
-    const rawCode  = document.getElementById('authCode').value.trim();
-    const plate = normalizePlate(rawPlate);
-    const code  = String(rawCode).trim();
+    const plate = document.getElementById('authPlate').value.trim().toUpperCase();
+    const code = document.getElementById('authCode').value.trim();
     const errorEl = document.getElementById('authError');
     errorEl.style.display = 'none';
-
-    console.log('🔐 login():', { rawPlate, normalizedPlate: plate, rawCode, code });
 
     if (!plate || !code) {
         errorEl.textContent = 'Введите номер и код';
@@ -486,23 +414,15 @@ async function login() {
     try {
         const jsonData = await loadJsonFromServer();
         if (!jsonData || !jsonData.clients) {
-            errorEl.textContent = '❌ Ошибка загрузки данных';
+            errorEl.textContent = '❌ Ошибка загрузки';
             errorEl.style.display = 'block';
             return;
         }
 
-        const client = jsonData.clients.find(c => {
-            if (!c.plate) return false;
-            const dbPlate = normalizePlate(c.plate);
-            const dbCode = String(c.access_code || '').trim();
-            return dbPlate === plate && dbCode === code;
-        });
+        const client = jsonData.clients.find(c =>
+            c.plate && c.plate.toUpperCase() === plate && c.access_code === code);
 
         if (!client) {
-            console.error('❌ Клиент не найден:', { plate, code });
-            console.error('❌ Доступные:', jsonData.clients.map(c => ({
-                name: c.name, plate: c.plate, norm: normalizePlate(c.plate), code: c.access_code
-            })));
             errorEl.textContent = '❌ Неверный номер или код';
             errorEl.style.display = 'block';
             return;
@@ -516,14 +436,13 @@ async function login() {
         startAutoRefresh();
         showNotification(`✅ Добро пожаловать, ${client.name}!`, 'success');
     } catch (e) {
-        console.error('❌ login error:', e);
         errorEl.textContent = '❌ Ошибка: ' + e.message;
         errorEl.style.display = 'block';
     }
 }
 
 // ============================================================
-// ЗАГРУЗКА ДАННЫХ КЛИЕНТА
+// ЗАГРУЗКА ДАННЫХ
 // ============================================================
 async function loadClientData() {
     if (!currentClient) return;
@@ -536,11 +455,10 @@ async function loadClientData() {
     await loadActiveBookings();
     await loadHistory();
     await loadMyPriceRequest();
+    await loadChat();
+    startChatPolling();
 }
 
-// ============================================================
-// АКТИВНАЯ ЗАПИСЬ (главный статус)
-// ============================================================
 async function loadBooking() {
     try {
         const jsonData = await loadJsonFromServer();
@@ -586,9 +504,6 @@ function updateStatusDisplay(b) {
     }
 }
 
-// ============================================================
-// АКТИВНЫЕ ЗАПИСИ
-// ============================================================
 async function loadActiveBookings() {
     try {
         const jsonData = await loadJsonFromServer();
@@ -636,7 +551,7 @@ function renderActiveBookings(bookings) {
 }
 
 // ============================================================
-// ИСТОРИЯ (кликабельная)
+// ИСТОРИЯ ОБСЛУЖИВАНИЯ (С ОЦЕНКОЙ)
 // ============================================================
 async function loadHistory() {
     const container = document.getElementById('historyContainer');
@@ -646,236 +561,382 @@ async function loadHistory() {
             container.innerHTML = '<div class="empty-state">История пуста</div>';
             return;
         }
+        
         const history = jsonData.journal.filter(j => j.clientId === currentClient.id).slice(0, 10);
+        const allReviews = jsonData.reviews || [];
+        
         if (history.length === 0) {
             container.innerHTML = '<div class="empty-state">История пуста</div>';
             return;
         }
+        
+        history.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
         container.innerHTML = history.map(e => {
             const icon = e.type === 'diagnostic' ? '🔍' : '🔧';
             const name = e.type === 'diagnostic' ? 'Диагностика' : 'Ремонт';
-
-            let totalInfo = '';
-            if (e.type === 'repair' && e.parts && e.works) {
-                const partsTotal = e.parts.reduce((s, p) => s + ((p.qty || 0) * (p.price || 0)), 0);
-                const worksTotal = e.works.reduce((s, w) => s + (w.cost || 0), 0);
-                let discountPercent = 0;
-                const discVal = e.carData && e.carData.discount;
-                if (discVal && discVal !== 'none' && discVal !== '') {
-                    const discId = parseInt(discVal);
-                    const found = cachedDiscounts.find(d => d.id === discId);
-                    if (found) discountPercent = found.percent;
+            const review = allReviews.find(r => r.journal_id === e.id);
+            
+            let reviewBtn = '';
+            if (e.type === 'repair') {
+                if (review) {
+                    const stars = '⭐'.repeat(review.rating);
+                    reviewBtn = `<div style="font-size:0.8rem;color:#0a6030;margin-top:4px;">Ваша оценка: ${stars}</div>`;
+                } else {
+                    reviewBtn = `<button class="btn" style="width:auto;padding:6px 14px;font-size:0.75rem;background:#f6b83d;color:#0b2b3c;margin-top:4px;" onclick="openReviewModal(${e.id})"><i class="fas fa-star"></i> Оценить работу</button>`;
                 }
-                const grand = partsTotal + worksTotal * (1 - discountPercent / 100);
-                totalInfo = `<span style="font-size:0.75rem;color:#1f7b4a;font-weight:700;margin-left:8px;">${Math.round(grand)} ₽</span>`;
             }
 
-            return `<div class="history-card jv-history-card" onclick="viewJournalEntry(${e.id})">
-                <div><strong>${icon} ${name}</strong> <span style="font-size:0.8rem;color:#3a657e;">${e.car||''}</span>${totalInfo}</div>
-                <div>
-                    <span style="font-size:0.8rem;color:#3a657e;">${e.date||''}</span>
-                    <span class="h-status" style="margin-left:8px;">👁 Открыть</span>
+            return `<div class="history-card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+                <div style="flex:1;">
+                    <div><strong>${icon} ${name}</strong> <span style="font-size:0.8rem;color:#3a657e;">${e.car||''}</span></div>
+                    <div style="font-size:0.8rem; color:#3a657e; margin-top:2px;">📅 ${e.date||''} | Гос. номер: ${e.plate||'—'}</div>
+                    ${reviewBtn}
                 </div>
+                <button class="btn" style="width:auto; padding:8px 16px; font-size:0.8rem; background:#2d6b84;" onclick="openHistoryDetail(${e.id})">
+                    <i class="fas fa-eye"></i> Открыть
+                </button>
             </div>`;
         }).join('');
     } catch (e) {
         console.error(e);
-        container.innerHTML = '<div style="color:#b33c3c;text-align:center;padding:20px;">Ошибка</div>';
+        container.innerHTML = '<div style="color:#b33c3c;text-align:center;padding:20px;">Ошибка загрузки</div>';
     }
 }
 
 // ============================================================
-// ПРОСМОТР ДЕТАЛЕЙ АКТА / ДИАГНОСТИКИ
+// ПРОСМОТР ДЕТАЛЕЙ ИЗ ИСТОРИИ (АКТ И ДИАГНОСТИКА)
 // ============================================================
-async function viewJournalEntry(entryId) {
+async function openHistoryDetail(entryId) {
     try {
         const jsonData = await loadJsonFromServer();
         if (!jsonData || !jsonData.journal) return;
+        
         const entry = jsonData.journal.find(e => e.id === entryId);
-        if (!entry) { showNotification('❌ Запись не найдена', 'error'); return; }
+        if (!entry) { showNotification('Запись не найдена', 'error'); return; }
 
-        // Проверка прав: clientId может отсутствовать в старых записях
-        if (entry.clientId && entry.clientId !== currentClient.id) {
-            showNotification('⛔ Нет доступа к этой записи', 'error');
+        const content = document.getElementById('historyDetailContent');
+        const modal = document.getElementById('historyDetailModal');
+        
+        let html = '';
+
+        if (entry.type === 'repair') {
+            const parts = entry.parts || [];
+            const works = entry.works || [];
+            const carData = entry.carData || {};
+            
+            const partsTotal = parts.reduce((sum, p) => sum + (p.qty * p.price), 0);
+            const worksTotal = works.reduce((sum, w) => sum + w.cost, 0);
+            
+            let discountPercent = 0;
+            let discountName = 'Нет';
+            
+            const allDiscounts = jsonData.discounts || [];
+            if (carData.discount && carData.discount !== 'none') {
+                const foundDiscount = allDiscounts.find(d => d.id === parseInt(carData.discount));
+                if (foundDiscount) {
+                    discountPercent = foundDiscount.percent;
+                    discountName = foundDiscount.name;
+                }
+            }
+            
+            const discountAmount = worksTotal * (discountPercent / 100);
+            const worksTotalWithDiscount = worksTotal - discountAmount;
+            const grandTotal = partsTotal + worksTotalWithDiscount;
+
+            html += `<div style="background:white; border-radius:12px; padding:16px; border:2px solid #0b2b3c;">
+                <div style="text-align:center; border-bottom:3px double #0b2b3c; padding-bottom:10px; margin-bottom:14px;">
+                    <h2 style="font-size:1.2rem; color:#0b2b3c;">АКТ ВЫПОЛНЕННЫХ РАБОТ</h2>
+                    <div style="color:#3a657e; font-size:0.85rem;">PalЫCH Car Diagnost</div>
+                </div>
+                
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; background:#f8fafc; padding:10px; border-radius:8px; margin-bottom:14px; font-size:0.85rem;">
+                    <div><strong>Марка:</strong> ${carData.make || '—'}</div>
+                    <div><strong>Гос. номер:</strong> <span class="plate-badge">${carData.plate || '—'}</span></div>
+                    <div><strong>Дата:</strong> ${entry.date || '—'}</div>
+                    <div><strong>Скидка:</strong> ${discountName} (${discountPercent}%)</div>
+                </div>`;
+
+            if (parts.length > 0) {
+                html += `<h4 style="color:#0b2b3c; margin-bottom:4px; font-size:0.9rem;">📦 Запчасти</h4>`;
+                html += `<div style="display:grid; grid-template-columns:3fr 1fr 1fr; padding:4px 8px; background:#e4ecf4; font-weight:700; font-size:0.75rem; border-radius:4px;"><span>Наименование</span><span>Кол-во</span><span>Сумма</span></div>`;
+                parts.forEach(p => {
+                    html += `<div style="display:grid; grid-template-columns:3fr 1fr 1fr; padding:4px 8px; border-bottom:1px solid #eef2f7; font-size:0.8rem;">
+                        <span>${p.name}</span><span>${p.qty} шт.</span><span>${p.qty * p.price} ₽</span>
+                    </div>`;
+                });
+                html += `<div style="text-align:right; font-weight:700; font-size:0.85rem; margin-top:6px;">Итого запчасти: ${partsTotal} ₽</div>`;
+            }
+
+            if (works.length > 0) {
+                html += `<h4 style="color:#0b2b3c; margin:12px 0 4px; font-size:0.9rem;">🔧 Работы</h4>`;
+                html += `<div style="display:grid; grid-template-columns:2fr 1.5fr; padding:4px 8px; background:#e4ecf4; font-weight:700; font-size:0.75rem; border-radius:4px;"><span>Наименование</span><span style="text-align:right;">Стоимость</span></div>`;
+                works.forEach(w => {
+                    let priceHtml = '';
+                    if (discountPercent > 0) {
+                        const discounted = w.cost * (1 - discountPercent / 100);
+                        priceHtml = `<span style="text-decoration:line-through; color:#b33c3c; font-size:0.75rem; margin-right:4px;">${w.cost} ₽</span><span style="color:#0a6030; font-weight:700;">${discounted.toFixed(0)} ₽</span>`;
+                    } else {
+                        priceHtml = `${w.cost} ₽`;
+                    }
+                    html += `<div style="display:grid; grid-template-columns:2fr 1.5fr; padding:4px 8px; border-bottom:1px solid #eef2f7; font-size:0.8rem;">
+                        <span>${w.name}</span><span style="text-align:right;">${priceHtml}</span>
+                    </div>`;
+                });
+                
+                if (discountPercent > 0) {
+                    html += `<div style="text-align:right; margin-top:6px;">
+                        <div style="font-size:0.75rem; color:#b33c3c; text-decoration:line-through;">Итого без скидки: ${worksTotal} ₽</div>
+                        <div style="font-weight:700; font-size:0.85rem; color:#0a6030;">Итого со скидкой: ${worksTotalWithDiscount.toFixed(2)} ₽</div>
+                    </div>`;
+                } else {
+                    html += `<div style="text-align:right; font-weight:700; font-size:0.85rem; margin-top:6px;">Итого работы: ${worksTotal} ₽</div>`;
+                }
+            }
+
+            html += `<div style="margin-top:12px; padding:10px; background:#f8fafc; border-radius:8px; border:2px solid #0b2b3c; text-align:center;">
+                <div style="font-size:1.1rem; font-weight:700; color:#0b2b3c;">ОБЩАЯ СТОИМОСТЬ: ${grandTotal.toFixed(2)} ₽</div>
+                ${discountPercent > 0 ? `<div style="font-size:0.75rem; color:#0a6030; margin-top:2px;">Вы сэкономили: ${discountAmount.toFixed(2)} ₽</div>` : ''}
+            </div></div>`;
+
+        } else if (entry.type === 'diagnostic') {
+            const carData = entry.carData || {};
+            const systems = entry.systems || [];
+            const tables = entry.tables || {};
+
+            html += `<div style="background:white; border-radius:12px; padding:16px; border:2px solid #0b2b3c;">
+                <div style="text-align:center; border-bottom:3px double #0b2b3c; padding-bottom:10px; margin-bottom:14px;">
+                    <h2 style="font-size:1.2rem; color:#0b2b3c;">ЛИСТ ДИАГНОСТИКИ</h2>
+                    <div style="color:#3a657e; font-size:0.85rem;">PalЫCH Car Diagnost</div>
+                </div>
+                
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; background:#f8fafc; padding:10px; border-radius:8px; margin-bottom:14px; font-size:0.85rem;">
+                    <div><strong>Марка:</strong> ${carData.make || '—'}</div>
+                    <div><strong>Гос. номер:</strong> <span class="plate-badge">${carData.plate || '—'}</span></div>
+                    <div><strong>Год:</strong> ${carData.year || '—'}</div>
+                    <div><strong>Дата:</strong> ${entry.date || '—'}</div>
+                    <div style="grid-column:1/-1;"><strong>Жалобы:</strong> ${carData.complaints || '—'}</div>
+                </div>`;
+
+            systems.forEach(sysId => {
+                const sysParams = tables[sysId] || [];
+                const items = sysParams.filter(r => r.checked && r.value.trim() !== '');
+                if (items.length === 0) return;
+                
+                const sysName = sysId === 'engine' ? 'Двигатель' : sysId === 'brakes' ? 'Тормоза' : sysId === 'suspension' ? 'Подвеска' : sysId; 
+                
+                html += `<div style="margin-top:10px; border:1px solid #e4ecf4; border-radius:8px; overflow:hidden;">
+                    <div style="background:#0b2b3c; color:white; padding:6px 10px; font-weight:700; font-size:0.85rem;">🔧 ${sysName}</div>
+                    <div style="padding:4px 0;">`;
+                items.forEach(row => {
+                    const statusText = row.status === 'ok' ? '✅' : row.status === 'fail' ? '⚠️' : '❓';
+                    html += `<div style="display:flex; justify-content:space-between; padding:4px 10px; border-bottom:1px solid #eef2f7; font-size:0.8rem;">
+                        <span><strong>${row.param}:</strong> ${row.value}</span>
+                        <span>${statusText}</span>
+                    </div>`;
+                });
+                html += `</div></div>`;
+            });
+            html += `</div>`;
+        }
+
+        content.innerHTML = html;
+        modal.classList.add('active');
+        
+    } catch (err) {
+        console.error(err);
+        showNotification('Ошибка загрузки деталей', 'error');
+    }
+}
+
+function closeHistoryDetailModal() {
+    document.getElementById('historyDetailModal').classList.remove('active');
+}
+
+// ============================================================
+// ЧАТ С МАСТЕРОМ
+// ============================================================
+async function loadChat() {
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData || !jsonData.chats) {
+            myChat = null;
+            renderChat([]);
+            return;
+        }
+        myChat = jsonData.chats.find(c => c.client_id === currentClient.id) || null;
+        if (myChat) {
+            let changed = false;
+            myChat.messages.forEach(m => {
+                if (m.from === 'master' && !m.read) { m.read = true; changed = true; }
+            });
+            if (changed) {
+                myChat.unread_for_client = 0;
+                myChat.updated_at = new Date().toISOString();
+                await updateJsonOnServer(jsonData);
+            }
+        }
+        renderChat(myChat ? myChat.messages : []);
+    } catch (e) { console.error('loadChat:', e); }
+}
+
+function renderChat(messages) {
+    const container = document.getElementById('chatMessages');
+    const badge = document.getElementById('chatUnreadBadge');
+    if (!container) return;
+
+    const unread = myChat ? (myChat.unread_for_client || 0) : 0;
+    if (badge) {
+        if (unread > 0) { badge.textContent = unread; badge.classList.remove('hidden'); }
+        else badge.classList.add('hidden');
+    }
+
+    if (!messages || messages.length === 0) {
+        container.innerHTML = '<div style="text-align:center;color:#3a657e;padding:30px;font-size:0.85rem;">Напишите мастеру — он ответит здесь</div>';
+        return;
+    }
+
+    container.innerHTML = messages.map(m => {
+        const time = new Date(m.timestamp).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        const date = new Date(m.timestamp).toLocaleDateString('ru-RU');
+        const cls = m.from === 'client' ? 'client' : 'master';
+        const text = String(m.text || '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[s]);
+        return `<div class="chat-msg ${cls}">
+            <div class="chat-bubble">${text}<div class="chat-time">${date} ${time}</div></div>
+        </div>`;
+    }).join('');
+
+    container.scrollTop = container.scrollHeight;
+}
+
+async function sendChatMessage() {
+    const input = document.getElementById('chatInput');
+    const text = input.value.trim();
+    if (!text || !currentClient) return;
+    input.value = '';
+
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData) return;
+
+        if (!jsonData.chats) jsonData.chats = [];
+        if (!jsonData.chatIdCounter) jsonData.chatIdCounter = 1;
+        if (!jsonData.messageIdCounter) jsonData.messageIdCounter = 1;
+
+        let chat = jsonData.chats.find(c => c.client_id === currentClient.id);
+        if (!chat) {
+            chat = {
+                id: jsonData.chatIdCounter++,
+                client_id: currentClient.id,
+                booking_id: null,
+                messages: [],
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+                unread_for_master: 0,
+                unread_for_client: 0
+            };
+            jsonData.chats.push(chat);
+        }
+
+        chat.messages.push({
+            id: jsonData.messageIdCounter++,
+            from: 'client',
+            text,
+            timestamp: new Date().toISOString(),
+            read: false
+        });
+        chat.unread_for_master = (chat.unread_for_master || 0) + 1;
+        chat.updated_at = new Date().toISOString();
+
+        await updateJsonOnServer(jsonData);
+        myChat = chat;
+        renderChat(chat.messages);
+    } catch (e) {
+        showNotification('❌ Ошибка отправки', 'error');
+        input.value = text;
+    }
+}
+
+function startChatPolling() {
+    if (chatPollTimer) clearInterval(chatPollTimer);
+    chatPollTimer = setInterval(() => {
+        if (currentClient) loadChat();
+    }, 10000);
+}
+
+// ============================================================
+// ОЦЕНКА КАЧЕСТВА
+// ============================================================
+let reviewJournalId = null;
+let reviewRating = 0;
+
+function openReviewModal(journalId) {
+    reviewJournalId = journalId;
+    reviewRating = 0;
+    document.getElementById('reviewText').value = '';
+    updateReviewStars();
+    document.getElementById('reviewModal').classList.add('active');
+}
+
+function closeReviewModal() {
+    document.getElementById('reviewModal').classList.remove('active');
+    reviewJournalId = null;
+    reviewRating = 0;
+}
+
+function setReviewRating(n) {
+    reviewRating = n;
+    updateReviewStars();
+}
+
+function updateReviewStars() {
+    document.querySelectorAll('#reviewStars span').forEach(s => {
+        const r = parseInt(s.dataset.rating);
+        s.textContent = r <= reviewRating ? '★' : '☆';
+        s.style.color = r <= reviewRating ? '#f6b83d' : '#888';
+    });
+}
+
+async function submitReview() {
+    if (!reviewRating || reviewRating < 1) {
+        showNotification('⚠️ Поставьте оценку', 'error');
+        return;
+    }
+    if (!reviewJournalId) return;
+
+    const text = document.getElementById('reviewText').value.trim();
+
+    try {
+        const jsonData = await loadJsonFromServer();
+        if (!jsonData) return;
+
+        if (!jsonData.reviews) jsonData.reviews = [];
+        if (!jsonData.reviewIdCounter) jsonData.reviewIdCounter = 1;
+
+        if (jsonData.reviews.find(r => r.journal_id === reviewJournalId && r.client_id === currentClient.id)) {
+            showNotification('Вы уже оценили эту работу', 'info');
+            closeReviewModal();
             return;
         }
 
-        if (entry.type === 'diagnostic') {
-            renderDiagView(entry);
-        } else if (entry.type === 'repair') {
-            renderRepairView(entry);
-        }
-        document.getElementById('journalViewModal').classList.add('active');
+        jsonData.reviews.push({
+            id: jsonData.reviewIdCounter++,
+            client_id: currentClient.id,
+            journal_id: reviewJournalId,
+            rating: reviewRating,
+            text,
+            timestamp: new Date().toISOString(),
+            reply: '',
+            reply_timestamp: null
+        });
+
+        await updateJsonOnServer(jsonData);
+        closeReviewModal();
+        await loadHistory();
+        showNotification('✅ Спасибо за оценку!', 'success');
     } catch (e) {
-        console.error(e);
-        showNotification('❌ Ошибка загрузки', 'error');
+        showNotification('❌ Ошибка: ' + e.message, 'error');
     }
-}
-
-function closeJournalView() {
-    document.getElementById('journalViewModal').classList.remove('active');
-}
-
-// --- Просмотр диагностики ---
-function renderDiagView(entry) {
-    document.getElementById('journalViewTitle').textContent = '🔍 Лист диагностики';
-    const c = entry.carData || {};
-    let html = `
-        <div class="jv-car-info">
-            <div><b>Марка:</b> ${escapeHtml(c.make || '—')}</div>
-            <div><b>Гос. номер:</b> <span class="jv-plate-badge">${escapeHtml(c.plate || '—')}</span></div>
-            <div><b>Год:</b> ${escapeHtml(c.year || '—')}</div>
-            <div><b>Пробег:</b> ${escapeHtml(c.mileage || '—')} км</div>
-            <div><b>Дата:</b> ${escapeHtml(c.date || entry.date || '—')}</div>
-            <div style="grid-column:1/-1;"><b>Жалобы:</b> ${escapeHtml(c.complaints || '—')}</div>
-        </div>
-    `;
-    const sysIds = entry.systems || [];
-    const tables = entry.tables || {};
-    let hasContent = false;
-    sysIds.forEach(sysId => {
-        const sysName = getSystemName(sysId);
-        const rows = (tables[sysId] || []).filter(r => r.checked && r.value && r.value.trim() !== '');
-        if (rows.length === 0) return;
-        hasContent = true;
-        html += `<div class="jv-section">
-            <div class="jv-section-title">🔧 ${escapeHtml(sysName)}</div>
-            <div class="jv-row header" style="grid-template-columns: 2fr 1fr 1fr 1.5fr;">
-                <span>Параметр</span><span>Значение</span><span>Статус</span><span>Примечание</span>
-            </div>`;
-        rows.forEach(r => {
-            let statusHtml = '';
-            if (r.status === 'ok') statusHtml = `<span class="jv-status-badge jv-status-ok">✅ норма</span>`;
-            else if (r.status === 'fail') statusHtml = `<span class="jv-status-badge jv-status-fail">⚠️ поломка</span>`;
-            else statusHtml = `<span class="jv-status-badge jv-status-unknown">❓ не опр.</span>`;
-            html += `<div class="jv-row" style="grid-template-columns: 2fr 1fr 1fr 1.5fr;">
-                <span style="font-weight:600;color:#0b2b3c;">${escapeHtml(r.param)}</span>
-                <span>${escapeHtml(r.value || '')}</span>
-                <span>${statusHtml}</span>
-                <span style="color:#3a657e;font-style:italic;font-size:0.75rem;">${escapeHtml(r.note || '')}</span>
-            </div>`;
-        });
-        html += `</div>`;
-    });
-    if (!hasContent) {
-        html += `<div class="jv-empty-msg">📭 Нет отмеченных параметров в этой диагностике</div>`;
-    }
-    document.getElementById('journalViewContent').innerHTML = html;
-}
-
-// --- Просмотр ремонта (акт) ---
-function renderRepairView(entry) {
-    document.getElementById('journalViewTitle').textContent = '🔧 Акт выполненных работ';
-    const c = entry.carData || {};
-    const parts = entry.parts || [];
-    const works = entry.works || [];
-
-    // Считаем скидку
-    let discountPercent = 0;
-    let discountName = '';
-    const discVal = c.discount;
-    if (discVal && discVal !== 'none' && discVal !== '') {
-        const discId = parseInt(discVal);
-        const found = cachedDiscounts.find(d => d.id === discId);
-        if (found) { discountPercent = found.percent; discountName = found.name; }
-    }
-
-    let html = `
-        <div class="jv-car-info">
-            <div><b>Марка:</b> ${escapeHtml(c.make || '—')}</div>
-            <div><b>Гос. номер:</b> <span class="jv-plate-badge">${escapeHtml(c.plate || '—')}</span></div>
-            <div><b>Год:</b> ${escapeHtml(c.year || '—')}</div>
-            <div><b>Пробег:</b> ${escapeHtml(c.mileage || '—')} км</div>
-            <div><b>Дата ремонта:</b> ${escapeHtml(c.date || entry.date || '—')}</div>
-            <div style="grid-column:1/-1;"><b>Жалобы:</b> ${escapeHtml(c.complaints || '—')}</div>
-            ${discountPercent > 0 ? `<div style="grid-column:1/-1;"><b>Скидка:</b> <span style="background:#f6b83d;color:#0b2b3c;padding:2px 10px;border-radius:10px;font-weight:600;font-size:0.8rem;">${escapeHtml(discountName)} (${discountPercent}%)</span></div>` : ''}
-        </div>
-    `;
-
-    const partsTotal = parts.reduce((s, p) => s + ((p.qty || 0) * (p.price || 0)), 0);
-    const worksTotal = works.reduce((s, w) => s + (w.cost || 0), 0);
-    const discountAmount = worksTotal * (discountPercent / 100);
-    const worksTotalWithDiscount = worksTotal - discountAmount;
-    const grandTotal = partsTotal + worksTotalWithDiscount;
-
-    // Запчасти
-    html += `<div class="jv-section">
-        <div class="jv-section-title">📦 Запчасти</div>`;
-    if (parts.length === 0) {
-        html += `<div style="padding:10px 14px;color:#4a6f82;font-size:0.85rem;">Нет запчастей</div>`;
-    } else {
-        html += `<div class="jv-row header grid-3"><span>Наименование</span><span>Кол-во</span><span>Сумма</span></div>`;
-        parts.forEach(p => {
-            html += `<div class="jv-row grid-3">
-                <span>${escapeHtml(p.name)}</span>
-                <span>${p.qty} шт.</span>
-                <span>${((p.qty || 0) * (p.price || 0)).toFixed(0)} ₽</span>
-            </div>`;
-        });
-        html += `<div class="jv-total">Итого запчасти: ${partsTotal.toFixed(0)} ₽</div>`;
-    }
-    html += `</div>`;
-
-    // Работы
-    html += `<div class="jv-section">
-        <div class="jv-section-title">🔧 Работы</div>`;
-    if (works.length === 0) {
-        html += `<div style="padding:10px 14px;color:#4a6f82;font-size:0.85rem;">Нет работ</div>`;
-    } else {
-        html += `<div class="jv-row header grid-4"><span>Наименование</span><span>Примечание</span><span>Стоимость</span><span></span></div>`;
-        works.forEach(w => {
-            const cost = w.cost || 0;
-            const costDisc = discountPercent > 0 ? cost * (1 - discountPercent / 100) : cost;
-            let priceHtml = '';
-            if (discountPercent > 0) {
-                priceHtml = `<span class="old-price">${cost.toFixed(0)} ₽</span><span class="new-price">${costDisc.toFixed(0)} ₽</span>`;
-            } else {
-                priceHtml = `${cost.toFixed(0)} ₽`;
-            }
-            html += `<div class="jv-row grid-4">
-                <span>${escapeHtml(w.name)}</span>
-                <span style="color:#3a657e;font-size:0.75rem;font-style:italic;">${escapeHtml(w.note || '')}</span>
-                <span>${priceHtml}</span>
-                <span></span>
-            </div>`;
-        });
-        html += `<div class="jv-total">
-            ${discountPercent > 0
-                ? `Итого работы со скидкой ${discountPercent}%: <span class="new-price">${worksTotalWithDiscount.toFixed(0)} ₽</span>`
-                : `Итого работы: ${worksTotal.toFixed(0)} ₽`}
-        </div>`;
-    }
-    html += `</div>`;
-
-    // Общая сумма
-    html += `<div style="margin-top:16px; padding:14px; background:#f8fafc; border-radius:8px; border:2px solid #0b2b3c; text-align:center;">
-        <div style="font-size:1.2rem; font-weight:700; color:#0b2b3c;">ОБЩАЯ СТОИМОСТЬ: ${grandTotal.toFixed(0)} ₽</div>
-        ${discountPercent > 0 ? `<div style="font-size:0.85rem; color:#0a6030; margin-top:4px;">✅ Вы сэкономили ${discountAmount.toFixed(0)} ₽</div>` : ''}
-    </div>`;
-
-    document.getElementById('journalViewContent').innerHTML = html;
-}
-
-// --- Вспомогательные ---
-function escapeHtml(str) {
-    return String(str || '').replace(/[&<>"']/g, s => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-    })[s]);
-}
-
-function getSystemName(sysId) {
-    const names = {
-        engine: 'Двигатель',
-        cooling: 'Система охлаждения',
-        brakes: 'Тормозная система',
-        ignition: 'Система зажигания',
-        lights: 'Световые приборы',
-        ac: 'Кондиционирование',
-        exhaust: 'Выхлопная система',
-        interior_electronics: 'Салонная электроника',
-        suspension: 'Подвеска'
-    };
-    return names[sysId] || sysId;
 }
 
 // ============================================================
@@ -1065,6 +1126,7 @@ async function refreshStatus() {
     await loadActiveBookings();
     await loadHistory();
     await loadMyPriceRequest();
+    await loadChat();
     showNotification('✅ Данные обновлены', 'success');
 }
 
@@ -1084,9 +1146,11 @@ function startAutoRefresh() {
 function logout() {
     if (!confirm('Выйти?')) return;
     if (statusCheckInterval) clearInterval(statusCheckInterval);
+    if (chatPollTimer) clearInterval(chatPollTimer);
     currentClient = null;
     currentBooking = null;
     myPriceRequest = null;
+    myChat = null;
     document.getElementById('authForm').classList.remove('hidden');
     document.getElementById('registerForm').classList.add('hidden');
     document.getElementById('dashboard').classList.add('hidden');
@@ -1112,94 +1176,31 @@ function showNotification(message, type = 'info') {
 }
 
 // ============================================================
-// ИНИЦИАЛИЗАЦИЯ — с автовходом из QR
+// ИНИЦИАЛИЗАЦИЯ
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('bkDate').value = new Date().toISOString().slice(0,10);
-
-    // === Автовход из QR-кода ===
-    const urlParams = new URLSearchParams(window.location.search);
-    const qrPlate = urlParams.get('plate');
-    const qrCode  = urlParams.get('code');
-
-    console.log('🔍 URL:', window.location.href);
-    console.log('🔍 Параметры:', { qrPlate, qrCode });
-
-    if (qrPlate && qrCode) {
-        const cleanPlate = qrPlate.trim().toUpperCase();
-        const cleanCode  = String(qrCode).trim();
-
-        console.log('📝 После очистки:', { cleanPlate, cleanCode });
-        console.log('📝 Нормализованный plate:', normalizePlate(cleanPlate));
-
-        document.getElementById('authPlate').value = cleanPlate;
-        document.getElementById('authCode').value  = cleanCode;
-        document.getElementById('qrBanner').classList.remove('hidden');
-        window.history.replaceState({}, document.title, window.location.pathname);
-
-        setTimeout(() => {
-            console.log('🚀 Автовход...');
-            login();
-        }, 400);
-    }
-
-    // === Автозаполнение после регистрации ===
     const saved = localStorage.getItem('palych_new_client');
     if (saved) {
         try {
             const data = JSON.parse(saved);
             document.getElementById('authPlate').value = data.plate || '';
-            document.getElementById('authCode').value  = data.access_code || '';
+            document.getElementById('authCode').value = data.access_code || '';
             localStorage.removeItem('palych_new_client');
         } catch(e) {}
     }
 
-    // === Закрытие модалки по клику на фон ===
-    const jvModal = document.getElementById('journalViewModal');
-    if (jvModal) {
-        jvModal.addEventListener('click', function(e) {
-            if (e.target === this) closeJournalView();
-        });
-    }
-    const prModal = document.getElementById('priceRequestModal');
-    if (prModal) {
-        prModal.addEventListener('click', function(e) {
-            if (e.target === this) closePriceRequestModal();
-        });
-    }
-});
-
-console.log('🚀 PalЫCH Client v' + APP_VERSION + ' загружен!');
-console.log('✅ Автовход из QR + просмотр актов и диагностики');
-</script>
-<script>
-    // Регистрация Service Worker
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./service-worker.js')
                 .then(reg => console.log('✅ SW зарегистрирован:', reg.scope))
-                .catch(err => console.warn('⚠️ Ошибка SW:', err));
+                .catch(err => console.warn('⚠️ SW:', err));
         });
     }
+});
 
-    // Установка PWA
-    let deferredPrompt = null;
-    window.addEventListener('beforeinstallprompt', (e) => {
-        console.log('💡 PWA можно установить');
-        e.preventDefault();
-        deferredPrompt = e;
-    });
-
-    window.installApp = async function() {
-        if (!deferredPrompt) {
-            alert('Установка недоступна. Используйте меню браузера: "Добавить на главный экран"');
-            return;
-        }
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log('Установка:', outcome);
-        deferredPrompt = null;
-    };
+console.log('🚀 PalЫCH Client v4.9 загружен!');
+console.log('✅ Чат с мастером + оценка качества');
 </script>
 </body>
 </html>

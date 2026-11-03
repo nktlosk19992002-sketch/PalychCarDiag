@@ -202,8 +202,24 @@
         .client-card .cc-line { color: #d4e9f5; font-size: 6.5pt; }
         .client-card .cc-plate { display: inline-block; background: #f6b83d; color: #0b2b3c; padding: 0.4mm 1.8mm; border-radius: 1.5mm; font-weight: 900; font-size: 7.5pt; margin-top: 0.8mm; }
         .client-card .cc-code { display: inline-block; background: rgba(255,255,255,0.12); color: #f6b83d; padding: 0.4mm 1.8mm; border-radius: 1.5mm; font-weight: 700; font-size: 6.5pt; margin-left: 1mm; }
-        .client-card .cc-qr { width: 20mm; height: 20mm; background: white; border-radius: 1.5mm; padding: 1mm; display: flex; align-items: center; justify-content: center; }
-
+.client-card .cc-qr { 
+    width: 20mm; 
+    height: 20mm; 
+    background: white; 
+    border-radius: 1.5mm; 
+    padding: 1mm; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    flex-shrink: 0;
+}
+.client-card .cc-qr img,
+.client-card .cc-qr canvas { 
+    width: 100%; 
+    height: 100%; 
+    display: block; 
+    object-fit: contain; 
+}
         /* ===== ЭТИКЕТКА МАСЛА ===== */
         .oil-label { width: 80mm; height: 50mm; background: #fff; border: 2px solid #0b2b3c; border-radius: 3mm; box-sizing: border-box; display: flex; flex-direction: column; }
         .oil-label .ol-header { background: #0b2b3c; color: white; padding: 2mm 3mm; display: flex; align-items: center; gap: 2mm; }

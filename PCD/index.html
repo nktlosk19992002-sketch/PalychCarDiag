@@ -393,31 +393,7 @@
             }
         }
 
-        @media (max-width: 700px) {
-            .row-3col, .row-2col { grid-template-columns: 1fr; }
-            .row-4col { grid-template-columns: 1fr 1fr; }
-            .main-menu { grid-template-columns: 1fr 1fr; }
-        }
-        .hidden { display: none !important; }
-        .text-center { text-align: center; }
-        .fw-bold { font-weight: 700; }
-        
-        .notification-main {
-            position: fixed; bottom: 20px; right: 20px; padding: 12px 20px;
-            border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            z-index: 1000; font-weight: 600; font-size: 0.9rem; color: white;
-        }
-        .notification-main.success { background: #1f7b4a; }
-        .notification-main.error { background: #b33c3c; }
-        .notification-main.info { background: #0b2b3c; }
-
-        #installServiceBtn {
-            background: #f6b83d;
-            color: #0b2b3c;
-            border: none;
-            font-weight: 700;
-        }
-		/* ============================================================ */
+         */
 /* НОВОЕ: ДАШБОРД И МОБИЛЬНАЯ АДАПТАЦИЯ (v5.0) */
 /* ============================================================ */
 
@@ -547,7 +523,67 @@
     background-color: #f8fafc;
 }
 
-/* --- Мобильная версия (только для маленьких экранов) --- */
+/* ============================================================ */
+/* 1. БАЗОВЫЕ СТИЛИ ДЛЯ ПК (ТАБЛИЦЫ) */
+/* ============================================================ */
+.bookings-table, .clients-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    table-layout: auto; /* Важно для правильных пропорций */
+}
+
+.bookings-table th, .clients-table th {
+    background: #e4ecf4;
+    padding: 12px 8px;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #1a4055;
+    white-space: nowrap;
+}
+
+.bookings-table td, .clients-table td {
+    padding: 6px 6px;
+    border-bottom: 1px solid #e9eff6;
+    vertical-align: middle;
+}
+
+/* Поля ввода в таблице на ПК (плоские, без рамок) */
+.bookings-table input[type="text"], 
+.bookings-table input[type="date"], 
+.bookings-table input[type="time"], 
+.bookings-table select,
+.clients-table select {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    background: transparent;
+    transition: 0.2s;
+}
+
+.bookings-table input:focus, 
+.bookings-table select:focus,
+.clients-table select:focus {
+    background: white;
+    border-color: #f6b83d;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(246,184,61,0.2);
+}
+
+.bookings-table tr:hover td {
+    background-color: #f8fafc;
+}
+
+/* ============================================================ */
+/* 2. МОБИЛЬНАЯ ВЕРСИЯ (ТОЛЬКО ДЛЯ ЭКРАНОВ < 768px) */
+/* ============================================================ */
 @media (max-width: 768px) {
     /* Шапка */
     .app-header { padding: 12px 16px; flex-direction: column; align-items: stretch; }
@@ -560,7 +596,7 @@
     .tabs { overflow-x: auto; flex-wrap: nowrap; padding: 0 10px; }
     .tab-btn { padding: 12px 16px; font-size: 0.85rem; white-space: nowrap; }
 
-    /* Таблицы -> Карточки (ТОЛЬКО на мобильных) */
+    /* Таблицы -> Карточки */
     .diagnostic-table, .bookings-table, .clients-table, .works-table {
         display: block;
         width: 100%;
@@ -596,6 +632,7 @@
         gap: 6px;
         padding-top: 10px;
     }
+    /* Подписи для ячеек (data-label) */
     .diagnostic-table td::before, .bookings-table td::before, .clients-table td::before, .works-table td::before {
         content: attr(data-label);
         font-weight: 600;
@@ -628,13 +665,14 @@
     /* Модальные окна */
     .modal-box { padding: 16px; width: 100%; max-height: 95vh; border-radius: 16px 16px 0 0; position: fixed; bottom: 0; left: 0; right: 0; margin: 0; }
 }
+
     </style>
 </head>
 <body>
 <div class="app-container">
     <div class="app-header">
         <h1 onclick="goHome()"><i class="fas fa-car"></i> PalЫCH</h1>
-        <span class="sub"><i class="fas fa-wrench"></i> v4.9</span>
+        <span class="sub"><i class="fas fa-wrench"></i> v5.0</span>
         <div class="nav-buttons">
             <button class="active" onclick="goHome()"><i class="fas fa-home"></i> Главная</button>
             <button onclick="switchMode('diag')"><i class="fas fa-stethoscope"></i> Диагностика</button>

@@ -489,25 +489,86 @@
 }
 
 /* --- Мобильная адаптация (для экранов < 768px) --- */
+/* ============================================================ */
+/* АДАПТИВНОСТЬ (ПК и Мобилки) */
+/* ============================================================ */
+
+/* --- Стили для ПК (по умолчанию) --- */
+.bookings-table, .clients-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.bookings-table th, .clients-table th {
+    background: #e4ecf4;
+    padding: 12px 8px;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #1a4055;
+    white-space: nowrap;
+}
+
+.bookings-table td, .clients-table td {
+    padding: 8px 6px;
+    border-bottom: 1px solid #e9eff6;
+    vertical-align: middle;
+}
+
+.bookings-table input[type="text"], 
+.bookings-table input[type="date"], 
+.bookings-table input[type="time"], 
+.bookings-table select,
+.clients-table select {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    background: transparent;
+    transition: 0.2s;
+}
+
+.bookings-table input:focus, 
+.bookings-table select:focus,
+.clients-table select:focus {
+    background: white;
+    border-color: #f6b83d;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(246,184,61,0.2);
+}
+
+.bookings-table tr:hover td {
+    background-color: #f8fafc;
+}
+
+/* --- Мобильная версия (только для маленьких экранов) --- */
 @media (max-width: 768px) {
     /* Шапка */
     .app-header { padding: 12px 16px; flex-direction: column; align-items: stretch; }
     .app-header h1 { font-size: 1.4rem; justify-content: center; }
     .app-header .sub { display: none; }
     .nav-buttons { overflow-x: auto; padding-bottom: 4px; flex-wrap: nowrap; }
-    .nav-buttons button { padding: 8px 12px; font-size: 0.75rem; }
+    .nav-buttons button { padding: 8px 12px; font-size: 0.75rem; white-space: nowrap; }
     
     /* Табы */
     .tabs { overflow-x: auto; flex-wrap: nowrap; padding: 0 10px; }
-    .tab-btn { padding: 12px 16px; font-size: 0.85rem; }
+    .tab-btn { padding: 12px 16px; font-size: 0.85rem; white-space: nowrap; }
 
-    /* Таблицы -> Карточки */
+    /* Таблицы -> Карточки (ТОЛЬКО на мобильных) */
     .diagnostic-table, .bookings-table, .clients-table, .works-table {
         display: block;
         width: 100%;
+        background: transparent;
+        box-shadow: none;
     }
     .diagnostic-table thead, .bookings-table thead, .clients-table thead, .works-table thead {
-        display: none; /* Скрываем заголовки */
+        display: none;
     }
     .diagnostic-table tbody, .bookings-table tbody, .clients-table tbody, .works-table tbody {
         display: block;
@@ -525,9 +586,9 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 6px 0;
+        padding: 8px 0;
         border-bottom: 1px solid #f0f4f8;
-        font-size: 0.85rem;
+        font-size: 0.9rem;
     }
     .diagnostic-table td:last-child, .bookings-table td:last-child, .clients-table td:last-child, .works-table td:last-child {
         border-bottom: none;
@@ -535,7 +596,6 @@
         gap: 6px;
         padding-top: 10px;
     }
-    /* Подписи для ячеек в мобильной версии */
     .diagnostic-table td::before, .bookings-table td::before, .clients-table td::before, .works-table td::before {
         content: attr(data-label);
         font-weight: 600;
@@ -544,40 +604,29 @@
         text-transform: uppercase;
         margin-right: 10px;
     }
-    /* Скрываем пустые подписи */
-    .diagnostic-table td[data-label=""]::before, .bookings-table td[data-label=""]::before, .clients-table td[data-label=""]::before {
-        content: none;
-    }
 
-    /* Поля ввода в карточках */
+    /* Поля ввода на мобилках */
     .bookings-table input, .clients-table input, .bookings-table select {
         width: 60% !important;
         text-align: right;
+        background: #f8fafc;
+        border: 1px solid #e4ecf4;
         margin-left: 10px;
     }
-    .bookings-table td:last-child input, .bookings-table td:last-child select {
-        width: 100% !important;
-        text-align: left;
-    }
-
+    
     /* Главное меню (плитки) */
     .main-menu { grid-template-columns: 1fr 1fr; gap: 12px; }
     .menu-card { padding: 16px 10px; }
     .menu-card i { font-size: 2rem; }
     .menu-card h2 { font-size: 1rem; }
-    .menu-card p { font-size: 0.7rem; }
-
-    /* Модальные окна */
-    .modal-box { padding: 16px; width: 100%; max-height: 95vh; border-radius: 16px 16px 0 0; position: fixed; bottom: 0; left: 0; right: 0; margin: 0; }
-    .modal-title { font-size: 1.1rem; }
     
     /* Дашборд */
     .dashboard-grid { grid-template-columns: 1fr 1fr; }
     .stat-card { padding: 12px; }
     .stat-card .stat-value { font-size: 1.4rem; }
 
-    /* Прочее */
-    .file-status-bar { flex-direction: column; gap: 4px; text-align: center; }
+    /* Модальные окна */
+    .modal-box { padding: 16px; width: 100%; max-height: 95vh; border-radius: 16px 16px 0 0; position: fixed; bottom: 0; left: 0; right: 0; margin: 0; }
 }
     </style>
 </head>
@@ -585,7 +634,7 @@
 <div class="app-container">
     <div class="app-header">
         <h1 onclick="goHome()"><i class="fas fa-car"></i> PalЫCH</h1>
-        <span class="sub"><i class="fas fa-wrench"></i> v5.0</span>
+        <span class="sub"><i class="fas fa-wrench"></i> v4.9</span>
         <div class="nav-buttons">
             <button class="active" onclick="goHome()"><i class="fas fa-home"></i> Главная</button>
             <button onclick="switchMode('diag')"><i class="fas fa-stethoscope"></i> Диагностика</button>

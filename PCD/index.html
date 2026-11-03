@@ -3629,16 +3629,9 @@ console.log('✅ Добавлена печать карты клиента 85×5
 // ============================================================
 // const VAPID_PUBLIC_KEY = 'BDfFn9Z5CpYrDLCc1LwGowbuWaZIJXkopu9d_zmlqJtZRJTFe43jYCmFyumZyrY-JX5qiwYvP_B7SWkxRnPPAjM'; // <-- ВАШ ПУБЛИЧНЫЙ КЛЮЧ
 
-function urlBase64ToUint8Array(base64String) {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
-    const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
-    for (let i = 0; i < rawData.length; ++i) {
-        outputArray[i] = rawData.charCodeAt(i);
-    }
+
     return outputArray;
-}
+
 
 </script>
 <!-- OneSignal SDK -->

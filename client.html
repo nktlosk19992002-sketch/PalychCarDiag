@@ -1178,8 +1178,13 @@ function showNotification(message, type = 'info') {
 // ============================================================
 // ИНИЦИАЛИЗАЦИЯ
 // ============================================================
+// ============================================================
+// ИНИЦИАЛИЗАЦИЯ
+// ============================================================
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('bkDate').value = new Date().toISOString().slice(0,10);
+
+    // 1. Восстанавливаем данные после регистрации (если есть)
     const saved = localStorage.getItem('palych_new_client');
     if (saved) {
         try {
@@ -1190,6 +1195,23 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch(e) {}
     }
 
+    // 2. АВТОВХОД ПО QR-КОДУ (параметры в URL)
+    const urlParams = new URLSearchParams(window.location.search);
+    const qrPlate = urlParams.get('plate');
+    const qrCode = urlParams.get('code');
+
+    if (qrPlate && qrCode) {
+        // Подставляем данные в поля
+        document.getElementById('authPlate').value = qrPlate;
+        document.getElementById('authCode').value = qrCode;
+        
+        // Даём браузеру полсекунды на отрисовку и автоматически жмём "Войти"
+        setTimeout(() => {
+            login();
+        }, 500);
+    }
+
+    // 3. Регистрация Service Worker (PWA)
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./service-worker.js')
@@ -1198,7 +1220,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-
 console.log('🚀 PalЫCH Client v4.9 загружен!');
 console.log('✅ Чат с мастером + оценка качества');
 </script>

@@ -2,8 +2,8 @@
 // SERVICE WORKER — PalЫCH Service PWA v1.0
 // ============================================================
 
-const CACHE_NAME = 'palych-service-v1';
-const RUNTIME_CACHE = 'palych-service-runtime-v1';
+const CACHE_NAME = 'palych-service-v222';
+const RUNTIME_CACHE = 'palych-service-runtime-v222';
 
 const PRECACHE_URLS = [
     './index.html',
